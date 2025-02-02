@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}">
+    <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% comment %} <link rel="stylesheet" href="{% static 'styles/output.css' %}"> {% endcomment %}
+</head>
+
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "myapp/navbar.html" %}
+    
+    <!-- phone navbar popup -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20 lg:hidden" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+    <!-- main section -->
+
+    <div class="flex w-full gap-x-5 lg:gap-x-2">
+        <!-- sidenav -->
+        {% include "myapp/sidenav.html" %}
+
+        <!-- explore section -->
+        <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-6">
+            <div>
+                <h1 class="hidden md:block text-3xl font-bold">
+                    < Explore />
+                </h1>
+            </div>
+        
+
+            <div class="flex flex-col gap-y-5 w-full mb-16">
+                <!-- top section, search bar and filter option -->
+                <div class="w-full flex flex-col items-center mt-5 justify-evenly md:items-end md:flex-row gap-x-5 gap-y-5">
+                    <div class="flex gap-x-4">
+                        <div class="font-bold text-[18px]">Projects</div>
+                        <div class="text-[#686868] text-[18px] ">({{total_result}} Results)</div>
+                        <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
+                    </div>
+                    <div class="flex items-end gap-x-4 w-full md:w-fit justify-center md:justify-start">
+                        <input type="text"
+                            class="md:w-96 w-[80%] outline-none border-b border-[#00000046] bg-[#f6f6f6] text-[16px] px-2 py-1 text-black"
+                            placeholder="Quick Search: Skill | Domain">
+                        <div class="lg:hidden flex" onclick="openFilter()">
+                            <button class="flex items-center gap-x-2"><i class="fa-solid fa-filter"></i> <span
+                                    class="hidden md:block">Filter</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- projects area fill all the projects inside this div -->
+                <div class="flex flex-col items-start w-full gap-y-5">
+                    <!-- start of 1st project -->
+
+                    {% for project in filtered_project %}
+                    <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full">
+                    <div class="flex items-center justify-between gap-x-5">
+                        <div class="flex items-start w-full gap-x-1">
+
+                            <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md"></a>
+                            <div class="w-5/6 md:w-[90%]">
+                                <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a><br>
+                                <div class='break-words mt-2'>{{project.description|truncatechars:200}}</div>
+                                <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
+                                    <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
+                                        <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span> <span>{{project.tot_member}} Users</span>
+                                    </div>
+                                    <p class="self-end">{{project.created_at}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute right-3 top-2 flex items-start gap-x-5">
+                            {% comment %} <i class="text-xl fa-solid fa-certificate">F</i> {% endcomment %}
+                            <p class="text-xl text-gray-700">{{project.type}}</p>
+                            <i
+                                class="text-xl fa-regular fa-bookmark hover:scale-[1.3] transition cursor-pointer"></i>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex items-center justify-between gap-x-5">
+                        <div class="flex items-center gap-x-5">
+                            {% if project.github_link %}
+                            <a href='{{project.github_link}}' target='_blank'><i class="text-2xl fa-brands fa-github cursor-pointer"></i></a>
+                            {% endif %}  
+                            <div class="underline">{{project.domain.name}}</div>
+                        </div>
+                        <div class="flex items-center gap-x-2 text-[#686868]">
+
+                            <!-- <p class="px-2 py-1 text-black border border-black rounded-md">Free</p> -->
+                            <a href='{% url "project_detail" project.id%}' class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.2]">View</a>
+                        </div>
+                    </div>
+                </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+
+                {% comment %} Paginator nav links {% endcomment %}
+                {% if total_result %}
+                <div class="flex justify-center mt-6 pb-20">
+                    <div class="flex items-center space-x-4">
+                        {% if filtered_project.has_previous %}
+                            <a href="?page=1&?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                            <a href="?page={{filtered_project.previous_page_number}}&?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                        {% endif %}
+                
+                        <span class="text-black">
+                            <span class="font-semibold">Page {{ filtered_project.number }}</span> of {{ filtered_project.paginator.num_pages }}
+                        </span>
+                
+                        {% if filtered_project.has_next %}
+                            <a href="?page={{filtered_project.next_page_number}}&domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>
+                            <a href="?page={{filtered_project.paginator.num_pages}}&domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="flex flex-col items-center justify-center p-4">
+                    <span class="text-lg md:text-xl lg:text-2xl font-normal text-gray-700 mb-4">
+                        Oops! No results Found!
+                    </span>
+                    <img src="{% static 'assets/not-found.png' %}" alt="Not Found" class="w-full rounded-2xl max-w-xs md:max-w-sm lg:max-w-md">
+                </div>
+                {% endif %}
+                
+                    
+            </div>
+        </div>
+
+
+
+        <!-- filter section -->
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-0 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-40px)] lg:top-5 gap-y-8 lg:flex overflow-y-scroll"
+            id="openFilterParent">
+            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 lg:mt-  overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
+                id="filterElement">
+                <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
+                        class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
+                <h1 class="text-xl font-bold text-center">
+                    < Filters />
+                </h1>
+
+                {% if applied_filter %}
+                <a href='{% url "explore-project" %}' class="group flex items-center justify-center gap-2 p-2 border border-black rounded-2xl  text-black hover:bg-black hover:text-white transition-all duration-200 w-fit">
+                        <p class="text-sm font-medium">Clear</p>
+                        <img src='{% static "assets/clear-filter.svg" %}' alt="Clear Filter"  class="w-5 h-5 transition-all duration-200 group-hover:invert">
+                </a>
+                {% endif %}
+
+
+                <div class="flex flex-col gap-y-3"> <!--Project Type-->
+                    <h1 class="text-xl font-bold">Type</h1>
+                    <div class="flex flex-wrap gap-2 text-white">
+                        {% for type in types %}
+                    <a href='?domain={{ request.GET.domain }}&type={{ type|slice:":1" }}&skill={{ request.GET.skill }}&level={{request.GET.level}}' class='{% if request.GET.type == type|slice:":1" %}text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] border border-[#323234] bg-[#323234] px-2 py-1 rounded-md font-bold'>{{type}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Level</h1>
+                    <div class="flex flex-wrap gap-2 text-white">
+                        {% for level in levels %}
+                        <a href= '?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{level|slice:":1"}}' class='{% if request.GET.level == level|slice:":1" %} text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] border border-[#323234] bg-[#323234] px-2 py-1 rounded-md font-bold'>{{level}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Domains</h1>
+                    <div class="flex flex-wrap gap-2 text-white">
+                        {% for domain in top_domains %}
+                        <a href = '?domain={{ domain.id }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}' 
+                            class="{% if request.GET.domain == domain.id|stringformat:'s' %}text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] bg-[#323234] px-2 py-1 rounded-md font-bold border border-[#323234]">
+                            {{domain.name}}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Skills</h1>
+                    <div class="flex flex-wrap gap-2 items-center text-white">
+                        {% for skill in top_skill %}
+                        <a href='?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ skill.id }}&level={{request.GET.level}}' class="{% if request.GET.skill == skill.id|stringformat:'s' %}text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] border border-[#323234] bg-[#323234] px-2 py-1 rounded-md font-bold">{{skill.name}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script src="{% static 'scripts/script.js' %}"></script>
+</body>
+
+</html>

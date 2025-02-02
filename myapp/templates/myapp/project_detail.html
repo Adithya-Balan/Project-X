@@ -1,0 +1,249 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+
+{% block html_class %}class="scroll-smooth scroll-pt-[50vh]"{% endblock %}
+{% block title %}{{project.title}}{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+
+{% block script %}
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+{% endblock %} 
+
+{% block content %}
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "myapp/navbar.html" %}
+
+    
+
+    <div class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
+
+        <a href="{{ request.META.HTTP_REFERER }}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i
+                class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Back</span></a>
+
+        <div class="flex gap-x-5 flex-col md:flex-row gap-y-10">
+            <div class="bg-white p-5 rounded-lg w-full md:w-3/5 flex flex-col gap-y-5">
+                <div class="flex items-center gap-x-5">
+                    <div>
+                        <img src="{{project.creator.profile_image.url}}" alt="" class="w-14 h-14 rounded-full">
+                    </div>
+                    <div class="flex flex-col gap-y-2">
+                        <div><span>Issued by</span> <span>@{{project.creator.user.username}}</span></div>
+                        <div class="text-[#686868]">{{project.created_at}}</div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-y-5">
+                    <div class="flex flex-col gap-y-2">
+                        <div class="font-bold text-3xl">{{project.title}}</div>
+                        <div class="flex gap-x-3"> 
+                            {% if project.url %}
+                            <a href='{{project.url}}' target='_blank'><i class="text-2xl cursor-pointer fa-solid fa-globe"></i></a>
+                            {% endif %}
+                            {% if project.github_link %}
+                            <a href='{{project.github_link}}' target='_blank'><i class="text-2xl cursor-pointer fa-brands fa-github"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-justify break-words pb-6">
+                        {{project.description}}
+                    </div>
+                    
+                    
+                    {% if project.file or project.video %}
+                    <div class='flex gap-x-2 items-center pt-6 '>
+                        <img src = '{% static "assets/link.svg" %}' class='w-4 h-4'>
+                        <p class='text-lg text-[#332f2f] underline underline-offset-2'>Learn More About This Project</p>
+                    </div>
+                        {% if project.file %}
+                        <a href='{{project.file.url}}' target='_blank' class='flex flex-row gap-x-2 items-center hover:bg-[#6feb8627] border border-[#6feb85] rounded-md hover:text-[#32643b] px-3 py-1 bg-[#6feb85] text-black transition text-center w-fit'>
+                            <img src = '{% static "assets/file.svg" %}' class='w-4 h-4'>
+                            <p class="">File</p>
+                        </a>
+                        {% endif %}                            
+                        {% if project.video %}
+                        <video width="320" height="240" controls class='pb-4' >
+                            <source src="{{project.video.url}}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>  
+                    {% endif %}
+                    {% endif %}
+                    
+                </div>
+            </div>
+
+            
+
+            <div class="w-full md:w-2/5 flex flex-col gap-y-5 items-start shadow-sm">
+                <div class="flex flex-col gap-y-4 border bg-white p-5 rounded-lg relative">
+                    {% if project.type %}
+                    <div class="absolute right-2 -top-5 text-2xl font-extrabold text-center bg-[#0000002a] self-center px-3 py-1 rounded-md">{{project.get_type_display}}</div> 
+                    {% endif %}
+                    <div class="text-2xl font-extrabold self-start mt-6 underline">Connect Dev</div>
+                    <div class="flex flex-col gap-y-4 text-base">
+                        <div class="flex justify-between items-center gap-x-5">
+                            <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank" class=""><i class="fa-regular fa-user"></i> &nbsp;<span class='hover:underline'>{{project.creator.user.first_name}} {{project.creator.user.last_name}}</span></a>
+                            
+                            {% if link_available %}
+                                <div class="flex gap-x-5">
+                                {% for link, url in social_link.items %}
+                                    {% if url %}
+                                    <a href='{{url}}' target='_blank'><i class="text-2xl cursor-pointer fa-brands fa-{{link}}"></i></a>
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <a href="mailto:{{ project.creator.user.email }}"><i class="fa-regular fa-envelope"></i> &nbsp;<span class='hover:underline '>{{project.creator.user.email}}</span></a>
+
+                        {% if project.creator.phone %}
+                        <a href='tell:+{{project.creator.phone}}'><i class="fa-solid fa-phone"></i> &nbsp;<span class='hover:underline'>{{project.creator.phone}}</span></a>
+                        {% endif %}
+
+                        <div><i class="fa-solid fa-map-marker-alt"></i> &nbsp;{{project.creator.location}}</div>
+                    </div>
+
+                    <div class='text-base'><span class="font-bold" id='membercount'>{{project.tot_member}}</span> <span>Members</span></div>
+
+                    <div class="flex gap-x-2 bg-[#6feb8627] px-3 py-2">
+                        <div class="w-5 bg-[#6feb85]"></div>
+                        <div><span class="font-bold">Note :</span> loreLut aperiam saepe mollitia quia harum numquam
+                            asperiores iure soluta at, esse vitae culpa quidem in corporis molestias maxime provident
+                            quas totam eveniet.</div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-x-5">
+                        <button id="joinProjectBtn"  class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110" onclick="joinProject({{ project.id }})">
+                            {% if request.user.info in project.members.all %}
+                               Leave
+                            {% else %}
+                                Join
+                            {% endif %}
+                                
+                        </button>
+                        <button
+                            class="px-4 py-2 bg-white text-black border border-black rounded-full transition hover:scale-110">Save</button>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-full">
+                    <div>
+                        <fieldset id = 'test' class="border border-[#0000002d] rounded-md p-3 flex flex-col gap-y-3 bg-white">
+                            <legend class="px-2 text-[#686868] text-md">Skills and Expertise</legend>
+                            <div class="text-2xl font-extrabold self-start">Domain: {{project.domain}}</div>
+
+                            {% if project.level %}
+                            <div class="self-start">
+                                <div class="border border-black px-3 py-1 rounded">Level: {{project.get_level_display}}</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex flex-col gap-y-2 rounded-md">
+                                <div>Skills Needed</div>
+                                <div class="flex gap-x-3 flex-wrap gap-y-2">
+                                    {% for skill in skill_needed %}
+                                    <div class="bg-[#6feb8627] w-fit px-3 border border-[#6feb85] rounded py-1 backdrop-blur text-black">{{skill.name}}</div>
+                                    {% endfor %}                                    
+                                </div>
+                            </div>
+                            <div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- comments section  -->
+        <div class=" m-auto w-[90%] lg:w-[900px] flex flex-col gap-y-5">
+            <!-- text area and submit btn -->
+            <div class="flex flex-col gap-y-3">
+                <form method = 'post' action='{% url "project_forum" project.id %}' class="flex flex-col gap-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_comment_id" id="parentCommentId">
+
+                    <textarea name="content" id="commentTextArea"
+                        class="h-44 outline-none p-2 border-dashed border-[#0000002c] border-2 rounded-md"
+                        placeholder="Comment...."></textarea>
+                    <button type="submit" class="self-end bg-black text-white px-5 py-1 rounded transition hover:scale-105">Submit</button>
+                </form>
+            </div>
+
+            <!-- all comments section -->
+            <div class="flex flex-col gap-y-10 bg-white px-3 py-10 rounded-md">
+                <div class="text-2xl">Comments <span class="text-[#686868]">{{project.tot_comments}}</span></div>
+
+                <!-- single comment -->
+                {% for comment in comments %}
+                
+                <div class="flex flex-col gap-y-8">
+                    <!-- question -->
+                    <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md">
+                        <div class="flex gap-x-2 items-center">
+                            <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                            <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
+                            <p class="text-[#686868]">{{comment.created_at|date:"M j, Y"}}</p>
+                        </div>
+                        <div class="flex items-end justify-between gap-x-3 relative pb-5">
+                            <div class="break-word mt-3" id='comment-{{comment.id}}'>
+                               {{comment.content}}
+                            </div>
+                            <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
+                        </div>
+                    </div>
+                    <!-- question end -->
+                    
+                    <!-- reply section -->
+                    <div class="flex gap-x-2">
+                        <div class="bg-black w-2 ml-5 rounded-full"></div>
+                        <div class="flex flex-col gap-y-3 ml-auto w-full">
+                            <!-- single reply -->
+
+                            {% for reply in comment.replies.all %}
+                            <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3">
+                                <div class="flex gap-x-2 items-center">
+                                    <img src="{{reply.user.profile_image.url}}" alt="" class="w-12 h-12 rounded-full">
+                                    <p class="font-bold">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                </div>
+                                <div class="break-word" id='reply-{{reply.id}}'>
+                                    {{reply.content}}
+                                </div>
+                                <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
+                            </div>
+                            {% endfor %}
+                                
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+    {% comment %} Jquery Loading {% endcomment %}
+    <script>
+        function joinProject(projectId){
+            $.ajax({
+                url: `/join-project/${projectId}/`,
+                type: "POST",
+                headers: {"X-CSRFToken": "{{ csrf_token }}" },
+                success: function(data){
+                    let btn = $("#joinProjectBtn");
+                    let membercount = $("#membercount");
+
+                    btn.text(data.joined ? "Leave": "Join");
+                    membercount.text(`${data.total_member} `)
+
+                    btn.addClass("scale-110");
+                    setTimeout(() => btn.removeClass("scale-110"), 200);
+                },
+                error: function(error) {
+                    console.error("Error:", error);
+                }
+            });
+        }
+    </script>
+</body>
+{% endblock  %}

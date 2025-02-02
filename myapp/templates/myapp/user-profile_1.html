@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{userinfo_obj.user.username}}</title>
+    <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}">
+    <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% comment %}
+    <link rel="stylesheet" href="{% static 'styles/output.css' %}"> {% endcomment %}
+</head>
+
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "myapp/navbar.html" %}
+
+    <!-- main section -->
+    <div class="lg:w-full lg:justify-between lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start">
+        <!-- sidenav -->
+        {% include "myapp/sidenav.html" %}
+
+        <!-- profile section -->
+        <div class="mt-16 lg:w-2/4 md:mt-28 md:w-full md:px-5">
+            <div class="flex flex-col items-center md:gap-y-10">
+                <div class="relative   w-full h-32 bg-black md:h-64 dot-white">
+                    <div class="absolute -bottom-16 md:-bottom-20 md:left-10 right-5">
+                        <img src="{{userinfo_obj.profile_image.url}}" alt=""
+                            class="rounded-3xl border-8 border-[#a5a2a296] w-32 h-32 md:w-40 md:h-40">
+                    </div>
+                    {% if user == userinfo_obj.user %}
+                    <div class="absolute hidden right-5 -bottom-5 md:flex">
+                        <button class="px-4 py-2 bg-[#6feb85] rounded-md">
+                            Edit Profile
+                        </button>
+                    </div>
+                    {% else %}
+                    {% if is_following %}
+                    <a href='{% url "unfollow_user" otheruserinfo_id=userinfo_obj.id %}'
+                        class="absolute hidden right-5 -bottom-5 md:flex">
+                        <p class="px-4 py-2 bg-[#6feb85] rounded-md">&lt;Unfollow/&gt;</p>
+                    </a>
+                    {% else %}
+                    <a href='{% url "follow_user" otheruserinfo_id=userinfo_obj.id  %}'
+                        class="absolute hidden right-5 -bottom-5 md:flex">
+                        <button class="px-4 py-2 bg-[#6feb85] rounded-md">
+                            &lt;Follow/&gt;
+                        </button>
+                    </a>
+                    {% endif %}
+                    {% endif %}
+
+                </div>
+                <div
+                    class="max-[400px]:flex-col max-[400px]:items-start flex items-center justify-between w-full bg-white rounded-md  md:self-end md:w-3/5 md:mr-0 gap-y-2">
+                    <div class="max-[400px]:mt-14 flex flex-col py-5 pl-4 gap-y-2 max-[400px]:w-full md:mt-0">
+                        <div class="text-xl font-bold">{ {{userinfo_obj.user.username}} }</div>
+                        <div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i>&nbsp; {{userinfo_obj.location}}</div>
+                        <div class="flex gap-x-2">
+                            <a href= "{% url 'follow_list' userinfo_obj.user.username %}" class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{userinfo_obj.get_followers.count}} Followers</a>
+                            <a href = "{% url 'follow_list' userinfo_obj.user.username%}?list=following" class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{userinfo_obj.following.count}} Following</a>
+                        </div>
+                    </div>
+
+                    {% comment %} phone {% endcomment %}
+                    {% if user == userinfo_obj.user %}
+                    <a herf='' class="max-[400px]:mt-0 max-[400px]:self-center mt-32 pr-2 py-2 md:hidden">
+                        <button class="px-4 py-2 bg-[#6feb85] rounded-md"> <!--Phone-->
+                            Edit Profile
+                        </button>
+                    </a>
+                    {% else %}
+                    {% if is_following %}
+                    <a href='{% url "unfollow_user" otheruserinfo_id=userinfo_obj.id  %}'
+                        class="max-[400px]:mt-0 max-[400px]:self-center mt-32 pr-2 py-2 md:hidden">
+                        <p class="px-4 py-2 bg-[#6feb85] rounded-md"> <!--Phone-->
+                            &lt;Unfollow/&gt;
+                        </p>
+                    </a>
+                    {% else %}
+                    <a href='{% url "follow_user" otheruserinfo_id=userinfo_obj.id  %}'
+                        class="max-[400px]:mt-0 max-[400px]:self-center mt-32 pr-2 py-2 md:hidden">
+                        <p class="px-4 py-2 bg-[#6feb85] rounded-md"> <!--Phone-->
+                            &lt;follow/&gt;
+                        </p>
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+
+                <div class="flex flex-col w-full p-3 gap-y-3">
+                    <div
+                        class="flex w-full px-2 py-2 overflow-x-scroll bg-white rounded-md justify-evenly md:px-10 gap-x-0 md:gap-x-1">
+                        <a href="?section=overview" class="{% if section == 'overview' or section == '' %}{{color.active}}{% else %}{{color.normal}}{% endif %}
+                            "> Overview</a>
+                        <a href="?section=experience"
+                            class="{% if section == 'experience' %}{{color.active}}{% else %}{{color.normal}}{% endif %}">Experience</a>
+                        <a href="?section=projects"
+                            class="{% if section == 'projects' %}{{color.active}}{% else %}{{color.normal}}{% endif %}">Projects</a>
+                        <a href="?section=info"
+                            class="{% if section == 'info'%}{{color.active}}{% else %}{{color.normal}}{% endif %}">Info</a>
+                    </div>
+
+                    <!-- overview section -->
+                    {% if section == 'overview' or section == '' %}
+                    <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-10">
+                        <div class="flex flex-col text-justify gap-y-3">
+                            <h1 class="text-xl font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>
+                            <p class="text-justify">
+                                {{userinfo_obj.bio}}
+                            </p>
+                        </div>
+                        
+                        {% comment %} Links {% endcomment %}
+                        <div class="flex flex-col gap-y-2">
+                            <h1 class="text-xl font-bold">Links</h1>
+                            {% if link_available %}
+                            <div class="flex flex-wrap gap-x-5 gap-y-2">
+                                {% for link, url in social_links.items %}
+                                {% if url %}
+                                <a href="{{url}}" target="_blank"
+                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                                    <i class="text-2xl fa-brands fa-{{link}}"></i>
+                                    <p class="text-[#6feb85] hidden md:block">{{link|capfirst}}</p>
+                                </a>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p>Not Updated Yet..</p>
+                            {% endif %}
+                        </div>
+
+
+                        {% comment %} current Position {% endcomment %}
+                        {% if userinfo_obj.current_position %}
+                        <div class="flex flex-col gap-y-3">
+                            <div class="flex flex-col text-justify gap-y-3">
+                                <h1 class="text-xl font-light text-gray-600">Current Position</h1>
+                            </div>
+                            <div class="flex items-start justify-start gap-x-5">
+                                <div class="">
+                                    <img src="{% static 'assets/current-position-logo.png' %}" alt=""
+                                        class="rounded-lg w-14 h-14">
+                                </div>
+                                <div class="w-4/5">
+                                    <h1 class="text-xl font-semibold">{{userinfo_obj.current_position.name}}</h1>
+                                    <p class="text-[#686868]">{{userinfo_obj.current_position.role}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+
+                        {% comment %} Education {% endcomment %}
+                        <div class="flex flex-col gap-y-3">
+                            <div class="flex flex-col text-justify gap-y-3">
+                                <h1 class="text-xl text-gray-600 font-light">Education</h1>
+                            </div>
+                            <div class="flex items-start justify-start gap-x-5">
+                                <div class="">
+                                    <img src="{% static 'assets/college-logo.png' %}" alt=""
+                                        class="rounded-lg w-14 h-14">
+                                </div>
+                                <div class="w-4/5">
+                                    {% if userinfo_obj.education %}
+                                    <h1 class="text-xl font-bold">{{userinfo_obj.education.name}}</h1>
+                                    <p class="text-[#686868]">{{userinfo_obj.education.field_of_study}}</p>
+                                    <p class="text-[#686868]">{{ userinfo_obj.education.start_date|date:"Y" }} -
+                                        {{userinfo_obj.education.end_date|date:"Y"}}</p>
+                                    {% else %}
+                                    <p class="text-base font-light text-gray-600 pb-3 mt-3">Not Updated Yet...</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+
+                    <!-- experience section -->
+                    {% if section == 'experience' %}
+                    <div class="flex flex-[3] px-5 py-2 mt-5 bg-white rounded-md gap-x-5">
+                        <div class="w-1 bg-[#00000096]"></div>
+                        <div class="flex flex-col gap-y-5">
+                            <div class="flex flex-col text-justify gap-y-3">
+                                <h1 class="mt-5 text-xl font-bold">{ Experience }</h1>
+                            </div>
+                            {% if exp_obj %}
+                            {% for exp in exp_obj %}
+                            <div class="flex items-start justify-start gap-x-5">
+                                <div class="">
+                                    <img src="{% static 'assets/work-exp.png' %}" alt="" class="rounded-lg w-14 h-14">
+                                </div>
+                                <div class="w-4/5">
+                                    <h1 class="text-xl font-bold">{{exp.name}}</h1>
+                                    <p class="text-[#686868]">{{exp.role}}</p><br>
+                                    <p class="text-[#686868]">{{ exp.start_date|date:"Y" }} - {{exp.end_date|date:"Y"}}
+                                    </p>
+                                </div>
+                            </div>
+                            <hr>
+                            {% endfor %}
+                            {% else %}
+                            <p class="text-base font-light text-gray-600 pb-3">Not Updated Yet...</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% comment %} project section {% endcomment %}
+                    {% if section == 'projects' %}
+                    <div class="flex flex-col px-2 py-4 pb-20 bg-white md:pb-4 gap-y-3 w-full">
+                        {% if user_project %}
+                        {% for project in user_project %}
+                        <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
+                            <div class="flex items-start w-full gap-x-3">
+                                <div class="md:w-20 h-20">
+                                    <img src="{{project.media.url}}" alt="" class="w-14 h-14">
+                                </div>
+                                <div class="flex flex-col w-4/5 gap-y-2">
+                                    <div class="font-semibold text-xl">{{project.name}}</div>
+                                    
+                                    {% if project.start_date and project.end_date %}
+                                    <div class="text-[#686868]">{{project.start_date|date:"F Y"}} - {{project.end_date|date:"F Y"}}</div>
+                                    {% elif project.start_date %}
+                                    <div class="text-[#686868]">{{project.start_date|date:"F Y"}} - Present</div>
+                                    {% elif project.end_date%}
+                                    <div class="text-[#686868]">{{project.end_date|date:"F Y"}}</div>
+                                    {% endif %}
+
+                                    <div class="pb-2">{{project.description}}</div>
+                                </div>
+                            </div>
+                            {% if project.url or project.repo_link %}
+                            <hr>
+                            {% endif %}
+                            <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                                
+                                {% if project.url %}
+                                <a href= "{{project.url}}" target='_blank' class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md flex gap-x-2">
+                                    <img src="{% static 'assets/link.svg' %}" alt="" class='w-5 h-5'>
+                                    <span>Link</span>
+                                </a>
+                                {% endif %}
+                                {% if project.repo_link %}
+                                <a href = "{{project.repo_link}}" target = '_blank' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] flex gap-x-2 rounded-md">
+                                    <img src="{% static 'assets/github.svg' %}" alt="" class='w-5 h-5'>
+                                    <span>Repo</span>
+                                </a>
+                                {% endif %}
+                                
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <img src='{% static "assets/project.svg" %}' class='w-20 h-20 mx-auto pt-10'>
+                        <p class='text-center text-gray-800 pb-20'>Not updated Yet...</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+
+                    <!-- profile section -->
+                    {% include "myapp/user-info-section.html" %}
+                </div>
+            </div>
+        </div>
+
+        <!-- skill project section -->
+        <div class="px-4 flex flex-col mt-3 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:items-start md:w-full md:gap-x-5 md:mr-3">
+            <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full">
+                <h1 class="text-xl font-bold text-center">Skills</h1><hr>
+                <div class="flex flex-col pl-3 gap-y-2 mt-1">
+                    <div class="flex flex-wrap gap-2">
+                        {% for skill in skill_list %}
+                        <div
+                            class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#22682f] font-bold border border-[#6feb85] cursor-pointer">
+                            {{skill.name}}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+            {% comment %}Trending project section {% endcomment %}    
+            <div class="flex flex-col px-2 py-4 pb-20 bg-white md:pb-4 gap-y-3 md:w-1/2 lg:w-full">
+                <h1 class="text-xl font-light text-[##323234] text-center">Projects You’ll Love</h1>
+                
+                {% for project in suggested_project %}
+                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
+                    <div class="flex items-start w-full gap-x-3">
+                        <div class="md:w-20 h-20">
+                            <img src="{{project.image.url}}" alt="" class='rounded-xl h-16 w-16'>
+                        </div>
+                        <div class="flex flex-col w-4/5 gap-y-2">
+                            <div class="font-semibold">{{project.title}}</div>
+                            <div class="break-words">{{project.description|slice:":80"}}...</div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
+                        </div>
+                        <div
+                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
+                            View</div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'scripts/script.js' %}"></script>
+</body>
+
+</html>

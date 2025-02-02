@@ -1,0 +1,55 @@
+{% load static %}
+
+{% if section == 'info' %}
+<div class=" bg-white rounded-md px-3 py-5">
+    <div class="flex flex-col gap-y-5">
+        <div class="flex gap-x-3 items-start">
+            <img class="w-12 h-12" src="{% static 'assets/birthday_icon.svg' %}" alt="">
+            <div class="w-full">
+                <p class="font-bold">DOB</p>
+                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.dob %}{{userinfo_obj.dob}}{% else %}Not Updated yet..{% endif %}</p>
+            </div>
+        </div>
+        <div class="flex gap-x-3 items-start">
+            <img class="w-12 h-12" src="{% static 'assets/about_icon.svg' %}" alt="">
+            <div class="w-full">
+                <p class="font-bold">About</p>
+                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.dev_story %}{{userinfo_obj.dev_story}}{% else %}Not Updated yet..{% endif %}</p>
+            </div>
+        </div>
+        {% if userinfo_obj.gender %}
+        <div class="flex gap-x-3 items-start">
+            <img class="w-12 h-12" src="{% static 'assets/gender_icon.svg' %}" alt="">
+            <div class="w-full">
+                <p class="font-bold">Gender</p>
+                <p class="break-words text-justify text-[#686868]">{{userinfo_obj.gender}}</p>
+            </div>
+        </div>
+        {% endif %}
+        <div class="flex gap-x-3 items-start">
+            <img class="w-12 h-12" src="{% static 'assets/email_icon.svg' %}" alt="">
+            <div class="w-full">
+                <p class="font-bold">Email</p>
+                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.user.email %}{{userinfo_obj.user.email}}{% else %}Not Updated yet..{% endif %}</p>
+            </div>
+        </div>
+        {% if userinfo_obj.phone %}
+        <div class="flex gap-x-3 items-start">
+            <img class="w-12 h-12" src="{% static 'assets/call_icon.svg' %}" alt="">
+            <div class="w-full">
+                <p class="font-bold">Phone</p>
+                <p class="break-words text-justify text-[#686868]">{{userinfo_obj.phone}}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="flex gap-x-3 items-start">
+            <img class="w-12 h-12" src="{% static 'assets/location_icon.svg' %}" alt="">
+            <div class="w-full">
+                <p class="font-bold">Location</p>
+                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.location %}{{userinfo_obj.location}}{% else %}Not Updated yet..{% endif %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
