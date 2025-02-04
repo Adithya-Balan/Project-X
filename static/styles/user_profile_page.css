@@ -57,3 +57,86 @@ progress::-webkit-progress-value {
 } */
 
 /* profile-page */
+
+/* editprofileform */
+/* Custom form styles specific to Edit Profile */
+#edit-profile-form {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 30px;
+    background-color: white;
+    border: 1px solid #000; /* Black border */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+#edit-profile-form:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.profile-field {
+    margin-bottom: 20px;
+}
+
+.profile-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 5px;
+}
+
+.field-wrapper input,
+.field-wrapper select,
+.field-wrapper textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #000; /* Black border */
+    border-radius: 6px;
+    font-size: 14px;
+    color: black;
+    background-color: #f9f9f9; /* Light gray background */
+    transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth focus effect */
+}
+
+.field-wrapper input:focus,
+.field-wrapper select:focus,
+.field-wrapper textarea:focus {
+    border-color: #000; /* Black focus border */
+    background-color: #e0e0e0; /* Slight gray background on focus */
+    outline: none;
+}
+
+.error-message {
+    font-size: 12px;
+    color: red;
+    margin-top: 5px; /* Adds a bit of spacing above the error message */
+}
+
+#submit-profile-btn {
+    padding: 12px 20px;
+    background-color: #000; /* Black background */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#submit-profile-btn:hover {
+    background-color: #333; /* Darker black on hover */
+}
+
+@media (max-width: 768px) {
+    #edit-profile-form {
+        padding: 25px;
+        width: 90%;
+    }
+
+    #submit-profile-btn {
+        width: 100%;
+    }
+}

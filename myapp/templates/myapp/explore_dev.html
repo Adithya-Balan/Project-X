@@ -12,9 +12,21 @@
 
 {% block content %}    
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <div id="notification" class="hidden fixed top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white py-2 px-4 rounded-lg shadow-md transition-opacity duration-500">
+        <span id="notification-message"></span>
+    </div>
     
     <!-- navbar -->
     {% include "myapp/navbar.html" %}
+
+    <!-- phone navbar popup -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20 lg:hidden" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
 
     <!-- main section -->
 
@@ -55,29 +67,66 @@
                             <!-- single user -->
                             {% for dev in filter_user %}
                             <div class="flex gap-x-2 bg-white px-3 py-2 items-start justify-between gap-y-2 max-[450px]:flex-col">
-                                <div class="flex gap-x-3">
-                                    <img src="{{dev.profile_image.url}}" alt="" class="w-[50px] h-[50px] rounded-lg">
+                                <div class="flex gap-x-3 w-full">
+                                    <a href='{% url "user_profile" dev.user.username %}' class="w-14 h-14"><img src="{{dev.profile_image.url}}" alt="" class="rounded-lg"></a>
                                     <div class="flex flex-col gap-y-1 w-full">
                                         <a href='{% url "user_profile" dev.user.username %}' class="font-bold cursor-pointer text-lg hover:underline">{{dev.user.first_name}} {{dev.user.last_name}}</a>
                                         <p class="text-[#686868]">@{{dev.user.username}}</p>
                                         <p class="text-[#686868] w-full break-words">#Mood</p>
                                     </div>
                                 </div>
-                                {% if user.info|is_following:dev %}
+                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition" data-user-id="{{ dev.id }}">
+                                    {% if user.info|is_following:dev %}
+                                        <span class="btn-text">Unfollow</span>
+                                    {% else %}
+                                        <span class="btn-text">Follow</span>
+                                    {% endif %}
+                                </a>
+                                
+                                {% comment %} {% if user.info|is_following:dev %}
                                 <a href='{% url "unfollow_user" dev.id %}' class="bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition">Unfollow</a>
                                 {% else %}
                                 <a href='{% url "follow_user" dev.id %}' class="bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition">Follow</a>
-                                {% endif %}
-                                    
+                                {% endif %}    {% endcomment %}
                             </div>
                             {% endfor %}
                             <!-- end of single user -->
-
 
                         </div>
                     </div>
                 </div>
             </div>
+
+            {% comment %} Pagination Links {% endcomment %}
+            <div>
+                {% if total_result %}
+                <div class="flex justify-center mt-6 pb-20">
+                    <div class="flex items-center space-x-4">
+                        {% if filter_user.has_previous %}
+                            <a href="?page=1" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                            <a href="?page={{filter_user.previous_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                        {% endif %}
+                
+                        <span class="text-black">
+                            <span class="font-semibold">Page {{ filter_user.number }}</span> of {{ filter_user.paginator.num_pages }}
+                        </span>
+                
+                        {% if filter_user.has_next %}
+                            <a href="?page={{filter_user.next_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>
+                            <a href="?page={{filter_user.paginator.num_pages}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="flex flex-col items-center justify-center p-4">
+                    <span class="text-lg md:text-xl lg:text-2xl font-normal text-gray-700 mb-4">
+                        Oops! No results Found!
+                    </span>
+                    <img src="{% static 'assets/not-found.png' %}" alt="Not Found" class="w-full rounded-2xl max-w-xs md:max-w-sm lg:max-w-md">
+                </div>
+                {% endif %}
+            </div>
+
         </div>
 
 
@@ -87,37 +136,27 @@
             <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10   overflow-y-scroll lg:bg-white rounded-lg  bottom-2 lg:h-[calc(100%-70px)] gap-y-8 lg:flex"
                 id="filterElement">
                 <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
-                        class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
+                    class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
                 <h1 class="text-xl font-bold text-center">
                     < Filters />
                 </h1>
                 <div class="flex flex-col gap-y-3">
                     <h1 class="text-xl font-bold">Status</h1>
                     <div class="flex flex-wrap gap-2 items-center">
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Student</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Working Professions</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Entrepreneurs</button>
+                        {% for state in status %}
+                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            {{state.name}}</a>
+                        {% endfor %}
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Level</h1>
+                    <h1 class="text-xl font-bold">skill</h1>
                     <div class="flex flex-wrap gap-2">
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Beginner</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Intermediate</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Expert</button>
+                        {% for skill in top_skill %}
+                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            {{skill.name}}</a>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -125,36 +164,57 @@
                 <div class="flex flex-col gap-y-3">
                     <h1 class="text-xl font-bold">Domains</h1>
                     <div class="flex flex-wrap gap-2">
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Web Development</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Mobile Development</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Data Science and AI</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Cloud and DevOps</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Game Development</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Embedded Systems</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Cybersecurity</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Blockchain</button>
+                        {% for domain in top_domains %}
+                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            {{domain.name}}</a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-</body>
+    <script>
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            }
+        });
+        $(document).ready(function () {
+            $(".follow-btn").click(function (){
+                let btn = $(this);
+                let userId = btn.data("user-id");
+                let actionUrl;
+                let isFollowing = btn.find(".btn-text").text().trim() === "Unfollow";
 
+                if (isFollowing) {
+                    actionUrl = `/unfollow/${userId}/`;
+                }else {
+                    actionUrl = `/follow/${userId}/`;   // URL for follow
+                }
+
+                $.ajax({
+                    url: actionUrl,
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
+                    },
+                    success: function (response) {
+                        if (response.status === "followed") {
+                            btn.find(".btn-text").text("Unfollow");
+                        } 
+                        else if (response.status === "unfollowed") {
+                            btn.find(".btn-text").text("Follow");
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error:", xhr.responseText);
+                    }
+                });
+            });
+        });    
+    </script>
+
+</body>
 {% endblock  %}

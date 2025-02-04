@@ -3,11 +3,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, ProjectCommentForm, ProjectReplyForm
+from .forms import RegistrationForm, EditProfileForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
+from django.core.exceptions import ValidationError
 # from django.contrib.postgres.search import TrigramSimilarity
 
 # Create your views here.
@@ -25,6 +26,8 @@ class sign_up(View):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            userinfo.objects.create(user=user)
+            user.save()
             
             username = form.cleaned_data.get("username") #Authenticate the user:
             password = form.cleaned_data.get("password1")
@@ -64,7 +67,10 @@ def user_profile(request, username):
         is_following = request.user.info.is_following(userinfo_obj)
         
         # Suggested Project
-        suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
+        if request.user.info.skills.all():
+            suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
+        else:
+            suggested_project = projects.objects.all()[:5] #For user, with no skill
         
         context = {
             'userinfo_obj': userinfo_obj,
@@ -93,14 +99,17 @@ def unfollow_user(request, otheruserinfo_id):
     user = request.user.info
     if user != otheruser:
         user.unfollow(otheruser)
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+        return JsonResponse({"status": "unfollowed", "message": "User unfollowed Successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
+    return JsonResponse({"status":"error", "message": "Invalid request."}, status = 400)
 
 def follow_user(request, otheruserinfo_id):
     otheruser = userinfo.objects.get(id = otheruserinfo_id)
     user = request.user.info
     if user != otheruser:
         user.follow(otheruser)
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+        return JsonResponse({"status": "followed", "message": "User followed successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
+    return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
+    # return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def follow_list(request, username):
         userinfo_obj = userinfo.objects.get(user__username = username) #user-profile list
@@ -123,6 +132,13 @@ def follow_list(request, username):
         }
         
         return render(request, 'myapp/followList.html', context)
+
+def edit_profile(request):
+    form = EditProfileForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'myapp/editprofile.html', context)
 
 #explore page:
 def explore_project(request):
@@ -153,7 +169,6 @@ def explore_project(request):
     #Pagination
     p = Paginator(filter_project, 7)
     page_number = request.GET.get("page")
-    page_obj = p.get_page(page_number)
     
     try:
         page_obj = p.get_page(page_number)  # returns the desired page object
@@ -208,6 +223,11 @@ def project_forum(request, id):
     
     if request.method == 'POST':
         content = request.POST.get('content')
+        
+        if not content:  # Checks if content is empty or None
+            redirect_url = f"{reverse('project_detail', args=[project.id])}?comment_error=Invalid-Comment#commentsection"
+            return redirect(redirect_url)
+        
         parent_comment_id = request.POST.get("parent_comment_id")
         print(parent_comment_id)
         
@@ -215,7 +235,6 @@ def project_forum(request, id):
             parent_comment = get_object_or_404(project_comment, id = parent_comment_id)
             r = project_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
             redirect_url = f"{reverse('project_detail', args=[project.id])}#reply-{r.id}"
-            
         else:
             c = project_comment.objects.create(user=userinfo_obj, project= project,content = content)
             redirect_url = f"{reverse('project_detail', args=[project.id])}#comment-{c.id}"
@@ -237,8 +256,25 @@ def join_project(request, id):
 
 def explore_dev(request):
     filter_dev = userinfo.objects.all().exclude(user=request.user)
+    
+    top_domain = Domain.objects.all()[:10]
+    top_skill= skill.objects.all()[:10]
+    status = user_status.objects.all()
+    
+    #Pagination
+    p = Paginator(filter_dev, 2)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.page(page_number)
+    except PageNotAnInteger:
+        page_obj = p.page(1)
+    r = filter_dev.count()
     context = {
-        'filter_user': filter_dev
+        'filter_user': page_obj,
+        'top_domains': top_domain,
+        'top_skill': top_skill,
+        'status': status,    
+        'total_result': r,    
     }
     return render(request, 'myapp/explore_dev.html', context)
 

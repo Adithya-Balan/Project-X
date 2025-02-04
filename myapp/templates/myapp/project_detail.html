@@ -156,7 +156,8 @@
 
         
         <!-- comments section  -->
-        <div class=" m-auto w-[90%] lg:w-[900px] flex flex-col gap-y-5">
+        <div class="m-auto w-[90%] lg:w-[900px] flex flex-col gap-y-2" id = "commentsection">
+            <p class='text-red-600'>{{ request.GET.comment_error}}</p>
             <!-- text area and submit btn -->
             <div class="flex flex-col gap-y-3">
                 <form method = 'post' action='{% url "project_forum" project.id %}' class="flex flex-col gap-y-3">
@@ -168,7 +169,7 @@
                         placeholder="Comment...."></textarea>
                     <button type="submit" class="self-end bg-black text-white px-5 py-1 rounded transition hover:scale-105">Submit</button>
                 </form>
-            </div>
+            </div><br>
 
             <!-- all comments section -->
             <div class="flex flex-col gap-y-10 bg-white px-3 py-10 rounded-md">

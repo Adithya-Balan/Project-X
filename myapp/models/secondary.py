@@ -30,8 +30,8 @@ class projects(models.Model):
     domain = models.ForeignKey(Domain, related_name='projects', on_delete=models.SET_NULL, null=True)
     level = models.CharField(max_length=1, blank=True, null= True, choices=LEVELS)
     
-    class meta:
-        verbose_name_plural = 'projects'
+    class Meta:
+        verbose_name_plural = "projects"
         
     def __str__(self):
         return self.title
@@ -52,6 +52,7 @@ class project_comment(models.Model):
     
     def __str__(self):
          return f"{self.id} Comment by {self.user.user.username} on {self.project.title}"
+     
     
 class project_reply(models.Model):
     user = models.ForeignKey(userinfo, related_name='project_replies', on_delete=models.CASCADE)
@@ -62,4 +63,6 @@ class project_reply(models.Model):
     def __str__(self):
         return f"Reply by {self.user.user.username} to {self.comment.user.user.username}'s comment"
     
+    class Meta:
+        verbose_name_plural = "project_reply"
     

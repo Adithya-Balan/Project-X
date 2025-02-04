@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .filter import skill, Domain
+from .filter import skill, Domain, user_status
 
 class userinfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='info')
@@ -15,7 +15,8 @@ class userinfo(models.Model):
     about_user = models.TextField(max_length=500, blank=True, null=True)
     phone = models.CharField(max_length=14, blank=True, null=True)
     gender = models.CharField(max_length=10, null=True, blank=True)
-    
+    status = models.ForeignKey(user_status, related_name='developers', on_delete=models.SET_NULL, null=True)
+
     github = models.URLField(blank=True, null=True)  
     linkedin = models.URLField(blank=True, null=True) 
     twitter = models.URLField(blank=True, null=True) 

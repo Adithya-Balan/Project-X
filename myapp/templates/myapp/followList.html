@@ -7,6 +7,7 @@
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 {% block script %}
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 {% endblock %} 
 
 {% block content %}
@@ -53,10 +54,14 @@
                         <div class="self-center">
                             {% if user.info == people %}
                             <a href='{% url "user_profile" user.username %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View Profile</a>
-                            {% elif user.info|is_following:people %}
-                            <a href='{% url "unfollow_user" people.id %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">Following</a>
                             {% else %}
-                            <a href='{% url "follow_user" people.id %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">Follow</a>
+                            <a href="javascript:void(0);" class="follow-btn bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black" data-user-id="{{ people.id }}">
+                                {% if user.info|is_following:people %}
+                                    <span class="btn-text">Unfollow</span>
+                                {% else %}
+                                    <span class="btn-text">Follow</span>
+                                {% endif %}
+                            </a>
                             {% endif %}
                         </div>
                     </div>
@@ -214,7 +219,46 @@
             </div>
         </div>
     </div>
+    <script>
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            }
+        });
+        $(document).ready(function () {
+            $(".follow-btn").click(function (){
+                let btn = $(this);
+                let userId = btn.data("user-id");
+                let actionUrl;
+                let isFollowing = btn.find(".btn-text").text().trim() === "Unfollow";
 
+                if (isFollowing) {
+                    actionUrl = `/unfollow/${userId}/`;
+                }else {
+                    actionUrl = `/follow/${userId}/`;   // URL for follow
+                }
+
+                $.ajax({
+                    url: actionUrl,
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
+                    },
+                    success: function (response) {
+                        if (response.status === "followed") {
+                            btn.find(".btn-text").text("Unfollow");
+                        } 
+                        else if (response.status === "unfollowed") {
+                            btn.find(".btn-text").text("Follow");
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error:", xhr.responseText);
+                    }
+                });
+            });
+        });    
+    </script>
 </body>
 
 {% endblock  %}

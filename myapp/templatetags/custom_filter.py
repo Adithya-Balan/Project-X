@@ -1,5 +1,6 @@
 from django import template
 from myapp.models import follow
+import urllib.parse
 
 register = template.Library()
 

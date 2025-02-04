@@ -27,3 +27,10 @@ class Domain(models.Model):
     
     def __str__(self):
         return self.name
+    
+class user_status(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=255)
+    
+    class Meta:
+        verbose_name_plural = "user_status"

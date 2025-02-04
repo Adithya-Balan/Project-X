@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filter %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,6 +10,9 @@
     <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}">
     <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'scripts/script.js' %}"></script>
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+
     {% comment %}
     <link rel="stylesheet" href="{% static 'styles/output.css' %}"> {% endcomment %}
 </head>
@@ -37,19 +41,14 @@
                         </button>
                     </div>
                     {% else %}
-                    {% if is_following %}
-                    <a href='{% url "unfollow_user" otheruserinfo_id=userinfo_obj.id %}'
-                        class="absolute hidden right-5 -bottom-5 md:flex">
-                        <p class="px-4 py-2 bg-[#6feb85] rounded-md">&lt;Unfollow/&gt;</p>
-                    </a>
-                    {% else %}
-                    <a href='{% url "follow_user" otheruserinfo_id=userinfo_obj.id  %}'
-                        class="absolute hidden right-5 -bottom-5 md:flex">
-                        <button class="px-4 py-2 bg-[#6feb85] rounded-md">
-                            &lt;Follow/&gt;
-                        </button>
-                    </a>
-                    {% endif %}
+
+                    <a href="javascript:void(0);" class="follow-btn absolute hidden right-5 -bottom-5 md:flex" data-user-id="{{ userinfo_obj.id }}">
+                        {% if user.info|is_following:userinfo_obj %}
+                        <span class="btn-text px-4 py-2 bg-[#6feb85] rounded-md">&lt;Unfollow/&gt;</span>
+                        {% else %}
+                            <span class="btn-text px-4 py-2 bg-[#6feb85] rounded-md">&lt;Follow/&gt;</span>
+                        {% endif %}
+                    </a> 
                     {% endif %}
 
                 </div>
@@ -57,10 +56,10 @@
                     class="max-[400px]:flex-col max-[400px]:items-start flex items-center justify-between w-full bg-white rounded-md  md:self-end md:w-3/5 md:mr-0 gap-y-2">
                     <div class="max-[400px]:mt-14 flex flex-col py-5 pl-4 gap-y-2 max-[400px]:w-full md:mt-0">
                         <div class="text-xl font-bold">{ {{userinfo_obj.user.username}} }</div>
-                        <div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i>&nbsp; {{userinfo_obj.location}}</div>
+                        {% if userinfo_obj.location %}<div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i>&nbsp; {{userinfo_obj.location}}</div>{% endif %}
                         <div class="flex gap-x-2">
-                            <a href= "{% url 'follow_list' userinfo_obj.user.username %}" class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{userinfo_obj.get_followers.count}} Followers</a>
-                            <a href = "{% url 'follow_list' userinfo_obj.user.username%}?list=following" class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{userinfo_obj.following.count}} Following</a>
+                            <a href= "{% url 'follow_list' userinfo_obj.user.username %}" class="followers-count border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{userinfo_obj.get_followers.count}} Followers</a>
+                            <a href = "{% url 'follow_list' userinfo_obj.user.username%}?list=following" class="following-count border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{userinfo_obj.get_following.count}} Following</a>
                         </div>
                     </div>
 
@@ -110,7 +109,7 @@
                         <div class="flex flex-col text-justify gap-y-3">
                             <h1 class="text-xl font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>
                             <p class="text-justify">
-                                {{userinfo_obj.bio}}
+                                {% if userinfo_obj.bio %}{{userinfo_obj.bio}}{% else %}Not Updated Yet...{% endif %}
                             </p>
                         </div>
                         
@@ -275,12 +274,16 @@
             <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full">
                 <h1 class="text-xl font-bold text-center">Skills</h1><hr>
                 <div class="flex flex-col pl-3 gap-y-2 mt-1">
-                    <div class="flex flex-wrap gap-2">
-                        {% for skill in skill_list %}
-                        <div
-                            class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#22682f] font-bold border border-[#6feb85] cursor-pointer">
-                            {{skill.name}}</div>
-                        {% endfor %}
+                    <div class="flex flex-wrap gap-2"> 
+                        {% if skill_list %}
+                            {% for skill in skill_list %}
+                            <div
+                                class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#22682f] font-bold border border-[#6feb85] cursor-pointer">
+                                {{skill.name}}</div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#22682f] font-bold border border-[#6feb85] cursor-pointer mx-auto">Not Updated Yet...</div>
+                        {% endif %}     
                     </div>
                 </div>
             </div>
@@ -315,7 +318,49 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'scripts/script.js' %}"></script>
+    <script>
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            }
+        });
+        $(document).ready(function () {
+            $(".follow-btn").click(function (){
+                let btn = $(this);
+                let userId = btn.data("user-id");
+                let actionUrl;
+                let isFollowing = btn.find(".btn-text").text().trim().includes("Unfollow");
+
+                if (isFollowing) {
+                    actionUrl = `/unfollow/${userId}/`;
+                }else {
+                    actionUrl = `/follow/${userId}/`;   // URL for follow
+                }
+
+                $.ajax({
+                    url: actionUrl,
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
+                    },
+                    success: function (response) {
+                        if (response.status === "followed") {
+                            btn.find(".btn-text").text("<Unfollow/>");
+                        } 
+                        else if (response.status === "unfollowed") {
+                            btn.find(".btn-text").text("<Follow/>");
+                        }
+
+                        $(`.followers-count`).text(`${response.followers_count} Followers`);
+                        $(`.following-count`).text(`${response.following_count} Following`);
+                    },
+                    error: function (xhr) {
+                        console.error("Error:", xhr.responseText);
+                    }
+                });
+            });
+        });    
+    </script>
 </body>
 
 </html>

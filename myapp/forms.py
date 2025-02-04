@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import re
-from .models import project_comment, project_reply
+from .models import project_comment, project_reply, userinfo, skill, Domain
 
 class RegistrationForm(UserCreationForm):
     class Meta:
@@ -36,6 +36,20 @@ class ProjectReplyForm(forms.ModelForm):
         fields = ['content']
         
 
-
-        
-        
+class EditProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=50, required=True)
+    last_name = forms.CharField(max_length=50, required=False)
+    skills = forms.ModelMultipleChoiceField(
+        queryset=skill.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control', 'id': 'skills-select'}),
+        required=False
+    )
+    domains = forms.ModelMultipleChoiceField(
+        queryset=Domain.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control', 'id': 'domains-select'}),
+        required=False
+    )
+    class Meta:
+        model = userinfo
+        exclude = ['user', 'years_of_experience', 'skills', 'domains']
+    field_order = ['first_name', 'last_name', '__all__']

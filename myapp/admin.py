@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import organization, skill, userinfo, education, current_position, experience, follow, projects, Domain,  user_project, project_comment, project_reply
+from .models import organization, skill, userinfo, education, current_position, experience, follow, projects, Domain,  user_project, project_comment, project_reply, user_status
 
 # Register your models here.
 admin.site.register(skill)
@@ -14,3 +14,4 @@ admin.site.register(Domain)
 admin.site.register(user_project)
 admin.site.register(project_comment)
 admin.site.register(project_reply)
+admin.site.register(user_status)
