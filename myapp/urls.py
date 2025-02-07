@@ -13,6 +13,12 @@ urlpatterns = [
     path("project/<int:id>/forum", views.project_forum, name="project_forum"),
     path("join-project/<int:id>/", views.join_project, name="join_project"),
     
+    path("create-org", views.create_organization, name="create_organiation"),
+    path("organization/<int:id>", views.organization_page, name="organization_page"),
+    path("<int:org_id>/follow-list", views.org_follow_list, name="org_follow_list"),
+    path('organization/<int:organization_id>/follow/', views.follow_organization, name='follow_organization'),
+    path('organization/<int:organization_id>/unfollow/', views.unfollow_organization, name='unfollow_organization'),
+    
     # User-profile
     path("user-profile/<str:username>", views.user_profile, name="user_profile"),
     path("<str:username>/follow-list", views.follow_list, name="follow_list"),

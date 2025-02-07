@@ -50,3 +50,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+
+const goTo = (url) => {
+    window.open('https://' + url, '_blank');
+}
+
+
+const showMenu = () => {
+    // Code to show the popup
+    const threeDotMenu = document.getElementById('threeDotMenu');
+    threeDotMenu.classList.toggle('flex')
+    threeDotMenu.classList.toggle('hidden')
+}
+
+const viewProfile = () => {
+    const entireSection = document.getElementById('entireSection')
+    const zoomProfile = document.getElementById('zoomProfile')
+    entireSection.classList.toggle('blur')
+    zoomProfile.classList.toggle('flex')
+    zoomProfile.classList.toggle('hidden')
+}
+
+const closeProfile = () => {
+    const entireSection = document.getElementById('entireSection')
+    const zoomProfile = document.getElementById('zoomProfile')
+    entireSection.classList.remove('blur')
+    zoomProfile.classList.add('hidden')
+    zoomProfile.classList.remove('flex')
+}

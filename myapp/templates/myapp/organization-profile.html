@@ -1,0 +1,314 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+{% load custom_filter %}
+
+{% block title %}{{organization.name}}{% endblock %} 
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+{% endblock  %}
+    
+{% block script %}
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+{% endblock %} 
+
+{% block content %}
+
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar --><!-- z-20 -->
+    {% include "myapp/navbar.html" %}
+    
+    <!-- z-20 -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+
+
+    <!-- main section -->
+
+    <div id="entireSection"
+        class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start">
+        <!-- sidenav -->
+        {% include "myapp/sidenav.html" %}
+
+        <!-- profile section -->
+        <div class="flex mt-16 lg:mt-28 md:w-full lg:pl-5 flex-[5] lg:px-3 lg:pb-10">
+            <div class="flex flex-col items-center md:gap-y-2 w-full">
+
+                <div class="w-full flex flex-col items-center md:gap-y-10 bg-white">
+                    <div class="relative w-full h-32 bg-[#444444] md:h-64">
+                        <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)]">
+                            <img src="{{organization.logo.url}}" alt=""
+                                class="rounded-3xl w-32 h-32 md:w-40 md:h-40"
+                                onclick="viewProfile()">
+                        </div>
+                        <div class="absolute right-10 -bottom-10 flex flex-col">
+                            <button class="" onclick="showMenu()"><i class="text-2xl fa-solid fa-ellipsis"></i></button>
+                        </div>
+                        <div id="threeDotMenu"
+                            class="hidden absolute right-10 -bottom-40 flex-col gap-y-2 bg-[#00000057] px-3 py-2 rounded-md backdrop-blur">
+                            <div
+                                class="flex items-center gap-x-3 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
+                                <i class="fa-solid fa-archway"></i><span>Report</span>
+                            </div>
+                            <div
+                                class="flex items-center gap-x-3 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
+                                <i class="fa-solid fa-archway"></i><span>Block</span>
+                            </div>
+                            <div
+                                class="flex items-center gap-x-3 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
+                                <i class="fa-solid fa-archway"></i><span>Restrict</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div
+                        class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md mr-auto md:ml-auto w-full md:mr-0 gap-y-2">
+                        <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
+                            <div class="text-xl font-bold">{{organization.name}}</div>
+                            <!-- <div class="text-[#686868]">@night_owl</div> -->
+                            <div class="text-[#686868] flex gap-x-3 items-center"><i
+                                    class="text-lg fa-solid fa-building"></i><span>{{ organization.get_industry_display }}</span></div>
+                                    {% if organization.location %}
+                                    <div class="text-[#686868] flex gap-x-3 items-center"><i class="text-lg fa-solid fa-location-dot"></i><span>{{organization.location}}</span></div>
+                                    {% endif %}
+                            <div class="flex gap-x-2">
+                                <a href='{% url "org_follow_list" organization.id %}' id='followers-count' class="followers-count border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{organization.get_followers.count}} Followers</a>
+                            </div>
+                        </div>
+                        {% if request.user == organization.user %}
+                        <div class="pb-4">
+                            <button class="px-4 py-2 bg-[#6feb85] rounded-md">
+                                &lt;Edit Profile/&gt;
+                            </button>
+                        </div>
+                        {% else %}
+                        <button class="px-4 py-2 rounded-md follow-toggle {% if user.info|is_following_org:organization %}bg-gray-500 text-white unfollow{% else %}bg-[#6feb85] follow{% endif %}" 
+                            data-org-id="{{ organization.id }}"
+                            data-follow-url="{% url 'follow_organization' organization.id %}"
+                            data-unfollow-url="{% url 'unfollow_organization' organization.id %}">
+                            {% if user.info|is_following_org:organization %}Unfollow{% else %}Follow{% endif %}
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <div class="flex flex-col w-full p-3 lg:p-0 gap-y-3">
+                    <div
+                        class="flex px-2 py-2 overflow-x-scroll bg-[#00000034] rounded-md justify-evenly md:px-10 gap-x-20 max-[400px]:gap-x-10 md:gap-x-20">
+                        <a href='?section=overview'
+                            class="px-2 md:px-4 py-2 rounded-md cursor-pointer hover:bg-white hover:text-black transition inline-block {% if section == 'overview' or section == '' %}{{color_active}}{% endif %}">
+                            Overview</a>
+                        <a href='?section=posts'
+                            class="px-2 py-2 rounded-md cursor-pointer md:px-4 hover:bg-white hover:text-black transition inline-block {% if section == 'posts' %}{{color_active}}{% endif %}">
+                            Posts</a>
+                        <a href='?section=events'
+                            class="px-2 py-2 rounded-md cursor-pointer md:px-4 hover:bg-white hover:text-black transition inline-block {% if section == 'events'%}{{color_active}}{% endif %}">
+                            Events</a>
+                    </div>
+
+                    <!-- overview section -->
+                    
+                    {% if section == 'overview' or section == '' %}
+                    <div class="flex flex-col px-3 py-2 bg-white rounded-md md:px-5 gap-y-10">
+                        <div class="flex flex-col text-justify gap-y-3">
+                            <h1 class="text-xl font-bold">{ Description }</h1>
+                            <p class="break-words">
+                                {{organization.description}}
+                            </p>
+                        </div>
+                        
+                        {% comment %} Links {% endcomment %}
+                        <div class="flex flex-col gap-y-2">
+                            <h1 class="text-xl font-bold">Links</h1>
+                            {% if link_available %}
+                                <div class="flex flex-wrap gap-x-5 gap-y-2">
+                                    {% for link, url in social_links.items %}
+                                    {% if url %}
+                                    <a href='{{url}}' target='_blank' class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                                        <i class="text-2xl fa-brands fa-{{link}}"></i>
+                                        <p class="text-[#6feb85] hidden md:block">{{link|capfirst}}</p>
+                                    </a>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                            <div class='flex items-center gap-x-2'>
+                            <i class="fa-solid fa-pen-nib"></i>
+                            <p class="">Not Updated Yet</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex flex-col gap-y-2">
+                            <div class="text-xl font-bold">Industry</div>
+                            <div>{{organization.get_industry_display}}</div>
+                        </div>
+                    </div>
+
+                    <!-- personal Info -->
+                    <div class=" bg-white rounded-md px-3 py-5">
+                        <div class="flex flex-col gap-y-5">
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="{% static 'assets/birthday_icon.svg' %}"alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Founded</p>
+                                    <p class="break-words text-justify text-[#686868]">{% if organization.founded_date %}{{organization.founded_date}}{% else %}Not Updated Yet.{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="{% static 'assets/email_icon.svg' %}" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Email</p>
+                                    <p class="break-words text-justify text-[#686868]">{% if organization.contact_email %}{{organization.contact_email}}{% else %}Not Updated Yet.{% endif %}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="{% static 'assets/call_icon.svg' %}" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Phone</p>
+                                    <p class="break-words text-justify text-[#686868]">{% if organization.phone %}{{organization.phone}}{% else %}Not Updated Yet.{% endif %}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="{% static 'assets/website.svg' %}" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Website</p>
+                                    <a href='{{organization.website}}' class="break-words text-justify text-[#686868] underline underline-offset-2" target='_blank'>{% if organization.website %}{{organization.website}}{% else %}Not Updated Yet.{% endif %}</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="{% static 'assets/building.svg' %}" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Organization Type</p>
+                                    <p class="break-words text-justify text-[#686868]">{{organization.get_organization_type_display}}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- event section yet to be done -->
+
+                </div>
+            </div>
+        </div>
+
+        <!-- similar Orgainization -->
+        <div class="flex w-full lg:w-1/4 lg:mt-28 flex-col px-3 lg:px-2  gap-y-5 pb-14 lg:pb-0">
+            <div class="flex flex-col gap-y-6 bg-white">
+                <h1 class="text-center text-2xl font-bold bg-[#000000] px-3 py-2 text-white rounded-md">Similar Orgainization
+                </h1>
+                {% if suggested_org %}
+                <!-- all Orgainization present inside this div -->
+                <div class="flex flex-col gap-y-5 px-3 py-5 pt-0">
+
+                    {% for org in suggested_org %}
+                    <!-- single Orgainization -->
+                    <div class="flex gap-x-3  justify-between items-center border w-full px-2 py-4 rounded-md">
+                        <div class="flex gap-x-3 items-start">
+                            <a href='{% url "organization_page" org.id %}' class="flex-shrink-0"><img src="{{org.logo.url}}" class="h-14 rounded-md w-14"></a>
+                            <div class="flex flex-col gap-y-3">
+                                <a href='{% url "organization_page" org.id %}' class="underline font-bold">{{org.name}}</a>
+                                <p>{{org.get_industry_display}}</p>
+                                {% comment %} laptop {% endcomment %}
+                                <a href='{% url "organization_page" org.id %}' class="hover:bg-black hover:text-white transition max-[450px]:flex hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl lg:flex gap-x-2 items-center">
+                                    <i class="fa fa-eye" aria-hidden="true"></i><span>View</span></a> 
+                            </div>
+                        </div>
+                        <a href='{% url "organization_page" org.id %}'
+                            class="hover:bg-black hover:text-white transition max-[450px]:hidden lg:hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl flex gap-x-2 items-center"><i
+                                class="fa-solid fa-eye"></i><span>View</span></a>
+                    </div>
+                    <!-- end of single Orgainization -->
+                    {% endfor %}
+
+                </div>
+                {% else %} 
+                <div class='mx-auto mb-14 mt-8 text-xl text-gray-900 flex flex-col gap-y-2 items-center'>
+                    <p>No Suggestions For You :(</p>
+                    <img src='{% static "assets/sad.svg" %}' class='h-14 w-14'>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- for viewing the profile -->
+    <div id="zoomProfile" class="hidden items-center justify-center fixed top-0 bottom-0  w-full">
+        <div class="relative">
+            <img src="{{organization.logo.url}}" alt=""
+                class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-3xl border-4 border-[#00000070]">
+            <button class="absolute -right-3 -top-3 md:top-0 md:right-0 border border-black rounded-full w-10 h-10 bg-white"
+                onclick="closeProfile()"><img src="{% static 'assets/close.svg' %}" alt=""></button>
+        </div>
+    </div>
+
+    
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        $(document).ready(function() {
+            $('.follow-toggle').click(function(e) {
+                e.preventDefault();
+                const button = $(this);
+                const orgId = button.data('org-id');
+                const isFollow = button.text().trim() === 'Follow';
+                
+                $.ajax({
+                    url: isFollow ? button.data('follow-url') : button.data('unfollow-url'),
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            // Toggle button appearance
+                            button.toggleClass('bg-[#6feb85] bg-gray-500');
+                            button.text(isFollow ? 'Unfollow' : 'Follow');
+                            
+                            // Update followers count if available
+                            if (data.followers_count !== undefined) {
+                                $('#followers-count').text(`${data.followers_count} Followers`);
+                            }
+                        }
+                        /*if (data.message) {
+                            alert(data.message);
+                        }*/
+                    },
+                    error: function(xhr) {
+                        alert(xhr.responseJSON?.message || 'An error occurred');
+                    }
+                });
+            });
+        });
+        </script>
+    
+</body>
+{% endblock %}

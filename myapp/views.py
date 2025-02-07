@@ -3,12 +3,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 # from django.contrib.postgres.search import TrigramSimilarity
 
 # Create your views here.
@@ -27,7 +28,7 @@ class sign_up(View):
         if form.is_valid():
             user = form.save()
             userinfo.objects.create(user=user)
-            user.save()
+            # user.save()
             
             username = form.cleaned_data.get("username") #Authenticate the user:
             password = form.cleaned_data.get("password1")
@@ -70,6 +71,7 @@ def user_profile(request, username):
         if request.user.info.skills.all():
             suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
         else:
+            
             suggested_project = projects.objects.all()[:5] #For user, with no skill
         
         context = {
@@ -94,6 +96,7 @@ def user_profile(request, username):
         raise Http404("User information does not exist")
 
 #follow request:
+@login_required
 def unfollow_user(request, otheruserinfo_id):
     otheruser = userinfo.objects.get(id = otheruserinfo_id)
     user = request.user.info
@@ -102,6 +105,7 @@ def unfollow_user(request, otheruserinfo_id):
         return JsonResponse({"status": "unfollowed", "message": "User unfollowed Successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
     return JsonResponse({"status":"error", "message": "Invalid request."}, status = 400)
 
+@login_required
 def follow_user(request, otheruserinfo_id):
     otheruser = userinfo.objects.get(id = otheruserinfo_id)
     user = request.user.info
@@ -110,17 +114,26 @@ def follow_user(request, otheruserinfo_id):
         return JsonResponse({"status": "followed", "message": "User followed successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
     # return redirect(request.META.get('HTTP_REFERER', '/'))
-
+@login_required
 def follow_list(request, username):
         userinfo_obj = userinfo.objects.get(user__username = username) #user-profile list
         l = request.GET.get('list')
-        
+        grp = False
         if l == None:
             return HttpResponseRedirect(f'{request.path}?list=followers')
         if l == 'followers':
             list = userinfo_obj.get_followers()
         elif l == 'following':   
             list = userinfo_obj.get_following()
+        elif l == 'org':
+            list = userinfo_obj.followed_organization.all()
+            grp = True
+        
+        if request.user.info.skills.all():
+            suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
+        else:
+            suggested_project = projects.objects.all()[:5] #For user, with no skill
+            
         print(list)
         p = Paginator(list, 10)
         page_number = request.GET.get('page')
@@ -128,11 +141,100 @@ def follow_list(request, username):
         context = {
             'userinfo_obj': userinfo_obj,
             'user_list': page_obj,
-            'l': l
+            'l': l,
+            'grp': grp,
+            'suggested_project': suggested_project,
         }
         
         return render(request, 'myapp/followList.html', context)
 
+# Organization
+def create_organization(request):
+    if request.method == "POST":
+        form = OrganizationForm(request.POST, request.FILES)
+        if form.is_valid():
+            org = form.save(commit=False)
+            org.user = request.user
+            org.save()
+            return redirect('organization_page', id=org.id)
+    else:
+        form = OrganizationForm()      
+    context  = {'form': form}
+    return render(request, 'myapp/create-org.html', context)  
+        
+        
+@login_required
+def organization_page(request, id):
+    organization_obj = get_object_or_404(organization, id = id)
+    link_available = False
+    section = request.GET.get('section', 'overview') 
+    social_links = { 
+        'github': organization_obj.github if organization_obj.github else None,
+        'linkedin': organization_obj.linkedin if organization_obj.linkedin else None,
+        'x-twitter': organization_obj.twitter if organization_obj.twitter else None,
+        'discord': organization_obj.discord if organization_obj.discord else None,
+        'instagram': organization_obj.instagram if organization_obj.instagram else None
+    }
+    suggested_org = organization.objects.filter(industry=organization_obj.industry, organization_type=organization_obj.organization_type).exclude(Q(id=organization_obj.id) | Q(user=request.user) | Q(followers=request.user.info)).order_by('?')[:5]
+    if social_links.get('github') or social_links.get('linkedin') or social_links.get('x-twitter') or social_links.get('discord') or social_links.get('instagram'):
+            link_available = True
+    context = {
+        'organization': organization_obj,
+        'section': section,
+        'social_links': social_links,
+        'link_available': link_available,
+        'color_active' : "bg-black text-white font-bold",
+        'suggested_org': suggested_org
+    }
+    return render(request, 'myapp/organization-profile.html', context)
+
+@login_required
+def org_follow_list(request, org_id):
+    org = get_object_or_404(organization, id = org_id)
+    list = org.get_followers()
+    if request.user.info.skills.all():
+            suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
+    else:
+        suggested_project = projects.objects.all()[:5] #For user, with no skill
+    print(list)
+    p = Paginator(list, 3)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+    context = {
+        'org': org,
+        'user_list': page_obj,
+        'suggested_project': suggested_project,
+    }
+    return render(request, 'myapp/org-followlist.html', context)
+
+
+@login_required
+def follow_organization(request, organization_id):
+    try:
+        org = organization.objects.get(id=organization_id)
+        user_info = request.user.info 
+        if user_info not in org.followers.all():
+            org.followers.add(user_info)
+            return JsonResponse({'status': 'success', 'action': 'follow', 'message': 'You are now following this organization.', 'followers_count': org.get_followers().count()})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'You are already following this organization.'}, status=400)
+    except org.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Organization not found.'}, status=404)
+    
+@login_required
+def unfollow_organization(request, organization_id):
+    try:
+        org = organization.objects.get(id=organization_id)
+        user_info = request.user.info
+        if user_info in org.followers.all():
+            org.followers.remove(user_info)
+            return JsonResponse({'status': 'success', 'action': 'unfollow', 'message': 'You have unfollowed this organization.', 'followers_count': org.get_followers().count()})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'You are not following this organization.'}, status=400)
+    except org.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Organization not found.'}, status=404)
+
+@login_required
 def edit_profile(request):
     form = EditProfileForm()
     context = {
@@ -141,6 +243,7 @@ def edit_profile(request):
     return render(request, 'myapp/editprofile.html', context)
 
 #explore page:
+@login_required
 def explore_project(request):
     
     #filter
@@ -191,6 +294,7 @@ def explore_project(request):
     # print(request.GET)
     return render(request,"myapp/explore-projects.html", context)
 
+@login_required
 def project_detail(request, id):
     project = projects.objects.get(id = id)
     userinfo_obj = project.creator
@@ -217,6 +321,7 @@ def project_detail(request, id):
     }
     return render(request, 'myapp/project_detail.html', context)
 
+@login_required
 def project_forum(request, id):
     project = get_object_or_404(projects, id=id)
     userinfo_obj = get_object_or_404(userinfo, user=request.user)
@@ -241,7 +346,7 @@ def project_forum(request, id):
 
     return redirect(redirect_url)
                 
-
+@login_required
 def join_project(request, id):
     project = get_object_or_404(projects, id=id)
     userinfo_obj = get_object_or_404(userinfo, user=request.user)
@@ -254,6 +359,7 @@ def join_project(request, id):
         joined = True
     return JsonResponse({"joined": joined, "total_member": project.tot_member()})
 
+@login_required
 def explore_dev(request):
     filter_dev = userinfo.objects.all().exclude(user=request.user)
     
@@ -277,6 +383,7 @@ def explore_dev(request):
         'total_result': r,    
     }
     return render(request, 'myapp/explore_dev.html', context)
+
 
 def logout_view(request):
     logout(request)

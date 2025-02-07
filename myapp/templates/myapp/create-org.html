@@ -1,0 +1,46 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Create Organization{% endblock %} 
+{% block script %}
+<script src="https://cdn.tailwindcss.com"></script>
+{% endblock %} 
+
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-black">
+
+    <form method="POST" class="bg-white p-6 rounded-lg shadow-md w-full max-w-md" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="text-2xl font-normal text-center text-black-800 mb-6 underline">Create Organization</h2>
+        {% for field in form %}
+            <div class="mb-4">
+                <label class="block text-lg font-medium mb-1 text-black">
+                    {{ field.label }}
+                </label>
+
+                <label class="block text-base font-thin mb-1 text-gray-900">
+                    {{ field.help_text }}
+                </label>
+
+                {{ field|add_class:"w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3" }}
+
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+            </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <p class='text-red-500 text-sm mb-2'>Invalid Credentials!</p>
+        {% endif %}
+
+        <button type='submit' class='w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 hover:cursor-pointer focus:ring-black'>Create</button>
+    </form>
+</div>
+{% endblock  %}
+    

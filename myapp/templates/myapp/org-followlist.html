@@ -22,78 +22,42 @@
 
         <!-- list section -->
         <div class="relative flex mt-32 lg:mt-32 md:w-full px-2 flex-[5] pb-16">
-            <a href = '{% url "user_profile" userinfo_obj.user.username %}' class="transition border-black hover:bg-white border hover:border-black hover:text-black absolute -top-12  right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded">
+            <a href = '{% url "organization_page" org.id %}' class="transition border-black hover:bg-white border hover:border-black hover:text-black absolute -top-12  right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded">
                 <i class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Back</span></a>
                     
             <div class="flex flex-col items- gap-y-10 w-full">
-                <div class="flex justify-start gap-x-2 md:gap-x-10 items-end bg-[#00000036] px-3 py-2 rounded-md">
-
-                    <a href = '?list=followers' data-active = "{% if request.GET.list == 'followers' or request.GET.list == None %}true{% else %}false{% endif %}" class="fl-btn">Followers</a>
-
-                    <a href = '?list=following' data-active = "{% if request.GET.list == 'following' %}true{% else %}false{% endif %}" class="fl-btn">Following</a>
-                    
-                    <a href='?list=org' data-active = "{% if request.GET.list == 'org' %}true{% else %}false{% endif %}" class="fl-btn">Groups</a>
-                </div>
+                <p class='bg-gray-800 text-white px-10 py-4 rounded-xl w-fit mx-auto'>{{org.get_followers.count}} &nbsp;Followers</p>
 
 
                 <div class="flex flex-col gap-y-3">
 
-                    {% if not grp %}
-                        {% for people in user_list %}
-                        <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
-                            <div class="flex gap-x-5 ">
-                                <div class="">
-                                    <div><a href="{% url 'user_profile' people.user.username %}"><img src="{{people.profile_image.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
-                                </div>
-                                <div class="flex flex-col gap-y-1 ">
-                                    <a href="{% url 'user_profile' people.user.username %}" class="font-bold cursor-pointer hover:underline transition">{{people.user.first_name}} {{people.user.last_name}}</a>
-                                    <p>@{{people.user.username}}</p>
-                                    <p class="break-words">#mood...</p>
-                                </div>
+                    {% for people in user_list %}
+                    <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
+                        <div class="flex gap-x-5 ">
+                            <div class="">
+                                <div><a href="{% url 'user_profile' people.user.username %}"><img src="{{people.profile_image.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
                             </div>
-                            <div class="self-center">
-                                {% if user.info == people %}
-                                <a href='{% url "user_profile" user.username %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View Profile</a>
-                                {% else %}
-                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black" data-user-id="{{ people.id }}">
-                                    {% if user.info|is_following:people %}
-                                        <span class="btn-text">Unfollow</span>
-                                    {% else %}
-                                        <span class="btn-text">Follow</span>
-                                    {% endif %}
-                                </a>
-                                {% endif %}
+                            <div class="flex flex-col gap-y-1 ">
+                                <a href="{% url 'user_profile' people.user.username %}" class="font-bold cursor-pointer hover:underline transition">{{people.user.first_name}} {{people.user.last_name}}</a>
+                                <p>@{{people.user.username}}</p>
+                                <p class="break-words">#mood...</p>
                             </div>
                         </div>
-                        {% endfor %}
-                    {% elif grp %}
-                        {% for org in user_list %}
-                        <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
-                            <div class="flex gap-x-5 ">
-                                <div class="">
-                                    <div><a href="{% url 'organization_page' org.id %}"><img src="{{org.logo.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
-                                </div>
-                                <div class="flex flex-col gap-y-1 ">
-                                    <a href="{% url 'organization_page' org.id %}" class="font-bold cursor-pointer hover:underline transition">{{org.name}}</a>
-                                    <p>{{org.get_industry_display}}</p>
-                                    {% comment %} <p class="break-words">#mood...</p> {% endcomment %}
-                                </div>
-                            </div>
-                            <div class="self-center">
-                                {% if org in user.organization.all %}
-                                <a href="{% url 'organization_page' org.id %}" class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View</a>
+                        <div class="self-center">
+                            {% if user.info == people %}
+                            <a href='{% url "user_profile" user.username %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View Profile</a>
+                            {% else %}
+                            <a href="javascript:void(0);" class="follow-btn bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black" data-user-id="{{ people.id }}">
+                                {% if user.info|is_following:people %}
+                                    <span class="btn-text">Unfollow</span>
                                 {% else %}
-                                <button class="px-4 py-2 rounded-md follow-toggle {% if user.info|is_following_org:org %}bg-gray-500 text-white unfollow{% else %}bg-[#6feb85] follow{% endif %}" 
-                                    data-org-id="{{ org.id }}"
-                                    data-follow-url="{% url 'follow_organization' org.id %}"
-                                    data-unfollow-url="{% url 'unfollow_organization' org.id %}">
-                                {% if user.info|is_following_org:org %}Unfollow{% else %}Follow{% endif %}
-                                </button>
+                                    <span class="btn-text">Follow</span>
                                 {% endif %}
-                            </div>
+                            </a>
+                            {% endif %}
                         </div>
-                        {% endfor %}
-                    {% endif %}
+                    </div>
+                    {% endfor %}
 
                 </div>
 
@@ -118,9 +82,9 @@
                 </div>
                 {% else %}
                 <div class="flex flex-col items-center justify-center p-4">
-                    <img src="{% static 'assets/no-follower.svg' %}" alt="Not Found" class="w-24 md:w-32 lg:w-48 xl:w-64">
+                    <img src="{% static 'assets/no-follower.svg' %}" alt="Not Found" class="w-20 md:w-28 lg:w-44 xl:w-60">
                     <span class="text-lg md:text-xl lg:text-2xl mt-5 font-normal text-gray-700 mb-4">
-                        This user has no connections yet.
+                        Your Organization has no Followers yet.
                     </span>
                 </div>
                 {% endif %}
@@ -286,57 +250,6 @@
                 });
             });
         });    
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        
-        $(document).ready(function() {
-            $('.follow-toggle').click(function(e) {
-                e.preventDefault();
-                const button = $(this);
-                const orgId = button.data('org-id');
-                const isFollow = button.text().trim() === 'Follow';
-                
-                $.ajax({
-                    url: isFollow ? button.data('follow-url') : button.data('unfollow-url'),
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.status === 'success') {
-                            // Toggle button appearance
-                            button.toggleClass('bg-[#6feb85] bg-gray-500');
-                            button.text(isFollow ? 'Unfollow' : 'Follow');
-                            
-                            // Update followers count if available
-                            if (data.followers_count !== undefined) {
-                                $('#followers-count').text(`${data.followers_count} Followers`);
-                            }
-                        }
-                        /*if (data.message) {
-                            alert(data.message);
-                        }*/
-                    },
-                    error: function(xhr) {
-                        alert(xhr.responseJSON?.message || 'An error occurred');
-                    }
-                });
-            });
-        });
     </script>
 </body>
 
