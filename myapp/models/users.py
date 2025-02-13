@@ -3,18 +3,26 @@ import uuid
 from django.contrib.auth.models import User
 from django.urls import reverse
 from .filter import skill, Domain, user_status
+from phonenumber_field.modelfields import PhoneNumberField
 
 class userinfo(models.Model):
+    GENDER_CHOICES = [
+    ('M', 'Male'),
+    ('F', 'Female'),
+    ('NB', 'Non-Binary'),
+    ('O', 'Other'),
+    ('N', 'Prefer not to say'),
+]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='info')
     bio = models.CharField(max_length=100, blank=True, null=True)
     dob = models.DateField(null=True, blank=True)
-    dev_story = models.TextField(max_length=1000, blank=True, null=True) 
+    contact_email = models.EmailField(max_length=255, blank=True, null=True)
+    about_user = models.TextField(max_length=1000, blank=True, null=True) 
     profile_image = models.ImageField(upload_to='user_profile_img', height_field=None, default='user_profile_img/profile.webp')
     location = models.CharField(max_length=50, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    about_user = models.TextField(max_length=500, blank=True, null=True)
-    phone = models.CharField(max_length=14, blank=True, null=True)
-    gender = models.CharField(max_length=10, null=True, blank=True)
+    phone = PhoneNumberField(blank=True, null=True)
+    gender = models.CharField(max_length=25, null=True, blank=True, choices=GENDER_CHOICES)
     status = models.ForeignKey(user_status, related_name='developers', on_delete=models.SET_NULL, null=True)
 
     github = models.URLField(blank=True, null=True)  
@@ -52,19 +60,20 @@ class userinfo(models.Model):
         return follow.objects.filter(follower = self, following = other_user).exists()
     
     def get_followers(self):
-        return userinfo.objects.filter(following__following=self)
+        return userinfo.objects.filter(following__following=self).order_by('-following__created_at')
     
     def get_following(self):
-        return userinfo.objects.filter(followers__follower = self)
+        return userinfo.objects.filter(followers__follower = self).order_by('-followers__created_at')
 
 
 class education(models.Model):
     user = models.OneToOneField(userinfo, on_delete=models.CASCADE, related_name='education')
     name = models.CharField(max_length=100)
     degree = models.CharField(max_length=255, blank=True, null=True)
-    field_of_study = models.CharField(max_length=255, blank=True, null=True)
+    field_of_study = models.CharField(max_length=255, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
+    till_now = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.id}-{self.name}"
@@ -90,12 +99,13 @@ class user_project(models.Model):
     end_date = models.DateField(blank=True, null=True)
 
 
-class experience(models.Model):
+class experience(models.Model): #Auto create.
     user = models.ForeignKey(userinfo, related_name='experiences', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     role = models.TextField(max_length=500)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
+    till_now = models.BooleanField(default=False)
     
 class follow(models.Model):
     follower = models.ForeignKey(userinfo, related_name='following', on_delete=models.CASCADE)

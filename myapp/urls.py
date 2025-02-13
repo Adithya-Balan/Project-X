@@ -20,9 +20,14 @@ urlpatterns = [
     path('organization/<int:organization_id>/unfollow/', views.unfollow_organization, name='unfollow_organization'),
     
     # User-profile
-    path("user-profile/<str:username>", views.user_profile, name="user_profile"),
+    path("user-profile/<str:user_name>", views.user_profile, name="user_profile"),
     path("<str:username>/follow-list", views.follow_list, name="follow_list"),
     path("unfollow/<int:otheruserinfo_id>/", views.unfollow_user, name = 'unfollow_user'),
     path("follow/<int:otheruserinfo_id>/", views.follow_user, name = 'follow_user'),
-        
+    path('saved', views.saved_page, name = 'saved_page'),
+    path("toggle_project_save/<int:project_id>/", views.toggle_project_save, name="toggle_project_save"),
+    
+    path('toggle_like/<int:post_id>/', views.toggle_like, name = 'toggle_like'),
+    path("save-post", views.save_post, name="save_post"),
+    path("save-comment/", views.save_comment, name="save_comment"),
 ]

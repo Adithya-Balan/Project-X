@@ -1,0 +1,246 @@
+{% load static %}
+<!-- edit profile -->
+<div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="editContainer">
+    <form method='POST' enctype="multipart/form-data"
+        class="relative flex flex-col gap-y-3 h-full overflow-y-scroll py-10 bg-white w-full lg:w-1/2 px-5 border">
+        {% csrf_token %}
+        <div class="cursor-pointer absolute top-5 right-5" onclick="closeEdit()"><i
+                class="text-3xl fa-solid fa-circle-xmark"></i></div>
+        <div class="max-[500px]:self-stretch self-center flex flex-col gap-y-3 w-full lg:w-[85%]">
+            <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
+                Edit Details
+            </h1>
+            <div class="self-center mb-4">
+                <div class="flex gap-x-3 items-center max-[500px]:flex-col gap-y-3">
+                    <div class="relative">
+                        <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-40 h-40" id="image">
+                        <label id="imageContainer" for="imgInput"
+                            class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
+                                src="{% static 'assets/edit.svg' %}" alt="" class="w-7 h-7"></label>
+                    </div>
+                    <div class="hidden gap-y-2 items-center flex-col" id="cropImgContainer">
+                        <p class="bold underline">crop image</p>
+                        <img src="" alt="" class="w-40 h-40" id="croppingImg">
+                    </div>
+                    <input type="file" name="profileImg" class="hidden" id="imgInput" accept="image/*">
+                    {% comment %} {{ep_form.profile_image}} {% endcomment %}
+                    <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn"
+                        onclick="crop()">Done</div>
+                </div>
+            </div>
+            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <input type ='hidden' name = 'form_type' value='editprofile'>
+                    <p>{{ep_form.first_name.label}}</p>
+                    {{ep_form.first_name}}
+                    {% if ep_form.first_name.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.first_name.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.last_name.label}}</p>
+                    {{ep_form.last_name}}
+                </div>
+            </div>
+            <div>
+                <div class="flex flex-col gap-y-1">
+                    <p>{{ep_form.username.label}}</p>
+                    {{ep_form.username}}
+                    {% if ep_form.username.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.username.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <div class="flex flex-col gap-y-1">
+                    <p>{{ep_form.bio.label}}</p>
+                    {{ep_form.bio}}
+                </div>
+            </div>
+            <div>
+                <div class="flex flex-col gap-y-1">
+                    <p>{{ep_form.dob.label}}</p>
+                    {{ep_form.dob}}
+                </div>
+            </div>
+            <div>
+
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.location.label}}</p>
+                    {{ep_form.location}}
+                </div>
+            </div>
+            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.contact_email.label}}</p>
+                    {{ep_form.contact_email}}
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.phone.label}}</p>
+                   {{ep_form.phone}}
+                </div>
+            </div>
+            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.gender.label}}</p>
+                    {{ep_form.gender}}
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.status.label}}</p>
+                    {{ep_form.status}}
+                </div>
+            </div>
+            <div class="flex gap-x-3 gap-y-3">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.website.label}}</p>
+                    {{ep_form.website}}
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.linkedin.label}}</p>
+                    {{ep_form.linkedin}}
+                </div>
+            </div>
+            <div class="flex gap-x-3 gap-y-3">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.github.label}}</p>
+                    {{ep_form.github}}
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.stackoverflow.label}}</p>
+                    <input type="text" name="stackoverflow" placeholder="Stackoverflow"
+                        class="outline-none border border-black px-2 py-1">
+                </div>
+            </div>
+
+            {% if ep_form.errors %}
+            <div class="text-red-500">
+                <strong>Form Errors:</strong>
+                <ul>
+                    {% for field, errors in ep_form.errors.items %}
+                        <li>{{ field }}: {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+                </div>
+            {% endif %}
+            <div class="self-center">
+                <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+    <!-- <div class="hidden absolute bg-[#00000031] backdrop-blur-md" id="croppedArea">
+        <img src="" alt="" id="croppedImg" class="w-[90%] h-96">
+    </div> -->
+
+</div>
+
+<!-- edit experience -->
+<form method = 'POST' class=" hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editExp">
+    {% csrf_token %}
+    <div
+        class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full lg:w-1/2 px-5 border">
+        <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditExp()"><i
+                class="text-3xl fa-solid fa-circle-xmark"></i></div>
+        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Edit
+            Experience</h1>
+        <input type ='hidden' name = 'form_type' value='experience'>
+        <div class="flex flex-col gap-y-1 w-full">
+            <p>{{exp_form.name.label}}</p>
+            {{exp_form.name}}
+            {% if exp_form.name.errors %}
+                <div class="text-red-500 text-sm">
+                    {% for error in exp_form.name.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="flex flex-col gap-y-1 w-full">
+            <p>{{exp_form.role.label}}</p>
+            {{exp_form.role}}
+            {% if exp_form.role.errors %}
+                <div class="text-red-500 text-sm">
+                    {% for error in exp_form.role.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="flex gap-x-3 w-full" id="dateSec">
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>{{exp_form.start_date.label}}</p>
+                {{exp_form.start_date}}
+            </div>
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>{{exp_form.end_date.label}}</p>
+               {{exp_form.end_date}}
+                <div class="flex gap-x-2">
+                    {{exp_form.till_now}}
+                    <label for="presentDate">{{exp_form.till_now.label}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
+    </div>
+</form>
+
+<!-- edit education -->
+<form method='post' action = '' class="hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editEducation">
+    {% csrf_token %}
+    <div
+        class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full md:w-3/4 lg:w-1/2 px-5 border">
+        <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditEducation()"><i
+                class="text-3xl fa-solid fa-circle-xmark"></i></div>
+        <h1 class="mt-5 w-fit self-center text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded">Edit
+            Education</h1>
+        <input type ='hidden' name = 'form_type' value='education'>
+        <div class="flex flex-col gap-y-1 w-full">
+            <p>{{edu_form.name.label}}</p>
+            {{ edu_form.name }}
+            {% if edu_form.name.errors %}
+                <div class="text-red-500 text-sm">
+                    {% for error in edu_form.name.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="flex flex-col gap-y-1 w-full">
+            <p>{{edu_form.field_of_study.label}}</p>
+            {{ edu_form.field_of_study }}
+            {% if edu_form.field_of_study.errors %}
+                <div class="text-red-500 text-sm">
+                    {% for error in edu_form.field_of_study.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="flex flex-col gap-y-1 w-full">
+            <p>{{edu_form.degree.label}}</p>
+            <input type="text" name="degree" placeholder="Degree"
+                class="outline-none border border-black px-2 py-1" value="{{userinfo_obj.education.degree}}">
+        </div>
+
+        <div class="flex gap-x-3 w-full" id="dateSecEducation">
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>{{edu_form.start_date.label}}</p>
+                {{edu_form.start_date}}
+            </div>
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>{{edu_form.end_date.label}}</p>
+                {{ edu_form.end_date }}
+            </div>
+        </div>
+
+        <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
+    
+    </div>
+</form>

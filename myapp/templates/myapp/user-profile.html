@@ -7,18 +7,18 @@
     <title>{{userinfo_obj.user.username}}</title>
     <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}">
     <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
     {% comment %} <link rel="stylesheet" href="{% static 'styles/output.css' %}"> {% endcomment %}
 </head>
 
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
-   {% include "myapp/navbar.html" %}
+   {% include "includes/navbar.html" %}
 
     <!-- main section -->
     <div class="lg:w-full lg:flex-row lg:flex lg:gap-x-10 md:flex md:flex-col md:justify-center md:items-start">
         <!-- sidenav -->
-        {% include "myapp/sidenav.html" %}
+        {% include "includes/sidenav.html" %}
 
         <!-- profile section -->
         <div class="mt-16 lg:w-2/4 md:mt-28 md:w-full md:px-5">
@@ -180,7 +180,7 @@
                                         <p class="text-[#686868]">{{ exp.start_date|date:"Y" }} - {{exp.end_date|date:"Y"}}</p>
                                     </div>
                                 </div>
-                                <hr>
+                                <hr class="border-t border-gray-200">
                                 {% endfor %}
                                 {% else %}
                                 <p class="text-base font-light text-gray-600 pb-3">Not Updated Yet...</p>
@@ -220,7 +220,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>
@@ -241,7 +241,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>

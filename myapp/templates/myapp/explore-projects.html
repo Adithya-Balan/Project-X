@@ -1,23 +1,24 @@
+{% extends "myapp/base.html" %} 
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% load custom_filter %}
+{% block title %}Explore Projects{% endblock %} 
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}">
-    <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/output.css' %}"> {% endcomment %}
-</head>
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+
+{% block script %}
+{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+{% endblock %} 
+
+
+{% block content %}
 
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
-    {% include "myapp/navbar.html" %}
+    {% include "includes/navbar.html" %}
     
     <!-- phone navbar popup -->
-    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20 lg:hidden" id="popup">
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
         <div class="flex flex-col gap-y-2">
             <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
             <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
@@ -25,10 +26,9 @@
         </div>
     </div>
     <!-- main section -->
-
-    <div class="flex w-full gap-x-5 lg:gap-x-2">
+    <div id = 'entireSection' class="flex w-full gap-x-5 lg:gap-x-2">
         <!-- sidenav -->
-        {% include "myapp/sidenav.html" %}
+        {% include "includes/sidenav.html" %}
 
         <!-- explore section -->
         <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-6">
@@ -75,18 +75,27 @@
                                     <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
                                         <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span> <span>{{project.tot_member}} Users</span>
                                     </div>
-                                    <p class="self-end">{{project.created_at}}</p>
+                                    <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="absolute right-3 top-2 flex items-start gap-x-5">
                             {% comment %} <i class="text-xl fa-solid fa-certificate">F</i> {% endcomment %}
                             <p class="text-xl text-gray-700">{{project.type}}</p>
-                            <i
-                                class="text-xl fa-regular fa-bookmark hover:scale-[1.3] transition cursor-pointer"></i>
+
+                            <button class="toggle-save-btn" data-project-id="{{ project.id }}">
+                                {% if project in user.info.saved_items.project.all %}
+                                <i class="text-xl fa-solid fa-bookmark hover:scale-[1.3] transition cursor-pointer"
+                                    aria-hidden="true"></i>
+                                    <span class='btn-text hidden'>Unsave</span>
+                                {% else %}
+                                <i class="text-xl fa-regular fa-bookmark hover:scale-[1.3] transition cursor-pointer"></i>
+                                <span class='btn-text hidden'>Save</span>
+                                {% endif %}
+                            </button>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex items-center justify-between gap-x-5">
                         <div class="flex items-center gap-x-5">
                             {% if project.github_link %}
@@ -202,9 +211,9 @@
         </div>
     </div>
 
-    
-
-    <script src="{% static 'scripts/script.js' %}"></script>
+    {% include "includes/create-post.html" %}
+    <script src ="{% static 'scripts/saved_toggle.js' %}"></script>
 </body>
 
-</html>
+    
+{% endblock  %}

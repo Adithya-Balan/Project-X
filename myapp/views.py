@@ -1,15 +1,18 @@
+import base64
+import uuid
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm,OrganizationForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.core.files.base import ContentFile
 # from django.contrib.postgres.search import TrigramSimilarity
 
 # Create your views here.
@@ -48,52 +51,89 @@ def index(request):
 
 #profile-page
 @login_required
-def user_profile(request, username):
-    try:
-        userinfo_obj = userinfo.objects.get(user__username = username)
-        user_project = link_available = False
-        social_links = { 
-        'github': userinfo_obj.github if userinfo_obj.github else None,
-        'linkedin': userinfo_obj.linkedin if userinfo_obj.linkedin else None,
-        'stack-overflow': userinfo_obj.stackoverflow if userinfo_obj.stackoverflow else None,
+def user_profile(request, user_name):
+    # userinfo_obj = userinfo.objects.get(user__username = user_name)
+    userinfo_obj = get_object_or_404(userinfo, user__username = user_name)
+    user_project = user_post= link_available = open_exp_flag = open_edu_flag = open_editprofile_flag = False
+    social_links = { 
+    'github': userinfo_obj.github if userinfo_obj.github else None,
+    'linkedin': userinfo_obj.linkedin if userinfo_obj.linkedin else None,
+    'stack-overflow': userinfo_obj.stackoverflow if userinfo_obj.stackoverflow else None,
+}
+    if social_links.get('github') or social_links.get('linkedin') or social_links.get('stackoverflow'):
+        link_available = True
+    skill_list = userinfo_obj.skills.all()
+    exp_obj = userinfo_obj.experiences.all().order_by('-start_date')
+    
+    section = request.GET.get('section', 'overview') 
+    if section == 'projects':
+        user_project = userinfo_obj.projects.all().order_by('-start_date')
+
+    if section == 'posts':
+        user_post = post.objects.filter(user = userinfo_obj).order_by('-created_at')
+    
+    is_following = request.user.info.is_following(userinfo_obj)
+    # Suggested Project
+    if request.user.info.skills.all():
+        suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
+    else:
+        suggested_project = projects.objects.all()[:5] #For user, with no skill
+    #Edit options
+    edu_form = EditEducationForm(instance=request.user.info.education)
+    exp_form = EditExperienceForm()
+    editprofile_form = EditProfileForm(instance=request.user.info)
+    post_form = PostForm()
+        
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+        if form_type == 'experience':
+            exp_form = EditExperienceForm(request.POST)
+            if exp_form.is_valid():
+                form = exp_form.save(commit=False)
+                form.user = request.user.info
+                form.save()
+                exp_form = EditExperienceForm()
+            else:
+                open_exp_flag = True
+        elif form_type == 'education':
+            edu_form = EditEducationForm(request.POST, instance=request.user.info.education)
+            if edu_form.is_valid():
+                edu_form.save()
+            else:
+                open_edu_flag = True
+        elif form_type == 'editprofile':
+            editprofile_form = EditProfileForm(request.POST, request.FILES, instance = request.user.info)
+            if editprofile_form.is_valid():
+                print(request.FILES['profileImg'])
+                editprofile_form.profile_image = request.FILES['profileImg']
+                editprofile_form.save()
+                redirect_url = reverse("user_profile", args=[request.user.username])
+                return redirect(redirect_url)
+            else:
+                open_editprofile_flag = True
+                    
+    context = {
+        'userinfo_obj': userinfo_obj,
+        'social_links': social_links,
+        'link_available': link_available,
+        'skill_list': skill_list,
+        'exp_obj': exp_obj,
+        'section': section,
+        'color': {
+            'active':"bg-black px-2 md:px-4 py-2 cursor-pointer rounded-md text-white font-bold hover:bg-[white] transition hover:text-black",
+            'normal':"px-2 py-2 rounded-md cursor-pointer md:px-2 hover:bg-[white] transition"
+            },
+        'is_following': is_following,
+        'user_project': user_project,
+        'user_post': user_post,
+        'suggested_project': suggested_project,
+        'ep_form': editprofile_form,
+        'edu_form': edu_form,
+        'exp_form': exp_form,
+        'post_form': post_form,
+        'flag': {'open_edu_flag': open_edu_flag, 'open_exp_flag': open_exp_flag, 'open_editprofile_flag': open_editprofile_flag}
     }
-        if social_links.get('github') or social_links.get('linkedin') or social_links.get('stackoverflow'):
-            link_available = True
-        skill_list = userinfo_obj.skills.all()
-        exp_obj = userinfo_obj.experiences.all().order_by('-start_date')
-        
-        section = request.GET.get('section', 'overview') 
-        if section == 'projects':
-            user_project = userinfo_obj.projects.all().order_by('-start_date')
-        is_following = request.user.info.is_following(userinfo_obj)
-        
-        # Suggested Project
-        if request.user.info.skills.all():
-            suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
-        else:
-            
-            suggested_project = projects.objects.all()[:5] #For user, with no skill
-        
-        context = {
-            'userinfo_obj': userinfo_obj,
-            'social_links': social_links,
-            'link_available': link_available,
-            'skill_list': skill_list,
-            'exp_obj': exp_obj,
-            'section': section,
-            'color': {
-                'active':"bg-[#6feb8631] px-3 md:px-4 py-2 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer",
-                'normal':"px-3 py-2 rounded-md cursor-pointer md:px-4 hover:bg-[#6feb8631] hover:text-[#6feb85] border border-white hover:border hover:border-[#6feb85]"
-                },
-            'is_following': is_following,
-            'user_project': user_project,
-            'suggested_project': suggested_project,
-        }
-        
-        return render(request, 'myapp/user-profile_1.html', context)
-        
-    except userinfo_obj.DoesNotExist:
-        raise Http404("User information does not exist")
+    return render(request, 'myapp/user-profile_1.html', context)
 
 #follow request:
 @login_required
@@ -114,6 +154,7 @@ def follow_user(request, otheruserinfo_id):
         return JsonResponse({"status": "followed", "message": "User followed successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
     # return redirect(request.META.get('HTTP_REFERER', '/'))
+    
 @login_required
 def follow_list(request, username):
         userinfo_obj = userinfo.objects.get(user__username = username) #user-profile list
@@ -147,7 +188,7 @@ def follow_list(request, username):
         }
         
         return render(request, 'myapp/followList.html', context)
-
+    
 # Organization
 def create_organization(request):
     if request.method == "POST":
@@ -384,6 +425,87 @@ def explore_dev(request):
     }
     return render(request, 'myapp/explore_dev.html', context)
 
+
+def saved_page(request):
+    saved_item  = request.user.info.saved_items
+    context = {
+        'saved_item': saved_item
+    }
+    return render(request, 'myapp/saved.html', context)
+
+@login_required
+def toggle_project_save(request, project_id):
+    project_obj = get_object_or_404(projects, id=project_id)
+    saved_items_obj = SavedItem.objects.get(user=request.user.info)
+    
+    # Toggle the project save status.
+    saved = saved_items_obj.toggle_project(project_obj)
+
+    return JsonResponse({
+        'saved': saved,
+        'followers_count': project_obj.saved_by_projects.count(),  # if you need to update count
+    })
+    
+@login_required
+def toggle_like(request, post_id):
+    post_obj = get_object_or_404(post, id = post_id)
+    userinfo_obj = request.user.info
+    if userinfo_obj in post_obj.likes.all():
+        post_obj.likes.remove(userinfo_obj)
+        liked = False
+    else:
+        post_obj.likes.add(userinfo_obj)
+        liked = True
+
+    return JsonResponse({'liked': liked, 'total_likes': post_obj.total_likes()}) 
+
+#for saving post
+def save_post(request):
+    form = PostForm(request.POST, request.FILES)
+    if form.is_valid():
+        new_post = form.save(commit=False)
+        new_post.user = request.user.info  # Set current user's profile
+        cropped_data = request.POST.get("cropped_image", "") # Check if a cropped image was submitted (base64 encoded data URL)
+        if cropped_data:
+            try:
+                header, img_str = cropped_data.split(";base64,") # Expected format: data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...
+            except ValueError: # If not in correct format, you may fallback or raise an error.
+                img_str = None
+            
+            if img_str:
+                    # Determine file extension from header
+                    ext = header.split("/")[-1]  # e.g., "png" or "jpeg"
+                    filename = f"post_{uuid.uuid4().hex}.{ext}"
+                    # Decode the base64 image data and wrap it in a ContentFile
+                    decoded_file = ContentFile(base64.b64decode(img_str), name=filename)
+                    new_post.file = decoded_file
+        else:
+            if 'post' in request.FILES: # Optional: If no cropped image provided, fallback to normal uploaded file if available.
+                new_post.file = request.FILES['post']
+                
+        new_post.save()
+        return redirect('/home')
+        
+#for saving post comments
+def save_comment(request):
+    comment_text = request.POST.get('comment')   
+    post_id = request.POST.get('post_id')
+    Post_obj = get_object_or_404(post, id=post_id)
+    
+    comment = post_comments.objects.create(
+        Post=Post_obj,
+        user=request.user.info,
+        content=comment_text
+    )
+    profile_image_url = comment.user.profile_image.url
+    data = {
+        'username': comment.user.user.username,
+        'comment': comment.content,
+        'created_at': comment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        'profile_image_url': profile_image_url,
+        'comments_count': Post_obj.tot_comments(),
+    }
+    return JsonResponse(data)
 
 def logout_view(request):
     logout(request)

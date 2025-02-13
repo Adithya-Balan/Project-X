@@ -6,14 +6,14 @@
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
 {% block script %}
-<script src="https://cdn.tailwindcss.com"></script>
+{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 {% endblock %} 
 
 {% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
-    {% include "myapp/navbar.html" %}
+    {% include "includes/navbar.html" %}
 
     
 

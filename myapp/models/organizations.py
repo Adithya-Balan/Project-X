@@ -108,3 +108,4 @@ class organization(models.Model):
     
     def get_followers(self):
         return self.followers.all()
+    

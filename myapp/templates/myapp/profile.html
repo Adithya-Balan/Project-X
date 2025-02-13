@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
+    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css"
+        integrity="sha512-087vysR/jM0N5cp13Vlp+ZF9wx6tKbvJLwPO8Iit6J7R+n7uIMMjg37dEgexOshDmDITHYY5useeSmfD1MYiQA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"
+        integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar --><!-- z-20 -->
+    <div class="fixed z-20 top-0 flex w-full text-white bg-black">
+        <nav class="flex items-center w-full px-10 py-4 justify-evenly">
+            <div class="flex items-center w-full gap-x-5">
+                <div class="py-1 text-xl font-bold">
+                    DevMate
+                </div>
+                <div class="hidden md:flex">
+                    <input type="text"
+                        class="outline-none border border-black rounded-xl text-[16px] px-2 py-1 text-black"
+                        placeholder="Search..">
+                </div>
+            </div>
+
+            <div class="flex gap-x-10">
+                <div>
+                    <i class="text-xl fa-solid fa-bell"></i>
+                </div>
+                <div>
+                    <i class="text-xl fa-solid fa-square-plus" onclick="openPost()"></i>
+                </div>
+                <div class="relative">
+                    <i class="hidden text-xl md:block fa-solid fa-circle-user"></i>
+                    <i class="text-xl md:hidden fa-solid fa-gear" onclick="showPopup()"></i>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- z-20 -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+
+
+    <!-- phone navbar -->
+    <div class="z-10 fixed bottom-0 w-full py-2 bg-[#00000057] backdrop-blur lg:hidden">
+        <div class="flex justify-around">
+            <div><i class="text-xl fa-solid fa-house"></i></div>
+            <div><i class="text-xl fa-regular fa-compass"></i></div>
+            <div><i class="text-xl fa-solid fa-house"></i></div>
+            <div><i class="text-xl fa-regular fa-circle-user"></i></div>
+        </div>
+    </div>
+
+    <!-- main section -->
+
+    <div id="entireSection"
+        class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start justify-between">
+        <!-- sidenav -->
+        <div
+            class="text-black hidden w-1/5 flex-col justify-between h-[calc(100vh-57px)] sticky top-14 mt-14 py-7 bg-white  shadow-lg md:hidden lg:flex">
+            <div class="flex px-10">
+                <div class="flex flex-col justify-center py-3 gap-y-3 w-full">
+                    <div class="text-lg"><i class="fa-solid fa-house"></i> Home</div>
+                    <div class="text-lg"><i class="fa-solid fa-house"></i> Explore</div>
+                    <div class="text-lg"><i class="fa-solid fa-house"></i> Home</div>
+                    <div
+                        class="px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]">
+                        <i class="fa-solid fa-house"></i> Profile
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-around w-full">
+                <div><i class="text-2xl fa-solid fa-calendar-days"></i></div>
+                <div><i class="text-2xl fa-regular fa-bookmark"></i></div>
+                <div><i class="text-2xl fa-solid fa-gear"></i></div>
+            </div>
+        </div>
+
+        <!-- profile section -->
+        <div class="mt-16 flex-[5] flex md:mt-28 md:w-full md:px-5">
+            <div class="flex flex-col items-center gap-y-2">
+                <!-- z-10 md -->
+                <div class="w-full flex flex-col items-center md:gap-y-10 bg-white">
+                    <div class="relative   w-full h-32 bg-black md:h-64 dot-white">
+                        <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
+                            <img src="profile.webp" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40"
+                                onclick="viewProfile()" id="originalProfile">
+                        </div>
+                    </div>
+
+                    <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md md:ml-auto w-full gap-y-2">
+                        <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
+                            <div class="text-xl font-bold">Asymmetric Technical lorem</div>
+                            <div class="text-[#686868]">@night_owl</div>
+                            <div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i> San fansisco, USA</div>
+                            <div class="flex gap-x-2">
+                                <button
+                                    class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">50
+                                    Followers</button>
+                                <button
+                                    class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">45
+                                    Following</button>
+                            </div>
+                        </div>
+                        
+                        <div class="pb-4">
+                            <button class="px-4 py-2 bg-[#6feb85] rounded-md" onclick="openEdit()">
+                                &lt;Follow/&gt; (or) Edit Profile
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex flex-col p-3 w-full gap-y-3">
+                    <div
+                        class="flex w-full px-2 py-2 overflow-x-scroll bg-[#00000042] rounded-md justify-evenly md:px-10 gap-x-0 md:gap-x-1">
+                        <div
+                            class="bg-black px-2 md:px-4 py-2 cursor-pointer rounded-md text-white font-bold hover:bg-[white] transition hover:text-black">
+                            Overview</div>
+                        <div class="px-2 py-2 rounded-md cursor-pointer md:px-2 hover:bg-[white] transition">Experience
+                        </div>
+                        <div class="px-2 py-2 rounded-md cursor-pointer md:px-4 hover:bg-[white] transition">Posts</div>
+                        <div class="px-2 py-2 rounded-md cursor-pointer md:px-4 hover:bg-[white] transition">Info</div>
+                    </div>
+
+                    <!-- overview section -->
+                    <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-10">
+                        <div class="flex flex-col text-justify gap-y-3">
+                            <h1 class="text-xl font-bold">{ Summary }</h1>
+                            <p class="text-justify">
+                                culpa.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col gap-y-2">
+                            <h1 class="text-xl font-bold">Links</h1>
+                            <div class="flex flex-wrap gap-x-5 gap-y-2">
+                                <div
+                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                                    <i class="text-2xl fa-brands fa-linkedin"></i>
+                                    <p class="text-[#6feb85] hidden md:block">Linkedin Id</p>
+                                </div>
+                                <div
+                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                                    <i class="text-2xl fa-brands fa-linkedin"></i>
+                                    <p class="text-[#6feb85] hidden md:block">Linkedin Id</p>
+                                </div>
+                                <div
+                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                                    <i class="text-2xl fa-brands fa-linkedin"></i>
+                                    <p class="text-[#6feb85] hidden md:block">Linkedin Id</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="flex flex-col gap-y-3">
+                            <div class="flex flex-col text-justify gap-y-3">
+                                <h1 class="text-xl font-bold">Current Position</h1>
+                            </div>
+                            <div class="flex items-start justify-start gap-x-5">
+                                <div class="">
+                                    <img src="team.jpeg" alt="" class="rounded-lg w-14 h-14">
+                                </div>
+                                <div class="w-4/5">
+                                    <h1 class="text-xl font-bold">Company Name</h1>
+                                    <p class="text-[#686868]">Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                        Optio,
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="relative flex flex-col gap-y-3">
+                            <div class="absolute right-0 top-5 cursor-pointer"><img src="plus-edit.svg" alt=""
+                                    class="h-7 w-7" onclick="openEditEducation()"></div>
+                            <div class="flex flex-col text-justify gap-y-3">
+                                <h1 class="text-xl font-bold">Education</h1>
+                            </div>
+                            <div class="flex items-start justify-start gap-x-5">
+                                <div class="">
+                                    <img src="team.jpeg" alt="" class="rounded-lg w-14 h-14">
+                                </div>
+                                <div class="w-4/5">
+                                    <h1 class="text-xl font-bold">College Name</h1>
+                                    <p class="text-[#686868]">Computer Science with business system
+                                    </p>
+                                    <p class="text-[#686868]">2024-2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- experience section -->
+                    <div class="flex relative flex-[3] px-5 py-2 mt-10 bg-white rounded-md gap-x-5">
+                        <div class="absolute right-5 top-5 cursor-pointer"><img src="plus-edit.svg" alt=""
+                                class="h-7 w-7" onclick="openEditExp()"></div>
+                        <div class="w-1 bg-[#00000096]"></div>
+                        <div class="flex flex-col gap-y-5">
+                            <div class="flex flex-col text-justify gap-y-3">
+                                <h1 class="mt-5 text-xl font-bold">{ Experience }</h1>
+                            </div>
+
+                            <div class="flex items-start justify-start gap-x-5">
+                                <div class="">{% if user == userinfo_obj.user %}
+                        <div class="absolute hidden right-5 -bottom-5 md:flex">
+                            <button class="px-4 py-2 bg-[#6feb85] rounded-md" onclick="openEdit()">
+                                Edit Profile
+                            </button>
+                        </div>
+                        {% else %}
+
+                        <a href="javascript:void(0);" class="follow-btn absolute hidden right-5 -bottom-5 md:flex" data-user-id="{{ userinfo_obj.id }}">
+                            {% if user.info|is_following:userinfo_obj %}
+                            <span class="btn-text px-4 py-2 bg-[#6feb85] rounded-md">&lt;Unfollow/&gt;</span>
+                            {% else %}
+                                <span class="btn-text px-4 py-2 bg-[#6feb85] rounded-md">&lt;Follow/&gt;</span>
+                            {% endif %}
+                        </a> 
+                        {% endif %}
+                                    <img src="team.jpeg" alt="" class="rounded-lg w-14 h-14">
+                                </div>
+                                <div class="w-4/5">
+                                    <h1 class="text-xl font-bold">Company Name</h1>
+                                    <p class="text-[#686868]">Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                        Optio,
+                                    </p>
+                                    <p class="text-[#686868]">since Nov 2024</p>
+                                </div>
+                            </div>
+                            <hr class="border-t border-gray-200">
+                            
+                        </div>
+                    </div>
+
+
+
+                    <!-- personal Info -->
+                    <div class=" bg-white rounded-md p-3 py-5 md:p-10">
+                        <div class="flex flex-col gap-y-5">
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="birthday_icon.svg" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">DOB</p>
+                                    <p class="break-words text-justify text-[#686868]">November 1, 2006</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="about_icon.svg" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">About</p>
+                                    <p class="break-words text-justify text-[#686868]">Lorem ipsum dolor sit amet
+                                        consectetur adipisicing elit. Ad magni velit iusto dolorum, excepturi nihil
+                                        veritatis incidunt inventore natus nesciunt earum tenetur, ratione eius
+                                        laudantium eum officia nobis. Porro, quasi!</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="gender_icon.svg" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Gender</p>
+                                    <p class="break-words text-justify text-[#686868]">Male</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="email_icon.svg" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Email</p>
+                                    <p class="break-words text-justify text-[#686868]">sampleemail@gmail.com</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="call_icon.svg" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Phone</p>
+                                    <p class="break-words text-justify text-[#686868]">9999999999</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-x-3 items-start">
+                                <img class="w-12 h-12" src="location_icon.svg" alt="">
+                                <div class="w-full">
+                                    <p class="font-bold">Location</p>
+                                    <p class="break-words text-justify text-[#686868]">Chennai, India</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- skill project section -->
+        <div
+            class="flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:items-start md:w-full md:gap-x-5 md:mr-3">
+            <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full">
+                <h1 class="text-xl font-bold text-center">Skills;</h1>
+                <div class="flex flex-col pl-3 gap-y-2">
+                    <div class="flex flex-wrap gap-2">
+                        <div
+                            class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                            Web Development;</div>
+                        <div
+                            class="bg-[#ebdf6f31] px-2 py-2 rounded-md text-[#edab19] font-bold border border-[#edab19] cursor-pointer">
+                            Mobile Development;</div>
+                        <div
+                            class="bg-[#5c6bc044] px-2 py-2 rounded-md text-[#5c6bc0] font-bold border border-[#5c6bc0] cursor-pointer">
+                            Data Science and AI;</div>
+                        <div
+                            class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                            Cloud and DevOps;</div>
+                        <div
+                            class="bg-[#ebdf6f31] px-2 py-2 rounded-md text-[#edab19] font-bold border border-[#edab19] cursor-pointer">
+                            Game Development;</div>
+
+                        <div
+                            class="bg-[#5c6bc044] px-2 py-2 rounded-md text-[#5c6bc0] font-bold border border-[#5c6bc0] cursor-pointer">
+                            Embedded Systems;</div>
+                        <div
+                            class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
+                            Cybersecurity;</div>
+                        <div
+                            class="bg-[#ebdf6f31] px-2 py-2 rounded-md text-[#edab19] font-bold border border-[#edab19] cursor-pointer">
+                            Blockchain;</div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="flex flex-col px-2 py-4 pb-20 bg-white md:pb-4 gap-y-3 md:w-1/2 lg:w-full">
+                <h1 class="text-xl font-bold text-center">Projects;</h1>
+                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
+                    <div class="flex items-start w-full gap-x-3">
+                        <div class="w-20 h-20 lg:w-1/5">
+                            <img src="profile.webp" alt="">
+                        </div>
+                        <div class="flex flex-col w-4/5 gap-y-2">
+                            <div class="font-semibold">Project Name</div>
+                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
+                        </div>
+                    </div>
+                    <hr class="border-t border-gray-200">
+                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
+                        </div>
+                        <div class="bg-[#5c6bc033] px-2 py-1 border border-[#5c6bc0] text-[#5c6bc0] rounded-md">10 July
+                        </div>
+                        <div
+                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
+                            View</div>
+                    </div>
+                </div>
+
+
+                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
+                    <div class="flex items-start w-full gap-x-3">
+                        <div class="w-20 h-20 lg:w-1/5">
+                            <img src="profile.webp" alt="">
+                        </div>
+                        <div class="flex flex-col w-4/5 gap-y-2">
+                            <div class="font-semibold">Project Name</div>
+                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
+                        </div>
+                    </div>
+                    <hr class="border-t border-gray-200">
+                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
+                        </div>
+
+                        <div
+                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
+                            View
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- zooming profile section -->
+    <div id="zoomProfile" class="fixed hidden items-center justify-center  top-0 bottom-0  w-full">
+        <div class="relative">
+            <img src="profile.webp" alt=""
+                class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-full border-8 border-[#00000070]">
+            <button
+                class="absolute -right-3 -top-3 md:top-0 md:right-0 border bg-white border-black rounded-full w-10 h-10"
+                onclick="closeProfile()"><i class="text-3xl fa-solid fa-circle-xmark"></i></button>
+        </div>
+    </div>
+
+    <!-- edit profile -->
+    <div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="editContainer">
+        <form
+            class="relative flex flex-col gap-y-3 h-full overflow-y-scroll py-10 bg-white w-full lg:w-1/2 px-5 border">
+            <div class="cursor-pointer absolute top-5 right-5" onclick="closeEdit()"><i
+                    class="text-3xl fa-solid fa-circle-xmark"></i></div>
+            <div class="max-[500px]:self-stretch self-center flex flex-col gap-y-3 w-full lg:w-[85%]">
+                <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
+                    Edit Details
+                </h1>
+
+                <div class="self-center mb-4">
+                    <div class="flex gap-x-3 items-center max-[500px]:flex-col gap-y-3">
+                        <div class="relative">
+                            <img src="profile.webp" alt="" class="rounded-lg w-40 h-40" id="image">
+                            <label id="imageContainer" for="imgInput"
+                                class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
+                                    src="edit.svg" alt="" class="w-7 h-7"></label>
+                        </div>
+                        <div class="hidden gap-y-2 items-center flex-col" id="cropImgContainer">
+                            <p class="bold underline">crop image</p>
+                            <img src="" alt="" class="w-40 h-40" id="croppingImg">
+                        </div>
+                        <input type="file" name="profileImg" class="hidden" id="imgInput" accept="image/*">
+                        <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn"
+                            onclick="crop()">Done</div>
+                    </div>
+                </div>
+                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>First Name</p>
+                        <input type="text" name="firstname" placeholder="First"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Last Name</p>
+                        <input type="text" name="lastname" placeholder="Last"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col gap-y-1">
+                        <p>Username</p>
+                        <input type="text" name="username" placeholder="Username"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col gap-y-1">
+                        <p>Bio</p>
+                        <textarea type="text" name="bio" placeholder="Bio...."
+                            class="outline-none border border-black px-2 py-1"></textarea>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col gap-y-1">
+                        <p>DOB</p>
+                        <input type="date" name="dob" id="dob" class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div>
+
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Location</p>
+                        <input type="text" name="loaction" placeholder="Loaction"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Email</p>
+                        <input type="email" name="email" placeholder="Email"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Phone</p>
+                        <input type="number" name="phone" placeholder="Phone"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Gender</p>
+                        <select name="gender" id="" class="outline-none border border-black px-2 py-1 bg-white">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="notToSay">Not To Say</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Status</p>
+                        <select name="gender" id="" class="outline-none border border-black px-2 py-1 bg-white">
+                            <option value="student">Student</option>
+                            <option value="intern">Intern</option>
+                            <option value="workingProfession">Working Profession</option>
+                            <option value="freelancer">Freelancer</option>
+                            <option value="entrepreneurs">Entrepreneurs</option>
+                            <option value="jobSeeker">Job Seeker</option>
+                            <option value="mentor">Mentor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-x-3 gap-y-3">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Website</p>
+                        <input type="text" name="website" placeholder="www.samplesite.in"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>LinkedIn</p>
+                        <input type="text" name="linkedin" placeholder="LinkedIn URL"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div class="flex gap-x-3 gap-y-3">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Github</p>
+                        <input type="text" name="github" placeholder="Github URL"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>Stackoverflow</p>
+                        <input type="text" name="stackoverflow" placeholder="Stackoverflow"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
+                <div class="self-center">
+                    <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+        <!-- <div class="hidden absolute bg-[#00000031] backdrop-blur-md" id="croppedArea">
+            <img src="" alt="" id="croppedImg" class="w-[90%] h-96">
+        </div> -->
+
+    </div>
+
+    <!-- edit experience -->
+    <form class=" hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editExp">
+        <div
+            class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full lg:w-1/2 px-5 border">
+            <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditExp()"><i
+                    class="text-3xl fa-solid fa-circle-xmark"></i></div>
+            <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Edit
+                Experience</h1>
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>Company Name</p>
+                <input type="text" name="companyName" placeholder="Company Name"
+                    class="outline-none border border-black px-2 py-1">
+            </div>
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>Description</p>
+                <textarea type="text" name="description" placeholder="Description"
+                    class="outline-none border border-black px-2 py-1"></textarea>
+            </div>
+            <div class="flex gap-x-3 w-full" id="dateSec">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>Start date</p>
+                    <input type="date" name="startDate" id="startDate"
+                        class="outline-none border border-black px-2 py-1">
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>End date</p>
+                    <input type="date" name="endDate" id="endDate" class="outline-none border border-black px-2 py-1">
+                    <div class="flex gap-x-2">
+                        <input type="checkbox" name="tillNow" id="presentDate">
+                        <label for="presentDate">Till Now</label>
+                    </div>
+                </div>
+            </div>
+            <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
+        </div>
+    </form>
+
+    <!-- edit education -->
+    <form class=" hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editEducation">
+        <div
+            class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full md:w-3/4 lg:w-1/2 px-5 border">
+            <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditEducation()"><i
+                    class="text-3xl fa-solid fa-circle-xmark"></i></div>
+            <h1 class="mt-5 w-fit self-center text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded">Edit
+                Education</h1>
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>University Name</p>
+                <input type="text" name="universityName" placeholder="University Name"
+                    class="outline-none border border-black px-2 py-1" value = '{{}}'>
+            </div>
+            <div class="flex flex-col gap-y-1 w-full">
+                <p>Course</p>
+                <input type="text" name="course" placeholder="Course"
+                    class="outline-none border border-black px-2 py-1">
+            </div>
+            <div class="flex gap-x-3 w-full" id="dateSecEducation">
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>Start date</p>
+                    <input type="date" name="startDateEducation" id="startDateEducation"
+                        class="outline-none border border-black px-2 py-1">
+                </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>End date</p>
+                    <input type="date" name="endDateEducation" id="endDateEducation"
+                        class="outline-none border border-black px-2 py-1">
+                    <div class="flex gap-x-2">
+                        <input type="checkbox" name="tillNow" id="presentDateEducation"
+                            onclick="if(this.checked){tillNoweducation()}else{notTillNowEducation()}">
+                        <label for="presentDateEducation">Till Now</label>
+                    </div>
+                </div>
+            </div>
+            <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
+        </div>
+    </form>
+
+    <script src="script.js"></script>
+    <script src="profile.js"></script>
+</body>
+
+</html>

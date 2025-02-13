@@ -9,7 +9,7 @@
 {% endblock  %}
     
 {% block script %}
-<script src="https://cdn.tailwindcss.com"></script>
+{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 {% endblock %} 
 
@@ -17,7 +17,7 @@
 
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar --><!-- z-20 -->
-    {% include "myapp/navbar.html" %}
+    {% include "includes/navbar.html" %}
     
     <!-- z-20 -->
     <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
@@ -34,7 +34,7 @@
     <div id="entireSection"
         class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start">
         <!-- sidenav -->
-        {% include "myapp/sidenav.html" %}
+        {% include "includes/sidenav.html" %}
 
         <!-- profile section -->
         <div class="flex mt-16 lg:mt-28 md:w-full lg:pl-5 flex-[5] lg:px-3 lg:pb-10">

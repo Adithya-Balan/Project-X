@@ -34,3 +34,6 @@ class user_status(models.Model):
     
     class Meta:
         verbose_name_plural = "user_status"
+        
+    def __str__(self):
+        return self.name

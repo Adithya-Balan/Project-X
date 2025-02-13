@@ -6,19 +6,27 @@
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 {% block script %}
-<script src="https://cdn.tailwindcss.com"></script>
+{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 {% endblock %} 
 
 {% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
-    {% include "myapp/navbar.html" %}
-    <!-- main section -->
+    {% include "includes/navbar.html" %}
+     <!-- phone navbar popup -->
+     <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
 
+    <!-- main section -->
     <div class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
         <!-- sidenav -->
-        {% include "myapp/sidenav.html" %}
+        {% include "includes/sidenav.html" %}
 
         <!-- list section -->
         <div class="relative flex mt-32 lg:mt-32 md:w-full px-2 flex-[5] pb-16">
@@ -130,22 +138,22 @@
         </div>
 
         <!-- skill project section -->
-        <div
-            class=" hidden lg:flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:w-full md:gap-x-5 md:mr-3 rounded-md">
+        <div class=" hidden lg:flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:w-full md:gap-x-5 md:mr-3 rounded-md">
 
             <div class="flex flex-col px-2 py-4 pb-20 bg-white md:pb-4 gap-y-5 md:w-1/2 lg:w-full rounded-md">
                 <h1 class="text-xl font-bold text-center">Projects;</h1>
+                {% for project in suggested_project %}
                 <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
                     <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
+                        <div class="md:w-20 h-20">
+                            <img src="{{project.image.url}}" class='rounded-xl h-16 w-16' alt="">
                         </div>
                         <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
+                            <div class="font-semibold">{{project.title}}</div>
+                            <div class="break-words">{{project.description|slice:":80"}}...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>
@@ -154,96 +162,7 @@
                             View</div>
                     </div>
                 </div>
-
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="profile.webp" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}    
             </div>
         </div>
     </div>

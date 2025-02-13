@@ -1,0 +1,53 @@
+{% load static %}
+<!-- create post -->
+ <div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="createPost">
+    <form method='post' action = '/save-post'  enctype="multipart/form-data"
+        class="border rounded-md shadow-md relative flex flex-col gap-y-3 h-full overflow-y-scroll bg-white w-full md:w-3/4 lg:w-1/2">
+        {% csrf_token %}
+        <div class="relative flex flex-col gap-y-4 overflow-y-scroll items-center py-10 bg-white w-full">
+            <div class="cursor-pointer absolute top-5 right-5" onclick="closePost()"><i
+                    class="text-3xl fa-solid fa-circle-xmark"></i>
+            </div>
+            <h1 class="mt-5 w-fit self-center text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded">
+                Create Post</h1>
+            <div class="flex flex-col items-start gap-4 border p-4 w-full max-w-[34rem] mx-auto">
+                <!-- Post Image -->
+                <div class="aspect-video overflow-hidden w-full bg-[#f8fafd]" id="postImgContainer">
+                    <input type="hidden" name="cropped_image" id="croppedImageInput">
+                    <img src="" alt="Post Banner" class="hidden w-full h-full object-cover aspect-video"
+                        id="postImg">
+                    <div id="uploadPostContainer" class="flex justify-center items-center h-full">
+                        <label for="uploadPost">
+                            <div class="flex items-center justify-center flex-col h-full">
+                                <img src="{% static 'assets/uploadPost.svg' %}" alt="" class="aspect-video w-52">
+                                <p>Upload the files here...</p>
+                            </div>
+                        </label>
+                        {{post_form.file}}
+                    </div>
+                </div>
+                <label id="uploadPostLabel" for="uploadPost"
+                    class="hidden bg-[#00000054] text-white font-bold rounded-md px-3 py-1 hover:bg-black transition cursor-pointer">Upload
+                    another</label>
+
+
+                <!-- Post Content -->
+                {% comment %} <textarea class="text-gray-700 w-full h-36 outline-none resize-none"
+                    placeholder="Description..." ></textarea> {% endcomment %}
+                {{post_form.content}}
+                <div class="flex gap-x-2 self-end">
+                    <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
+                        onclick="setImgOriginal()">Original</div>
+                    <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
+                        onclick="resizePost(0)">1:1</div>
+                    <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
+                        onclick="resizePost(1)">16:9</div>
+                </div>
+            </div>
+
+            <button type="submit" class="self-center"><button type="submit"
+                    class="bg-[#6feb85] text-black px-3 py-1">Post</button>
+            </button>
+        </div>
+    </form>
+</div>

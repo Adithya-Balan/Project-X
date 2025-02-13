@@ -14,7 +14,7 @@
             <img class="w-12 h-12" src="{% static 'assets/about_icon.svg' %}" alt="">
             <div class="w-full">
                 <p class="font-bold">About</p>
-                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.dev_story %}{{userinfo_obj.dev_story}}{% else %}Not Updated yet..{% endif %}</p>
+                <p class="break-words text-[#686868]">{% if userinfo_obj.about_user %}{{userinfo_obj.about_user}}{% else %}Not Updated yet..{% endif %}</p>
             </div>
         </div>
         {% if userinfo_obj.gender %}
@@ -30,7 +30,7 @@
             <img class="w-12 h-12" src="{% static 'assets/email_icon.svg' %}" alt="">
             <div class="w-full">
                 <p class="font-bold">Email</p>
-                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.user.email %}{{userinfo_obj.user.email}}{% else %}Not Updated yet..{% endif %}</p>
+                <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.contact_email %}{{userinfo_obj.contact_email}}{% else %}Not Updated yet..{% endif %}</p>
             </div>
         </div>
         {% if userinfo_obj.phone %}

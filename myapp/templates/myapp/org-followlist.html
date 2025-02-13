@@ -6,19 +6,19 @@
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 {% block script %}
-<script src="https://cdn.tailwindcss.com"></script>
+{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 {% endblock %} 
 
 {% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
-    {% include "myapp/navbar.html" %}
+    {% include "includes/navbar.html" %}
     <!-- main section -->
 
     <div class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
         <!-- sidenav -->
-        {% include "myapp/sidenav.html" %}
+        {% include "includes/sidenav.html" %}
 
         <!-- list section -->
         <div class="relative flex mt-32 lg:mt-32 md:w-full px-2 flex-[5] pb-16">
@@ -109,7 +109,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>
@@ -130,7 +130,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>
@@ -152,7 +152,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>
@@ -174,7 +174,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>
@@ -197,7 +197,7 @@
                             <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
                         </div>

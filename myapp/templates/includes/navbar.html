@@ -16,11 +16,16 @@
             <div>
                 <i class="text-xl fa-solid fa-bell"></i>
             </div>
-            <div class="relative">
-                <i class="hidden text-xl md:block fa-solid fa-circle-user"></i>
-                <i class="text-xl md:hidden fa-solid fa-gear" onclick="showPopup()"></i>
+            <div>
+                <i class="text-xl fa-solid fa-square-plus" onclick="openPost()"></i>
             </div>
-        </div>
+            <div class="relative">
+                <!-- Icon visible only on laptops (md and above) -->
+                {% comment %} <i class="hidden md:inline-block text-xl fa-solid fa-circle-user"></i> {% endcomment %}
+                <!-- Icon visible only on tablets and mobile (below md) -->
+                <i class="inline-block md:hidden text-xl fa-solid fa-gear" onclick="showPopup()"></i>
+            </div>
+            
     </nav>
 </div>
 
