@@ -3,6 +3,7 @@ from django.urls import reverse
 from .users import userinfo
 from .filter import Domain, skill
 from .organizations import organization
+from phonenumber_field.modelfields import PhoneNumberField
     
 class projects(models.Model):
     TYPES = [
@@ -69,10 +70,16 @@ class project_reply(models.Model):
 
 # User-Posts
 class post(models.Model):
+    ASPECT_CHOICES = [
+        ('Original', 'Original'),
+        ('1:1', '1:1'),
+        ('16:9', '16:9'),
+    ]
     content = models.TextField()
-    file = models.FileField(upload_to='user-posts')
+    file = models.ImageField(upload_to='user-posts', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(userinfo, related_name='liked_posts', blank=True)
+    aspect = models.CharField(max_length=10, choices=ASPECT_CHOICES, default='16:9')
     
     # Either a User OR an Organization can be the author
     user = models.ForeignKey(userinfo, related_name='all_post', on_delete=models.CASCADE, null=True, blank=True)
@@ -92,7 +99,6 @@ class post_comments(models.Model):
     Post = models.ForeignKey(post, related_name='comments', on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    
     def __str__(self):
         return f"Comment by {self.user} on {self.Post.id}"
     
@@ -108,20 +114,58 @@ class event(models.Model):
         ('conference', 'Conference'),
         ('meetup', 'Meetup'),
         ('hackathon', 'Hackathon'),
+        ('bootcamp', 'Bootcamp'),
+        ('pitch', 'Startup Pitch'),
+        ('networking', 'Networking'),
         ('other', 'Other'),
     ]
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    short_description = models.TextField(max_length=255, help_text="A brief overview of the event", null=True)
+    description = models.TextField(null=True)
     organization = models.ForeignKey(organization, related_name='events', on_delete=models.CASCADE)
     event_type = models.CharField(max_length=20, choices=EVENT_TYPE_CHOICES, default='other')
     location = models.CharField(max_length=255, blank=True, null=True)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField(blank=True, null=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    banner = models.ImageField(upload_to='events', help_text="Optional image for the event.")
+    updated_at = models.DateTimeField(auto_now=True)
+    banner = models.ImageField(upload_to='events', help_text="Optional Banner for the event.", blank=True, default='events/default-event-banner.png')
+    mode = models.CharField(max_length=50, null=True, blank=True)
+    registration_link = models.URLField(blank=True, null=True)   
     
+    contact_email =  models.EmailField(blank=True, null=True)
+    contact_phone = PhoneNumberField(blank=True, null=True)
+    
+
     def __str__(self):
         return f"{self.title} ({self.get_event_type_display()})"
+    
+    def tot_comments(self):
+        comments = self.forum.all()
+        total_replies = sum(comment.replies.count() for comment in comments)
+        return comments.count() + total_replies
+    
+class event_comment(models.Model):
+    user = models.ForeignKey(userinfo, related_name='event_comments', on_delete=models.CASCADE)
+    content = models.TextField()
+    event = models.ForeignKey(event, related_name="forum", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+         return f"{self.id} Comment by {self.user.user.username} on {self.event.title}"
+     
+    
+class event_reply(models.Model):
+    user = models.ForeignKey(userinfo, related_name='event_replies', on_delete=models.CASCADE)
+    comment = models.ForeignKey(event_comment, related_name='replies', on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Reply by {self.user.user.username} to {self.comment.user.user.username}'s comment"
+    
+    class Meta:
+        verbose_name_plural = "event_replies"
     
 class SavedItem(models.Model):
     user = models.OneToOneField(userinfo, related_name='saved_items', on_delete=models.CASCADE)
@@ -130,14 +174,14 @@ class SavedItem(models.Model):
     events = models.ManyToManyField(event, related_name='saved_by_events', blank=True) 
     saved_at = models.DateTimeField(auto_now_add=True)
     
-    def toggle_project(self, project_obj):
-        if project_obj in self.project.all():
-            self.project.remove(project_obj)
-            return False  # Indicates the project was unsaved.
-        else:
-            self.project.add(project_obj)
-            return True   # Indicates the project was saved.
-
     def __str__(self):
         return f"Saved items for {self.user}"
+    
+    def tot_count(self):
+        tot_posts = self.posts.all().count()
+        tot_projects = self.project.all().count()
+        tot_events = self.events.all().count()
+        return {'posts': tot_posts, 'projects': tot_projects, 'events': tot_events}
+    
+    
     

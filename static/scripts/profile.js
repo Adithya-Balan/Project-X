@@ -56,6 +56,22 @@ const closeEdit = () => {
     entireSection.classList.remove('blur-md')
 }
 
+//open edit current position
+const openEditCurrentPosition = () => {
+    const entireSection = document.getElementById('entireSection')
+    const editCP = document.getElementById('editCurrentPosition')
+    entireSection.classList.add('blur-md')
+    editCP.classList.remove('hidden')
+    editCP.classList.add('flex')
+}
+
+const closeCurrentPosition = () => {
+    const entireSection = document.getElementById('entireSection')
+    const editCP = document.getElementById('editCurrentPosition')
+    entireSection.classList.remove('blur-md')
+    editCP.classList.add('hidden')
+    editCP.classList.remove('flex')
+}
 
 // open edit experience function
 const openEditExp = () => {
@@ -85,6 +101,26 @@ const openEditEducation = () => {
     editEducation.classList.remove('hidden')
     editEducation.classList.add('flex')
     console.log(editEducation)
+}
+
+// open edit experience function
+const openEditProject = () => {
+    const entireSection = document.getElementById('entireSection')
+    const editProject = document.getElementById('editProject')
+    entireSection.classList.add('blur-md')
+    editProject.classList.remove('hidden')
+    editProject.classList.add('flex')
+    console.log(editProject)
+}
+
+// close edit experience function
+const closeEditProject = () => {
+    const entireSection = document.getElementById('entireSection')
+    const editProject = document.getElementById('editProject')
+    entireSection.classList.remove('blur-md')
+    editProject.classList.add('hidden')
+    editProject.classList.remove('flex')
+    console.log(editProject)
 }
 
 
@@ -119,6 +155,24 @@ const notTillNow = () => {
     document.getElementById('dateSec').classList.remove('items-center')
 }
 
+const openEditSkill = () => {
+    const entireSection = document.getElementById('entireSection')
+    const editSkill = document.getElementById('editSkill')
+    entireSection.classList.add('blur-md')
+    editSkill.classList.remove('hidden')
+    editSkill.classList.add('flex')
+    console.log(editSkill)
+}
+
+ // Project type dropdown
+ function toggleProjectDropdown() {
+    document.getElementById("dropdown-project-menu").classList.toggle("hidden");
+    }
+
+// #skill for select2
+// $(document).ready(function() {
+//     $('#editSkill').select2();
+// });
 
 // till now function when the check box is clicked for education
 // document.getElementById("presentDateEducation").addEventListener("click", function () {

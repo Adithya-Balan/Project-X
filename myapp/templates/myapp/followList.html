@@ -140,26 +140,25 @@
         <!-- skill project section -->
         <div class=" hidden lg:flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:w-full md:gap-x-5 md:mr-3 rounded-md">
 
-            <div class="flex flex-col px-2 py-4 pb-20 bg-white md:pb-4 gap-y-5 md:w-1/2 lg:w-full rounded-md">
-                <h1 class="text-xl font-bold text-center">Projects;</h1>
+            <div class="flex flex-col pb-20 bg-white md:pb-4 gap-y-5 md:w-1/2 lg:w-full rounded-md">
+                <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
                 {% for project in suggested_project %}
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
+                <div class="flex flex-col gap-y-2 border border-[#6868682f] mx-2 p-2 rounded-md">
                     <div class="flex items-start w-full gap-x-3">
                         <div class="md:w-20 h-20">
-                            <img src="{{project.image.url}}" class='rounded-xl h-16 w-16' alt="">
+                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='rounded-xl h-16 w-16'></a>
                         </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
+                        <div class="flex flex-col w-4/5 gap-y-1">
                             <div class="font-semibold">{{project.title}}</div>
-                            <div class="break-words">{{project.description|slice:":80"}}...</div>
+                            <a href='{% url "project_detail" project.id %}'><div class="break-words">{{project.description|slice:":80"}}...</div></a>
                         </div>
                     </div>
                     <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
+                        <div class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
                         </div>
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View</div>
+                        <a href='{% url "explore-project" %}?domain={{ project.domain.id }}' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
+                            {{project.domain}}</a>
                     </div>
                 </div>
                 {% endfor %}    

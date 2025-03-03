@@ -1,0 +1,225 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+
+{% block title %}{{event_obj.title}}{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+
+
+{% block content %}
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "includes/navbar.html" %}
+    
+    <!-- z-20 -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+
+    <div id = 'entireSection' class="mt-20 w-full pb-20 flex flex-col gap-y-10">
+        <a href="{% url 'explore_events' %}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black ml-3 mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i
+                class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">More Events</span></a>
+
+        <div class="flex flex-col gap-y-10">
+            <!-- add events section here -->
+
+            <div class="flex flex-col md:mx-10 mx-4 lg:flex-row gap-y-5 gap-x-5 min-[1300px]:mx-32 items-start">
+                <div class="lg:w-[70%]">
+                    <div class="flex gap-x-5  bg-white p-5">
+                        <div class="w-2 bg-black -ml-2"></div>
+                        <div class="flex flex-col gap-y-3">
+                            <div>
+                                <img src="{{event_obj.banner.url}}" alt="">
+                            </div>
+                            <div class="flex flex-col gap-y-5">
+                                <div class="flex gap-x-3 items-center">
+                                    <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-8 h-8">
+                                    <h1 class='text-lg font-semibold underline underline-offset-2'>{{event_obj.title}}</h1>
+                                </div>
+                                <div class="flex gap-x-3 ">
+                                    <img src="{% static 'assets/description.svg' %}" alt="" class="w-7 h-7">
+                                    <p>{{event_obj.short_description}}
+                                    </p>
+                                </div>
+                                <div class="flex gap-x-3 items-center">
+                                    <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
+                                    <p>{{event_obj.get_event_type_display}}</p>
+                                </div>                                
+                                {% if event_obj.mode %}
+                                <div class="flex gap-x-3 items-center">
+                                    <img src="{% static 'assets/mode2.svg' %}" alt="" class="w-6 h-6">
+                                    <p>{{event_obj.mode}}
+                                    </p>
+                                </div>
+                                {% endif %}
+                            
+                                {% if event_obj.location %}
+                                <div class="flex gap-x-3 items-center">
+                                    <img src="{% static 'assets/location_icon.svg' %}" alt="" class="w-7 h-7">
+                                    <p>{{event_obj.location}}</p>
+                                </div>
+                                {% endif %}
+
+                                <div class="flex gap-x-3 items-center">
+                                    <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
+                                    <p>{{event_obj.start_time|date:"M j, Y"}}</p>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="flex gap-x-3 items-center">
+                                        <img src="{% static 'assets/link2.svg' %}" alt="" class="w-7 h-7">
+                                        <a href='{{event_obj.registration_link}}' class='bg-[#d2d2d2] text-black px-2 hover:bg-black hover:text-white py-1 rounded' target='_blank'>Register</a>
+                                    </div>
+
+                                    <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event_obj.id }}">
+                                        <i class="text-xl fa-solid fa-bookmark {% if event_obj in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full mt-10">
+                        <div class="flex flex-col gap-y-3 bg-white p-5">
+                            <div class="font-bold text-2xl">Information</div><hr class="border-gray-300">
+                            <div style="white-space: pre-wrap;">{{event_obj.description}}</div>
+                            <div class="flex flex-col items-center w-fit px-3 py-1 rounded bg-[#d2d2d2]">{{ event_obj.start_time|date:"M d, Y" }} at {{ event_obj.start_time|time:"g:i A" }} - {{ event_obj.end_time|date:"M d, Y" }} at {{ event_obj.end_time|time:"g:i A" }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="lg:w-[30%] flex flex-col gap-y-5 w-full sticky top-20">
+                    <div class="flex flex-col gap-y-2 bg-white">
+                        <h1 class="text-2xl bg-black text-white rounded text-center px-5 py-1">Organized By</h1>
+                        <div class="flex gap-x-3 px-3">
+                            <div class="bg-white w-full">
+                                <div class="flex gap-x-3 justify-between items-end w-full py-4 rounded-md">
+                                    <div class="flex gap-x-4 items-start">
+                                        <img src="{{event_obj.organization.logo.url}}" class="w-14 h-14 rounded-md">
+                                        <div class="flex flex-col gap-y-1">
+                                            <a href='{% url "organization_page" event_obj.organization.id %}' target = '_blank' class="font-bold text-xl">{{event_obj.organization.name}}</a>
+                                            <p class="text-[#575656]">{{event_obj.organization.get_industry_display}}</p>
+                                            <p class='text-[#4f4e4e]'>{{event_obj.organization.get_followers.count}} Followers</p>
+                                            <a href='{% url "organization_page" event_obj.organization.id %}' class="hover:bg-black hover:text-white transition max-[450px]:flex hidden w-fit bg-[#6feb85] px-2 py-1 rounded-lg lg:flex gap-x-2 items-center mt-2">
+                                                <i class="fa fa-eye" aria-hidden="true"></i><span>View</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><hr class="border-gray-300">
+
+                        {% if event_obj.contact_email or event_obj.contact_phone %}
+                        <div class="flex flex-col gap-y-3 mt-2 bg-white">
+                            <div class='flex flex-row gap-x-2 ml-5 items-center'>
+                                <div><img src="{% static 'assets/contact-us.svg' %}" alt="" class="h-6 w-6"></div>
+                                <h1 class="text-lg font-bold underline">Contact</h1>
+                            </div>
+                            <div class="flex gap-x-3 mt-2 pb-5">
+                                <div class="bg-white border border-black w-1 ml-3"></div>
+                                <div class="flex gap-x-5">
+                                    <div class="flex flex-col gap-y-1"> 
+                                        {% if event_obj.contact_email %}   
+                                        <div class='flex flex-row gap-2'>
+                                            <img src="{% static 'assets/email_icon.svg' %}" class='h-5 w-5'>
+                                            <a href="mailto:{{event_obj.contact_email}}"
+                                            class="text-[#686868] break-all">{{event_obj.contact_email}}</a>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if event_obj.contact_phone %}
+                                        <div class='flex flex-row gap-2'>
+                                            <img src="{% static 'assets/call-receive.svg' %}" class='h-5 w-5'>
+                                            <a href="tel:{{event_obj.contact_phone}}" class="text-[#686868]">{{event_obj.contact_phone}}</a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- comments section  -->
+            <div class="m-auto w-[90%] lg:w-[900px] flex flex-col gap-y-2" id = "commentsection">
+                <p class='text-red-600'>{{ request.GET.comment_error}}</p>
+                <!-- text area and submit btn -->
+                <div class="flex flex-col gap-y-3">
+                    <form method = 'post' action='{% url "event_forum" event_obj.id %}'  class="flex flex-col gap-y-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_comment_id" id="parentCommentId">
+
+                        <textarea name="content" id="commentTextArea"
+                            class="h-44 outline-none p-2 border-dashed border-[#0000002c] border-2 rounded-md"
+                            placeholder="Comment...."></textarea>
+                        <button type="submit" class="self-end bg-black text-white px-5 py-1 rounded transition hover:scale-105">Submit</button>
+                    </form>
+                </div><br>
+
+                <!-- all comments section -->
+                <div class="flex flex-col gap-y-10 bg-white rounded-md">
+                    <div class="text-xl bg-black text-white p-2 rounded-lg text-center"> <span class="text-white">{{event_obj.tot_comments}}</span> Comments</div>
+                    
+                    {% if comments %}
+                        <!-- single comment -->
+                        {% for comment in comments %}    
+                        <div class="flex flex-col gap-y-8 px-3 pb-5">
+                            <!-- question -->
+                            <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md">
+                                <div class="flex gap-x-2 items-center">
+                                    <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                    <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
+                                    <p class="text-[#686868]">{{comment.created_at|date:"M j, Y"}}</p>
+                                </div>
+                                <div class="flex items-end justify-between gap-x-3 relative pb-5">
+                                    <div class="break-word mt-3" id='comment-{{comment.id}}'>
+                                    {{comment.content}}
+                                    </div>
+                                    <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
+                                </div>
+                            </div>
+                            <!-- question end -->
+                            
+                            <!-- reply section -->
+                            <div class="flex gap-x-2">
+                                <div class="bg-black w-2 ml-5 rounded-full"></div>
+                                <div class="flex flex-col gap-y-3 ml-auto w-full">
+                                    <!-- single reply -->
+
+                                    {% for reply in comment.replies.all %}
+                                    <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3">
+                                        <div class="flex gap-x-2 items-center">
+                                            <img src="{{reply.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                            <p class="font-bold">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                        </div>
+                                        <div class="break-word" id='reply-{{reply.id}}'>
+                                            {{reply.content}}
+                                        </div>
+                                        <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
+                                    </div>
+                                    {% endfor %}
+                                        
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class='flex flex-col gap-y-8 px-3'>
+                        <img src = "{% static 'assets/comment.svg' %}" class='h-1/2 w-1/2 mx-auto'>
+                        <p class='text-center text-lg mt-2 text-gray-600 pb-5'>No comments Yet...</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+</body>
+{% endblock  %}

@@ -32,25 +32,30 @@
 
         <!-- explore section -->
         <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-6">
-            <div>
-                <h1 class="hidden md:block text-3xl font-bold">
-                    < Explore />
-                </h1>
+            <div class="flex gap-x-1 flex-wrap gap-y-2 items-center justify-center absolute top-20">
+                <div class="flex flex-col gap-y-2 items-center" onclick="getExplore()">
+                    <div class="flex items-center bg-black text-white px-2 py-1 rounded-lg">
+                        <div id="exploreTitle" class="cursor-pointer text-lg"><span class='text-lg'>Projects</div>
+                        <img src="{% static 'assets/down.svg' %}" alt="" class="w-7 h-7">
+                    </div>
+                    <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded" id="allExplore">
+                        <a href="{% url 'explore_dev' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Developers</a>
+                        <a href="{% url 'explore-project' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Projects</a>
+                        <a href="{% url 'explore_events' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Events</a>
+                        <a href="{% url 'explore_organization' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Organizations</a>
+                    </div>
+                </div>
             </div>
-        
 
             <div class="flex flex-col gap-y-5 w-full mb-16">
-                <!-- top section, search bar and filter option -->
-                <div class="w-full flex flex-col items-center mt-5 justify-evenly md:items-end md:flex-row gap-x-5 gap-y-5">
-                    <div class="flex gap-x-4">
-                        <div class="font-bold text-[18px]">Projects</div>
-                        <div class="text-[#686868] text-[18px] ">({{total_result}} Results)</div>
-                        <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
-                    </div>
-                    <div class="flex items-end gap-x-4 w-full md:w-fit justify-center md:justify-start">
-                        <input type="text"
-                            class="md:w-96 w-[80%] outline-none border-b border-[#00000046] bg-[#f6f6f6] text-[16px] px-2 py-1 text-black"
-                            placeholder="Quick Search: Skill | Domain">
+                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
+                    <div class="text-[#686868] text-[18px] ">({{total_result}} Results)</div>
+                    <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
+                    <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
+                        <div class="flex gap-x-3 items-center">
+                            <input type="text" class="md:w-72 w-full outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-2 py-1 text-black" placeholder="Search..">
+                                <img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6">
+                        </div>
                         <div class="lg:hidden flex" onclick="openFilter()">
                             <button class="flex items-center gap-x-2"><i class="fa-solid fa-filter"></i> <span
                                     class="hidden md:block">Filter</span></button>
@@ -67,7 +72,7 @@
                     <div class="flex items-center justify-between gap-x-5">
                         <div class="flex items-start w-full gap-x-1">
 
-                            <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md"></a>
+                            <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover"></a>
                             <div class="w-5/6 md:w-[90%]">
                                 <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a><br>
                                 <div class='break-words mt-2'>{{project.description|truncatechars:200}}</div>
@@ -83,16 +88,9 @@
                             {% comment %} <i class="text-xl fa-solid fa-certificate">F</i> {% endcomment %}
                             <p class="text-xl text-gray-700">{{project.type}}</p>
 
-                            <button class="toggle-save-btn" data-project-id="{{ project.id }}">
-                                {% if project in user.info.saved_items.project.all %}
-                                <i class="text-xl fa-solid fa-bookmark hover:scale-[1.3] transition cursor-pointer"
-                                    aria-hidden="true"></i>
-                                    <span class='btn-text hidden'>Unsave</span>
-                                {% else %}
-                                <i class="text-xl fa-regular fa-bookmark hover:scale-[1.3] transition cursor-pointer"></i>
-                                <span class='btn-text hidden'>Save</span>
-                                {% endif %}
-                            </button>
+                            <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
+                                <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
+                            </div>
                         </div>
                     </div>
                     <hr class="border-t border-gray-200">

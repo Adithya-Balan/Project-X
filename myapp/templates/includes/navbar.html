@@ -17,7 +17,7 @@
                 <i class="text-xl fa-solid fa-bell"></i>
             </div>
             <div>
-                <i class="text-xl fa-solid fa-square-plus" onclick="openPost()"></i>
+                <i class="text-xl fa-solid fa-square-plus" onclick="showPostOption()"></i>
             </div>
             <div class="relative">
                 <!-- Icon visible only on laptops (md and above) -->
@@ -25,8 +25,17 @@
                 <!-- Icon visible only on tablets and mobile (below md) -->
                 <i class="inline-block md:hidden text-xl fa-solid fa-gear" onclick="showPopup()"></i>
             </div>
-            
+        </div>
     </nav>
+    <div class="hidden top-20 right-10 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md" id="postOption">
+        <div class="flex flex-col gap-y-1">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-black hover:text-white font-bold transition"
+                onclick="openPost()">Upload Post</div>
+            <div
+                class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-black hover:text-white font-bold transition">
+                Upload Project</div>
+        </div>
+    </div>
 </div>
 
   {% comment %} phone navbar {% endcomment %}

@@ -5,14 +5,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.core.files.base import ContentFile
 # from django.contrib.postgres.search import TrigramSimilarity
 
 # Create your views here.
@@ -31,6 +30,8 @@ class sign_up(View):
         if form.is_valid():
             user = form.save()
             userinfo.objects.create(user=user)
+            current_position.objects.create(user = user.info)
+            education.objects.create(user = user.info)
             # user.save()
             
             username = form.cleaned_data.get("username") #Authenticate the user:
@@ -54,7 +55,7 @@ def index(request):
 def user_profile(request, user_name):
     # userinfo_obj = userinfo.objects.get(user__username = user_name)
     userinfo_obj = get_object_or_404(userinfo, user__username = user_name)
-    user_project = user_post= link_available = open_exp_flag = open_edu_flag = open_editprofile_flag = False
+    user_project = user_created_project = user_post= link_available = open_exp_flag = open_edu_flag = open_editprofile_flag = open_project_flag = open_cp_flag =editprofile_form = edu_form = exp_form = project_form = skill_form = cp_form = False
     social_links = { 
     'github': userinfo_obj.github if userinfo_obj.github else None,
     'linkedin': userinfo_obj.linkedin if userinfo_obj.linkedin else None,
@@ -64,11 +65,20 @@ def user_profile(request, user_name):
         link_available = True
     skill_list = userinfo_obj.skills.all()
     exp_obj = userinfo_obj.experiences.all().order_by('-start_date')
+    post_form = PostForm()
+    
     
     section = request.GET.get('section', 'overview') 
     if section == 'projects':
-        user_project = userinfo_obj.projects.all().order_by('-start_date')
-
+        project = request.GET.get('project')
+        if project == 'created':
+            user_created_project = userinfo_obj.created_projects.all()
+        else:
+            user_project = userinfo_obj.projects.all().order_by('-start_date')
+            if not user_project and userinfo_obj.created_projects.all():
+                redirect_url = reverse("user_profile", args=[userinfo_obj.user.username])
+                return redirect(f'{redirect_url}?section=projects&project=created')
+        
     if section == 'posts':
         user_post = post.objects.filter(user = userinfo_obj).order_by('-created_at')
     
@@ -78,11 +88,15 @@ def user_profile(request, user_name):
         suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
     else:
         suggested_project = projects.objects.all()[:5] #For user, with no skill
-    #Edit options
-    edu_form = EditEducationForm(instance=request.user.info.education)
-    exp_form = EditExperienceForm()
-    editprofile_form = EditProfileForm(instance=request.user.info)
-    post_form = PostForm()
+    if request.user.info == userinfo_obj:
+        #Edit options
+        edu_form = EditEducationForm(instance=request.user.info.education)
+        exp_form = EditExperienceForm()
+        editprofile_form = EditProfileForm(instance=request.user.info)
+        project_form = UserProjectForm()
+        skill_form = EditSkillForm()
+        cp_form = EditCurrentPositionForm(instance=request.user.info.current_position)
+        
         
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -111,7 +125,31 @@ def user_profile(request, user_name):
                 return redirect(redirect_url)
             else:
                 open_editprofile_flag = True
-                    
+        elif form_type == 'project':
+            project_form = UserProjectForm(request.POST, request.FILES)
+            if project_form.is_valid():
+                form = project_form.save(commit=False)
+                form.user = request.user.info
+                form.save()
+                project_form = UserProjectForm()
+                redirect_url = reverse('user_profile', args=[request.user.username])
+                return redirect(f'{redirect_url}?section=projects')
+            else:
+                open_project_flag = True
+        elif form_type ==  'current_position':
+            cp_form = EditCurrentPositionForm(request.POST, instance=request.user.info.current_position)
+            if cp_form.is_valid():
+                form = cp_form.save()
+                redirect_url = reverse('user_profile', args=[request.user.username])
+                return redirect(f'{redirect_url}')       
+            else: 
+                open_cp_flag = True   
+                
+                                                                  
+            
+        # elif form_type == 'skill':
+        #     skill_form   = EditSkillForm(request.POST)
+                
     context = {
         'userinfo_obj': userinfo_obj,
         'social_links': social_links,
@@ -125,13 +163,17 @@ def user_profile(request, user_name):
             },
         'is_following': is_following,
         'user_project': user_project,
+        'user_created_project': user_created_project,
         'user_post': user_post,
         'suggested_project': suggested_project,
         'ep_form': editprofile_form,
         'edu_form': edu_form,
         'exp_form': exp_form,
         'post_form': post_form,
-        'flag': {'open_edu_flag': open_edu_flag, 'open_exp_flag': open_exp_flag, 'open_editprofile_flag': open_editprofile_flag}
+        'skill_form': skill_form,
+        'project_form': project_form,
+        'cp_form': cp_form,
+        'flag': {'open_edu_flag': open_edu_flag, 'open_exp_flag': open_exp_flag, 'open_editprofile_flag': open_editprofile_flag, 'open_project_flag': open_project_flag, 'open_cp_flag': open_cp_flag}
     }
     return render(request, 'myapp/user-profile_1.html', context)
 
@@ -203,6 +245,12 @@ def create_organization(request):
     context  = {'form': form}
     return render(request, 'myapp/create-org.html', context)  
         
+@login_required
+def explore_organization(request):
+    context = {
+        
+    }
+    return render(request, 'myapp/explore-organization.html', context)
         
 @login_required
 def organization_page(request, id):
@@ -313,6 +361,7 @@ def explore_project(request):
     #Pagination
     p = Paginator(filter_project, 7)
     page_number = request.GET.get("page")
+    post_form = PostForm()
     
     try:
         page_obj = p.get_page(page_number)  # returns the desired page object
@@ -323,6 +372,7 @@ def explore_project(request):
     r = filter_project.count()
     top_domain = Domain.objects.all()[:10]
     top_skill= skill.objects.all()[:10]
+        
     context = {
         'filtered_project': page_obj,
         'total_result': r,
@@ -330,7 +380,8 @@ def explore_project(request):
         'types': ['Open-Source', 'Learning', 'Paid', 'Freelance'],
         'levels': ['Beginner', 'Intermediate', 'Expert'],
         'top_skill': top_skill,
-        'applied_filter': applied_filter
+        'applied_filter': applied_filter,
+        'post_form': post_form
     }
     # print(request.GET)
     return render(request,"myapp/explore-projects.html", context)
@@ -352,16 +403,39 @@ def project_detail(request, id):
     comments = project.forum.all()
     if not all_comment:
         comments = comments.order_by('-created_at')
+        
+    post_form = PostForm()
 
     context = {
         'project': project,
         'skill_needed': project.skill_needed.all(),
         'link_available': link_available,
         'social_link': social_links,
-        'comments': comments
+        'comments': comments,
+        'post_form': post_form,
     }
     return render(request, 'myapp/project_detail.html', context)
 
+@login_required
+def project_detail_members(request, id):
+    project = get_object_or_404(projects, id = id)
+    members =  project.members.all()
+    post_form = PostForm()
+    
+    p = Paginator(members, 10)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.page(page_number)
+    except PageNotAnInteger:
+        page_obj = p.page(1)
+    context = {
+        'project': project,
+        'joined_members': members,
+        'post_form': post_form,
+        'page_obj': page_obj,
+        
+    }
+    return render(request, 'myapp/project-member-list.html', context)
 @login_required
 def project_forum(request, id):
     project = get_object_or_404(projects, id=id)
@@ -409,27 +483,80 @@ def explore_dev(request):
     status = user_status.objects.all()
     
     #Pagination
-    p = Paginator(filter_dev, 2)
+    p = Paginator(filter_dev, 10)
     page_number = request.GET.get('page')
     try:
         page_obj = p.page(page_number)
     except PageNotAnInteger:
         page_obj = p.page(1)
     r = filter_dev.count()
+    post_form = PostForm()
     context = {
         'filter_user': page_obj,
         'top_domains': top_domain,
         'top_skill': top_skill,
         'status': status,    
-        'total_result': r,    
+        'total_result': r,  
+        'post_form': post_form,  
     }
     return render(request, 'myapp/explore_dev.html', context)
 
+#Explore event and single page event
+def explore_events(request):
+    filtered_events = event.objects.all()
+    post_form = PostForm()
+    context = {
+        'post_form': post_form,
+        'filtered_event': filtered_events
+    }
+    return render(request, 'myapp/explore-events.html', context)
+
+def event_detail(request, id):
+    event_obj = get_object_or_404(event, pk=id)
+    post_form = PostForm()
+    comments = event_obj.forum.all()
+    context = {
+        'event_obj': event_obj,
+        'post_form' : post_form,
+        'comments': comments,
+    }
+    return render(request, 'myapp/event_detail.html', context)
+
+def event_forum(request, id):
+    Event = get_object_or_404(event, id = id)
+    userinfo_obj = get_object_or_404(userinfo, user=request.user)
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if not content:  # Checks if content is empty or None
+            redirect_url = f"{reverse('event_detail', args=[Event.id])}?comment_error=Invalid-Comment#commentsection"
+            return redirect(redirect_url)
+        parent_comment_id = request.POST.get("parent_comment_id")
+        
+        if parent_comment_id:
+            parent_comment = get_object_or_404(event_comment, id = parent_comment_id)
+            r = event_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
+            redirect_url = f"{reverse('event_detail', args=[Event.id])}#reply-{r.id}"
+        else:
+            c = event_comment.objects.create(user=userinfo_obj, event=Event ,content = content)
+            redirect_url = f"{reverse('event_detail', args=[Event.id])}#comment-{c.id}"
+
+    return redirect(redirect_url)
 
 def saved_page(request):
     saved_item  = request.user.info.saved_items
+    saved_post = saved_item.posts.all()
+    saved_project = saved_item.project.all()
+    saved_event = saved_item.events.all()
+    post_form = PostForm()
+    print(saved_item, request.META.get('HTTP_REFERER', '/'))
+    print(saved_event)
     context = {
-        'saved_item': saved_item
+        'saved_item': saved_item,
+        'section': 'posts',
+        'post_form': post_form,
+        'saved_post': saved_post,
+        'saved_project': saved_project,
+        'saved_events': saved_event,
     }
     return render(request, 'myapp/saved.html', context)
 
@@ -438,12 +565,30 @@ def toggle_project_save(request, project_id):
     project_obj = get_object_or_404(projects, id=project_id)
     saved_items_obj = SavedItem.objects.get(user=request.user.info)
     
-    # Toggle the project save status.
-    saved = saved_items_obj.toggle_project(project_obj)
-
+    if project_obj in saved_items_obj.project.all():
+        saved_items_obj.project.remove(project_obj)
+        saved = False
+    else:
+        saved_items_obj.project.add(project_obj)
+        saved = True
+        
     return JsonResponse({
         'saved': saved,
-        'followers_count': project_obj.saved_by_projects.count(),  # if you need to update count
+    })
+    
+@login_required
+# Toggle saving events
+def toggle_event_save(request, eventId):
+    event_obj = get_object_or_404(event, id = eventId)
+    saved_items_obj = SavedItem.objects.get(user=request.user.info)
+    if event_obj in saved_items_obj.events.all():
+        saved_items_obj.events.remove(event_obj)
+        saved = False
+    else:
+        saved_items_obj.events.add(event_obj)
+        saved = True
+    return JsonResponse({
+        'saved': saved,
     })
     
 @login_required
@@ -465,31 +610,19 @@ def save_post(request):
     if form.is_valid():
         new_post = form.save(commit=False)
         new_post.user = request.user.info  # Set current user's profile
-        cropped_data = request.POST.get("cropped_image", "") # Check if a cropped image was submitted (base64 encoded data URL)
-        if cropped_data:
-            try:
-                header, img_str = cropped_data.split(";base64,") # Expected format: data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...
-            except ValueError: # If not in correct format, you may fallback or raise an error.
-                img_str = None
-            
-            if img_str:
-                    # Determine file extension from header
-                    ext = header.split("/")[-1]  # e.g., "png" or "jpeg"
-                    filename = f"post_{uuid.uuid4().hex}.{ext}"
-                    # Decode the base64 image data and wrap it in a ContentFile
-                    decoded_file = ContentFile(base64.b64decode(img_str), name=filename)
-                    new_post.file = decoded_file
-        else:
-            if 'post' in request.FILES: # Optional: If no cropped image provided, fallback to normal uploaded file if available.
-                new_post.file = request.FILES['post']
-                
+        new_post.aspect = request.POST.get("aspect_ratio", "16:9")
         new_post.save()
-        return redirect('/home')
+        redirect_url = reverse('user_profile', args=[request.user.username])
+        return redirect(f'{redirect_url}?section=posts')
+    else:
+        return HttpResponseRedirect('/home')
         
 #for saving post comments
 def save_comment(request):
+    print(True)
     comment_text = request.POST.get('comment')   
     post_id = request.POST.get('post_id')
+    print(post_id)
     Post_obj = get_object_or_404(post, id=post_id)
     
     comment = post_comments.objects.create(
@@ -506,6 +639,19 @@ def save_comment(request):
         'comments_count': Post_obj.tot_comments(),
     }
     return JsonResponse(data)
+
+@login_required
+def toggle_post_save(request, post_id):
+    post_obj = get_object_or_404(post, id = post_id)
+    saved_obj, created = SavedItem.objects.get_or_create(user=request.user.info)
+    print(created)
+    if post_obj in saved_obj.posts.all():
+        saved_obj.posts.remove(post_obj)
+        saved = False
+    else:
+        saved_obj.posts.add(post_obj)
+        saved = True
+    return JsonResponse({'saved': saved})
 
 def logout_view(request):
     logout(request)

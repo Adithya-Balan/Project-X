@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import re
-from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post
+from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position
+# from django_select2.forms import Select2MultipleWidget
 
 class RegistrationForm(UserCreationForm):
     class Meta:
@@ -156,20 +157,75 @@ class EditEducationForm(forms.ModelForm):
         exclude = ['user']
         
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1'}),
-            'field_of_study': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1'}),
-            'degree': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1'}),
+            'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: Harvard University'}),
+            'field_of_study': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: Computer Science'}),
+            'degree': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: B.Tech'}),
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
-            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
+            'till_now': forms.CheckboxInput(attrs={'id': 'presentDate'}),
         }                                                               
         labels = {
             'name': 'University Name',
             'field_of_study': 'Course',
+            'till_now': 'Currently Pursuing',
         }
         error_messages = {
             'name': {'required':'University name is required',},
             'field_of_study': {'required': 'Enter a Valid course',}
         }
+        def clean(self):
+            cleaned_data = super().clean()
+            present = cleaned_data.get('till_now')
+            if present:
+                cleaned_data['end_date'] = None
+            return cleaned_data
+
+class UserProjectForm(forms.ModelForm):
+    class Meta:
+        model = user_project
+        exclude = ['user', 'techstack']
+        labels = {
+            'name': 'Project Name',
+            'description': 'Description',
+            'url': 'URL (If any)',
+            'repo_link': 'Github-URL (If any)',
+            'end_date': "End Date",
+            'media': 'Thumbnail'
+        }
+        
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Project Name'}),
+            'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Tell More about your Project'}),
+            'url': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder':'https://livedemo.in/'}),
+            'repo_link': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'https://github.com/project-x'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
+            'media': forms.ClearableFileInput(attrs={'class': 'border border-gray-700 p-2 rounded-lg w-full file:bg-black file:text-white file:border-none file:px-4 file:py-2 file:rounded-lg cursor-pointer'})
+        }
+        
+class EditCurrentPositionForm(forms.ModelForm):
+    class Meta:
+        model = current_position
+        exclude = ['user']
+        labels = {
+            'name': 'Enter your Current Position',
+            'role': 'Enter your Role',
+            'description': 'Explain Your Role',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Company Name'}),               
+            'role': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Role'}),      
+            'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Briefly Describe your Role.'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),                       
+        }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        present = cleaned_data.get('till_now')
+        if present:
+            cleaned_data['end_date'] = None
+        return cleaned_data
 
 class EditExperienceForm(forms.ModelForm):
     class Meta:
@@ -197,6 +253,16 @@ class EditExperienceForm(forms.ModelForm):
         if present:
             cleaned_data['end_date'] = None
         return cleaned_data
+
+class EditSkillForm(forms.ModelForm):
+    class Meta:
+        model = userinfo
+        fields = ('skills',)
+        widgets = {
+            'skills': forms.SelectMultiple(attrs={
+                'class': 'w-full p-2 border border-black bg-white text-black rounded'
+            })
+        }
         
 class PostForm(forms.ModelForm):
     class Meta:
@@ -213,6 +279,11 @@ class PostForm(forms.ModelForm):
                 'placeholder': 'Content....'
             }),
         }
+        
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = event
+        exclude = ['organization']
 
         
 # skills = forms.ModelMultipleChoiceField(

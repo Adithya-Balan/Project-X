@@ -13,7 +13,7 @@
             <div class="flex flex-col items-start gap-4 border p-4 w-full max-w-[34rem] mx-auto">
                 <!-- Post Image -->
                 <div class="aspect-video overflow-hidden w-full bg-[#f8fafd]" id="postImgContainer">
-                    <input type="hidden" name="cropped_image" id="croppedImageInput">
+                    <input type="hidden" name="aspect_ratio" id="aspectRatioInput" value = '16:9'> <!--For Aspect.-->
                     <img src="" alt="Post Banner" class="hidden w-full h-full object-cover aspect-video"
                         id="postImg">
                     <div id="uploadPostContainer" class="flex justify-center items-center h-full">
@@ -30,18 +30,14 @@
                     class="hidden bg-[#00000054] text-white font-bold rounded-md px-3 py-1 hover:bg-black transition cursor-pointer">Upload
                     another</label>
 
-
-                <!-- Post Content -->
-                {% comment %} <textarea class="text-gray-700 w-full h-36 outline-none resize-none"
-                    placeholder="Description..." ></textarea> {% endcomment %}
                 {{post_form.content}}
                 <div class="flex gap-x-2 self-end">
                     <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
-                        onclick="setImgOriginal()">Original</div>
+                        onclick="setImgOriginal(); setAspectRatio('Original')">Original</div>
                     <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
-                        onclick="resizePost(0)">1:1</div>
+                        onclick="resizePost(0); setAspectRatio('1:1')">1:1</div>
                     <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
-                        onclick="resizePost(1)">16:9</div>
+                        onclick="resizePost(1); setAspectRatio('16:9')">16:9</div>
                 </div>
             </div>
 

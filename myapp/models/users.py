@@ -82,7 +82,11 @@ class current_position(models.Model):
     user = models.OneToOneField(userinfo, on_delete=models.CASCADE, related_name='current_position')
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)
-    description = models.TextField(max_length=500, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)  
+    till_now = models.BooleanField(default=False)
+    
     
     def __str__(self):
         return f"{self.id}-{self.name}"
@@ -90,7 +94,7 @@ class current_position(models.Model):
 class user_project(models.Model):
     user = models.ForeignKey(userinfo, related_name='projects', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(null=True)
     url = models.URLField(blank=True, null=True)
     repo_link = models.URLField(blank=True, null=True)
     tech_stack = models.ManyToManyField(skill, related_name='user_projects', blank=True)
@@ -103,6 +107,7 @@ class experience(models.Model): #Auto create.
     user = models.ForeignKey(userinfo, related_name='experiences', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     role = models.TextField(max_length=500)
+    description = models.TextField(blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     till_now = models.BooleanField(default=False)

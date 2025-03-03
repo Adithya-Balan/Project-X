@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'myapp',
     "phonenumber_field",
+    'django_select2',
 ]
 
 MIDDLEWARE = [

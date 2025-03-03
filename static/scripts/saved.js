@@ -11,21 +11,21 @@ const savedEventSection = document.getElementById('savedEventSection')
 postBtn.addEventListener('click', () => {
     savedPostSection.classList.remove('hidden')
     savedProjectSection.classList.add('hidden')
-    // savedEventSection.classList.add('hidden')
+    savedEventSection.classList.add('hidden')
 })
 
 // for showing the saved projects
 projectsBtn.addEventListener('click', () => {
     savedPostSection.classList.add('hidden')
     savedProjectSection.classList.remove('hidden')
-    // savedEventSection.classList.add('hidden')
+    savedEventSection.classList.add('hidden')
 })
 
 // for showing the saved events
 eventsBtn.addEventListener('click', () => {
     savedPostSection.classList.add('hidden')
     savedProjectSection.classList.add('hidden')
-    savedEventSection.classList.add('block')
+    savedEventSection.classList.remove('hidden')
 })
 
 //save.html

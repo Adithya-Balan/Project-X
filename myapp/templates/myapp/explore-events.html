@@ -1,0 +1,195 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+{% load custom_filter %}
+
+
+{% block title %}Events{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+{% block script %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+{% endblock %} 
+
+{% block content %} 
+
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "includes/navbar.html" %}
+
+    <!-- z-20 -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+
+    <!-- main section -->
+
+    <div class="flex w-full gap-x-5 lg:gap-x-2" id='entireSection'>
+        <!-- sidenav -->
+        {% include "includes/sidenav.html" %}
+
+        <!-- explore section -->
+        <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-2">
+
+            <div class="flex gap-x-1 flex-wrap gap-y-2 items-center justify-center absolute top-20">
+                <div class="flex flex-col gap-y-2 items-center" onclick="getExplore()">
+                    <div class="flex items-center bg-black text-white px-2 py-1 rounded-lg">
+                        <div id="exploreTitle" class="cursor-pointer text-lg">Events</div>
+                        <img src="{% static 'assets/down.svg' %}" alt="" class="w-7 h-7">
+                    </div>
+                    <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded" id="allExplore">
+                        <a href="{% url 'explore_dev' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Developers</a>
+                        <a href="{% url 'explore-project' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Projects</a>
+                        <a href="{% url 'explore_events' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Events</a>
+                        <a href="{% url 'explore_organization' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Organizations</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-y-10 w-full mb-16">
+                <!-- top section, search bar and filter option -->
+                <div
+                    class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
+                    <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
+                        <div class="flex gap-x-3 items-center">
+                            <input type="text" class="md:w-96 w-full outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-2 py-1 text-black" placeholder="Search..">
+                                <img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6">
+                        </div>
+                        <div class="lg:hidden flex" onclick="openFilter()">
+                            <button class="flex items-center gap-x-2"><i class="fa-solid fa-filter"></i> <span
+                                    class="hidden md:block">Filter</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- events area fill all the events inside this div -->
+                <div class="flex flex-col justify-center items-center  w-full gap-y-10">
+
+                    <!-- start of 1st event -->
+                    {% for event in filtered_event %}                        
+                    <div class="flex flex-col w-full md:w-[34rem] bg-white p-3 pb-4">
+                        <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative dot">
+                            <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover">
+                        </div>
+                        <div class=" flex justify-between pt-2 items-end">
+                            <div class="flex flex-col gap-y-2 mt-2">
+                                <div class="flex gap-x-2 items-start">
+                                    <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-7 h-7">
+                                    <div class="font-bold">{{event.title}}</div>
+                                </div>
+                                <!-- <div>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aut quo eum suscipit aliquid enim porro quos, iste quaerat cumque, omnis delectus aperiam, dolores earum tempora cum! Quas veritatis inventore consectetur!</div> -->
+                                <div class="flex gap-x-2 items-start">
+                                    <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
+                                    <div class="text-[#686868]">{{event.event_type}}</div>
+                                </div>
+                                
+                                <div class="flex gap-x-2 items-start">
+                                    <img src="{% static 'assets/organization.svg' %}" alt="" class="w-7 h-7">
+                                    <div class="text-[#686868]">{{event.organization.name}}</div>
+                                </div>
+
+                                <div class="flex gap-x-2 items-center">
+                                    <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
+                                    <p class='text-[#686868]'>{{event.start_time|date:"M j, Y"}}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class='flex flex-row mt-1'>
+                            <a href='{% url "event_detail" event.id %}' class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center mx-auto">
+                                View
+                            </a>
+
+                            <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
+                                <i class="text-2xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    {% endfor %}
+                    <!-- end of 1st event -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- filter section -->
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-0 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-40px)] lg:top-5 gap-y-8 lg:flex overflow-y-scroll"
+            id="openFilterParent">
+            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10   overflow-y-scroll lg:bg-white rounded-lg  bottom-2 lg:h-[calc(100%-70px)] gap-y-8 lg:flex"
+                id="filterElement">
+                <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
+                        class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
+                <h1 class="text-xl font-bold text-center">
+                    < Filters />
+                </h1>
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Status</h1>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Student</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Working Professions</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Entrepreneurs</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Level</h1>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Beginner</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Intermediate</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Expert</button>
+                    </div>
+                </div>
+
+
+                <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Domains</h1>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Web Development</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Mobile Development</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Data Science and AI</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Cloud and DevOps</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Game Development</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Embedded Systems</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Cybersecurity</button>
+                        <button
+                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                            Blockchain</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+</body>
+{% endblock %}

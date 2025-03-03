@@ -43,9 +43,7 @@
                 <div class="w-full flex flex-col items-center md:gap-y-10 bg-white">
                     <div class="relative w-full h-32 bg-[#444444] md:h-64">
                         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)]">
-                            <img src="{{organization.logo.url}}" alt=""
-                                class="rounded-3xl w-32 h-32 md:w-40 md:h-40"
-                                onclick="viewProfile()">
+                            <img src="{{organization.logo.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()">
                         </div>
                         <div class="absolute right-10 -bottom-10 flex flex-col">
                             <button class="" onclick="showMenu()"><i class="text-2xl fa-solid fa-ellipsis"></i></button>
@@ -251,7 +249,7 @@
         <div class="relative">
             <img src="{{organization.logo.url}}" alt=""
                 class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-3xl border-4 border-[#00000070]">
-            <button class="absolute -right-3 -top-3 md:top-0 md:right-0 border border-black rounded-full w-10 h-10 bg-white"
+            <button class="absolute -right-3 -top-3 md:top-0 md:right-0 border border-black rounded-full w-8 h-8 bg-gray-300"
                 onclick="closeProfile()"><img src="{% static 'assets/close.svg' %}" alt=""></button>
         </div>
     </div>

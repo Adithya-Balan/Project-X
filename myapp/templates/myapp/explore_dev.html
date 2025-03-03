@@ -4,10 +4,6 @@
 
 {% block title %}Find your Dev{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
-{% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-{% endblock %} 
 
 
 {% block content %}    
@@ -29,29 +25,38 @@
     </div>
 
     <!-- main section -->
-
-    <div class="flex w-full gap-x-2">
+    <div id='entireSection'class="flex w-full gap-x-2">
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
 
         <!-- explore section -->
-        <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-6">
-            <div>
-                <h1 class="md:block text-xl md:text-3xl font-bold">
-                    < Explore DevMates />
-                </h1>
+        <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-24 gap-y-0 md:gap-y-5 lg:px-4 px-6">
+            <div class="flex gap-x-1 flex-wrap gap-y-2 items-center justify-center absolute top-20">
+                <div class="flex flex-col gap-y-2 items-center" onclick="getExplore()">
+                    <div class="flex items-center bg-black text-white px-2 py-1 rounded-lg">
+                        <div id="exploreTitle" class="cursor-pointer text-lg"><span class='text-lg'>&lt;</span> / Dev <span class='text-xl'>&gt;</span></div>
+                        <img src="{% static 'assets/down.svg' %}" alt="" class="w-7 h-7">
+                    </div>
+                    <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded" id="allExplore">
+                        <a href="{% url 'explore_dev' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Developers</a>
+                        <a href="{% url 'explore-project' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Projects</a>
+                        <a href="{% url 'explore_events' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Events</a>
+                        <a href="{% url 'explore_organization' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Organizations</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex flex-col gap-y-5 w-full mb-16">
+            <div class="flex flex-col gap-y-5 w-full mb-16 md:mt-8">
+
                 <!-- top section, search bar and filter option -->
-                <div class="w-full flex flex-col items-center mt-5 md:items-end md:flex-row gap-x-5 gap-y-5">
-                    <div class="flex gap-x-4">
-                        <div class="font-bold text-[18px]">DevMates</div>
-                    </div>
-                    <div class="flex items-end gap-x-4 w-full md:w-fit justify-center md:justify-start">
-                        <input type="text"
-                            class="md:w-96 w-[80%] outline-none border-b border-[#00000046] bg-[#f6f6f6] text-[16px] px-2 py-1 text-black"
-                            placeholder="Search..">
+                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
+                    <div class="text-[#686868] text-[18px] ">({{total_result}} Results)</div>
+                    <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
+                    <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
+                        <div class="flex gap-x-3 items-center">
+                            <input type="text" class="md:w-72 w-full outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-2 py-1 text-black" placeholder="Search..">
+                                <img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6">
+                        </div>
                         <div class="lg:hidden flex" onclick="openFilter()">
                             <button class="flex items-center gap-x-2"><i class="fa-solid fa-filter"></i> <span
                                     class="hidden md:block">Filter</span></button>
@@ -174,6 +179,9 @@
         </div>
 
     </div>
+
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 
     <script>
         $.ajaxSetup({

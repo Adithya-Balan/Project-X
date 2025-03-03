@@ -21,6 +21,19 @@ const showPopup = () => {
     popup.classList.toggle('hidden')
 }
 
+const showPostOption = () => { //code to post options in Navbar
+    const postOption = document.getElementById('postOption')
+    postOption.classList.toggle('absolute')
+    postOption.classList.toggle('hidden')
+}
+
+function getExplore() { //code to select multiple explore pages such as events, projects
+    const allExplore = document.getElementById('allExplore')
+    allExplore.classList.toggle('flex')
+    allExplore.classList.toggle('hidden')
+}
+
+
 const openFilter = () => {
     if (window.screen.width < 1024) {
         const filterElement = document.getElementById('filterElement');
@@ -59,7 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'center'
+                    block: 
+                    'center'
                 });
                 target.focus();
             }
@@ -117,6 +131,13 @@ const setImgOriginal = () => {
     const postImg = document.getElementById('postImg')
     postImg.classList.add('object-contain')
     postImg.classList.remove('object-cover')
+    postImgContainer.classList.remove('aspect-square')
+    postImgContainer.classList.add('aspect-video')
+}
+
+//Get aspect ratio for userpost
+function setAspectRatio(ratio){
+    document.getElementById('aspectRatioInput').value = ratio
 }
 
 // upload post
@@ -153,6 +174,7 @@ const openPost = () => {
     entireSection.classList.add('blur-md')
     createPost.classList.remove('hidden')
     createPost.classList.add('flex')
+    console.log("openPost called!");
 }
 
 // closing create post div function
@@ -172,7 +194,7 @@ $(document).ready(function() {
         let heartIcon = container.find("i");
         let likeCountSpan = container.find("span");
         let actionUrl = `/toggle_like/${postId}/`; 
-
+        
         $.ajax({
             url: actionUrl,
             type: "POST",
@@ -211,14 +233,15 @@ commentBtn.forEach((element, i) => {
 
 //for saving post comments
 $(document).ready(function(){
-    $("#postCommentForm").on("submit", function(event){
+    $(document).on("submit", ".postCommentForm", function(event){
         event.preventDefault();
-        var commentText = $('#postCommentText').val();
-        var postId = $("#postId").val();
-        var csrftoken = $("input[name='csrfmiddlewaretoken']").val();
+        var form = $(this);
+        var commentText = form.find("input[name='comment']").val();
+        var postId = form.data("post-id");
+        var csrftoken = form.find("input[name='csrfmiddlewaretoken']").val();
 
         $.ajax({
-            url: '/save-comment/',
+            url: form.attr("action"),
             type: 'POST',
             data: {
                 'comment': commentText,
@@ -235,11 +258,96 @@ $(document).ready(function(){
                                             "<p class='text-sm mt-2'>" + response.comment + "</p>" +
                                         "</div>" +
                                     "</div>";
-                $("#postCommentContainer").prepend(commentHTML);
-                $("#postCommentText").val('');
-                $('#postCommentCount').text(response.comments_count);
+
+                $("#postCommentContainer" + postId).prepend(commentHTML);
+                // Clear the comment text input
+                form.find("input[name='comment']").val('');
+                // Update the comment count if available
+                $("#postCommentCount" + postId).text(response.comments_count);
             },  error: function(xhr, errmsg, err) {
                 console.error("Error saving comment: " + errmsg);
+            }
+        });
+    });
+});
+
+// Post save Toggle
+$(document).ready(function() {
+    $(".bookmark-container").click(function() {
+        let container = $(this);
+        let postId = container.data("post-id");
+        let bookmarkIcon = container.find("i");
+        let actionUrl = `/toggle_post_save/${postId}/`; 
+
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            success: function(response) {
+                if (response.saved) {
+                    bookmarkIcon.addClass("text-[#6feb85]");
+                } else {
+                    bookmarkIcon.removeClass("text-[#6feb85]");
+                }
+                // Update the like count in the span
+                // likeCountSpan.text(response.total_likes);
+            },
+            error: function(xhr) {
+                console.error("Error toggling save:", xhr.responseText);
+            }
+        });
+    });
+});
+
+// Project Save Toggle
+$(document).ready(function() {
+    $(".bookmark-container-project").click(function() {
+        let container = $(this);
+        let projectId = container.data("project-id");
+        let bookmarkIcon = container.find("i");
+        let actionUrl = `/toggle_project_save/${projectId}/`; 
+
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            success: function(response) {
+                // Update the heart icon's style based on like status
+                if (response.saved) {
+                    bookmarkIcon.addClass("text-[#6feb85]");
+                } else {
+                    bookmarkIcon.removeClass("text-[#6feb85]");
+                }
+            },
+            error: function(xhr) {
+                console.error("Error toggling save:", xhr.responseText);
+            }
+        });
+    });
+});
+
+//event save toggle
+$(document).ready(function() {
+    $(".bookmark-container-event").click(function() {
+        let container = $(this);
+        let eventId = container.data("event-id");
+        let bookmarkIcon = container.find("i");
+        let actionUrl = `/toggle_event_save/${eventId}/`; 
+
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            success: function(response) {
+                // Update the heart icon's style based on like status
+                if (response.saved) {
+                    bookmarkIcon.addClass("text-[#6feb85]");
+                } else {
+                    bookmarkIcon.removeClass("text-[#6feb85]");
+                }
+            },
+            error: function(xhr) {
+                console.error("Error toggling save:", xhr.responseText);
             }
         });
     });

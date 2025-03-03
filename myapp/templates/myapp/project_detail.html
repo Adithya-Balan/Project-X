@@ -5,24 +5,25 @@
 {% block title %}{{project.title}}{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
-{% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-{% endblock %} 
-
 {% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
-    
+    <!-- z-20 -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
 
-    <div class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
+    <div id = 'entireSection' class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
 
-        <a href="{{ request.META.HTTP_REFERER }}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i
-                class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Back</span></a>
+        <a href="{{ request.META.HTTP_REFERER }}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Back</span></a>
 
-        <div class="flex gap-x-5 flex-col md:flex-row gap-y-10">
+        <div class="flex gap-x-5 flex-col md:flex-row gap-y-10 -mt-5">
             <div class="bg-white p-5 rounded-lg w-full md:w-3/5 flex flex-col gap-y-5">
                 <div class="flex items-center gap-x-5">
                     <div>
@@ -31,6 +32,9 @@
                     <div class="flex flex-col gap-y-2">
                         <div><span>Issued by</span> <span>@{{project.creator.user.username}}</span></div>
                         <div class="text-[#686868]">{{project.created_at}}</div>
+                    </div>
+                    <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]  ml-auto" data-project-id = "{{ project.id }}">
+                        <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
                     </div>
                 </div>
                 <div class="flex flex-col gap-y-5">
@@ -44,6 +48,10 @@
                             <a href='{{project.github_link}}' target='_blank'><i class="text-2xl cursor-pointer fa-brands fa-github"></i></a>
                             {% endif %}
                         </div>
+
+                        <div class='mt-2'>
+                            <img src="{{project.image.url}}" alt="" class='rounded-sm'>
+                        </div>
                     </div>
                     <div class="text-justify break-words pb-6">
                         {{project.description}}
@@ -51,7 +59,7 @@
                     
                     
                     {% if project.file or project.video %}
-                    <div class='flex gap-x-2 items-center pt-6 '>
+                    <div class='flex gap-x-2 items-center pt-3 '>
                         <img src = '{% static "assets/link.svg" %}' class='w-4 h-4'>
                         <p class='text-lg text-[#332f2f] underline underline-offset-2'>Learn More About This Project</p>
                     </div>
@@ -72,15 +80,14 @@
                 </div>
             </div>
 
-            
-
-            <div class="w-full md:w-2/5 flex flex-col gap-y-5 items-start shadow-sm">
-                <div class="flex flex-col gap-y-4 border bg-white p-5 rounded-lg relative">
+            <div class="w-full md:w-2/5 flex flex-col gap-y-5 items-start">
+                <div class="flex flex-col gap-y-4 border border-[#0000002d] bg-white p-5 rounded-lg relative w-full">
                     {% if project.type %}
                     <div class="absolute right-2 -top-5 text-2xl font-extrabold text-center bg-[#0000002a] self-center px-3 py-1 rounded-md">{{project.get_type_display}}</div> 
                     {% endif %}
-                    <div class="text-2xl font-extrabold self-start mt-6 underline">Connect Dev</div>
+                    <div class="text-2xl font-extrabold self-start mt-6 underline">Connect with Creator</div>
                     <div class="flex flex-col gap-y-4 text-base">
+                        <img src='{{project.creator.profile_image.url}}' class='w-20 h-20 rounded-lg'>
                         <div class="flex justify-between items-center gap-x-5">
                             <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank" class=""><i class="fa-regular fa-user"></i> &nbsp;<span class='hover:underline'>{{project.creator.user.first_name}} {{project.creator.user.last_name}}</span></a>
                             
@@ -106,10 +113,8 @@
                     <div class='text-base'><span class="font-bold" id='membercount'>{{project.tot_member}}</span> <span>Members</span></div>
 
                     <div class="flex gap-x-2 bg-[#6feb8627] px-3 py-2">
-                        <div class="w-5 bg-[#6feb85]"></div>
-                        <div><span class="font-bold">Note :</span> loreLut aperiam saepe mollitia quia harum numquam
-                            asperiores iure soluta at, esse vitae culpa quidem in corporis molestias maxime provident
-                            quas totam eveniet.</div>
+                        <div class="w-1 bg-[#6feb85]"></div>
+                        <div><span class="font-bold">Note:</span> Only Project Creator can view all members who joined.</div>
                     </div>
 
                     <div class="flex items-center justify-center gap-x-5">
@@ -121,8 +126,9 @@
                             {% endif %}
                                 
                         </button>
-                        <button
-                            class="px-4 py-2 bg-white text-black border border-black rounded-full transition hover:scale-110">Save</button>
+                        {% comment %} <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-7xl text-[#4a5565]" data-project-id = "{{ project.id }}">
+                            <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
+                        </div> {% endcomment %}
                     </div>
                 </div>
 
@@ -172,57 +178,67 @@
             </div><br>
 
             <!-- all comments section -->
-            <div class="flex flex-col gap-y-10 bg-white px-3 py-10 rounded-md">
-                <div class="text-2xl">Comments <span class="text-[#686868]">{{project.tot_comments}}</span></div>
-
-                <!-- single comment -->
-                {% for comment in comments %}
+            <div class="flex flex-col gap-y-10 bg-white rounded-md pb-8">
+                <div class="text-xl bg-black text-white p-2 rounded-lg text-center"> <span class="text-white">{{project.tot_comments}}</span> Comments</div>
                 
-                <div class="flex flex-col gap-y-8">
-                    <!-- question -->
-                    <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md">
-                        <div class="flex gap-x-2 items-center">
-                            <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
-                            <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
-                            <p class="text-[#686868]">{{comment.created_at|date:"M j, Y"}}</p>
-                        </div>
-                        <div class="flex items-end justify-between gap-x-3 relative pb-5">
-                            <div class="break-word mt-3" id='comment-{{comment.id}}'>
-                               {{comment.content}}
+                {% if comments %}
+                    <!-- single comment -->
+                    {% for comment in comments %}    
+                    <div class="flex flex-col gap-y-8 px-3">
+                        <!-- question -->
+                        <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md">
+                            <div class="flex gap-x-2 items-center">
+                                <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
+                                <p class="text-[#686868]">{{comment.created_at|date:"M j, Y"}}</p>
                             </div>
-                            <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
+                            <div class="flex items-end justify-between gap-x-3 relative pb-5">
+                                <div class="break-word mt-3" id='comment-{{comment.id}}'>
+                                {{comment.content}}
+                                </div>
+                                <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
+                            </div>
                         </div>
-                    </div>
-                    <!-- question end -->
-                    
-                    <!-- reply section -->
-                    <div class="flex gap-x-2">
-                        <div class="bg-black w-2 ml-5 rounded-full"></div>
-                        <div class="flex flex-col gap-y-3 ml-auto w-full">
-                            <!-- single reply -->
+                        <!-- question end -->
+                        
+                        <!-- reply section -->
+                        <div class="flex gap-x-2">
+                            <div class="bg-black w-2 ml-5 rounded-full"></div>
+                            <div class="flex flex-col gap-y-3 ml-auto w-full">
+                                <!-- single reply -->
 
-                            {% for reply in comment.replies.all %}
-                            <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3">
-                                <div class="flex gap-x-2 items-center">
-                                    <img src="{{reply.user.profile_image.url}}" alt="" class="w-12 h-12 rounded-full">
-                                    <p class="font-bold">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                {% for reply in comment.replies.all %}
+                                <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3">
+                                    <div class="flex gap-x-2 items-center">
+                                        <img src="{{reply.user.profile_image.url}}" alt="" class="w-12 h-12 rounded-full">
+                                        <p class="font-bold">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                    </div>
+                                    <div class="break-word" id='reply-{{reply.id}}'>
+                                        {{reply.content}}
+                                    </div>
+                                    <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
                                 </div>
-                                <div class="break-word" id='reply-{{reply.id}}'>
-                                    {{reply.content}}
-                                </div>
-                                <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
+                                {% endfor %}
+                                    
                             </div>
-                            {% endfor %}
-                                
                         </div>
                     </div>
+                    {% endfor %}
+                {% else %}
+                <div class='flex flex-col gap-y-8 px-3'>
+                    <img src = "{% static 'assets/comment.svg' %}" class='h-1/2 w-1/2 mx-auto'>
+                    <p class='text-center text-lg mt-2 text-gray-600 pb-5'>No comments Yet...</p>
                 </div>
-                {% endfor %}
+                {% endif %}
 
             </div>
         </div>
 
     </div>
+
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+
     {% comment %} Jquery Loading {% endcomment %}
     <script>
         function joinProject(projectId){
