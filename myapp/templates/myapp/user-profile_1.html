@@ -4,7 +4,9 @@
 
 
 {% block title %}{{userinfo_obj.user.username}}{% endblock %} 
-{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+<link rel="stylesheet" href="{% static 'styles/banner.css' %}"/>
+{% endblock %} 
 {% block script %}
 {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %} 
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
@@ -40,11 +42,8 @@
             <div class="flex flex-col items-center gap-y-2 w-full">
                 <!-- z-10 md -->
                 <div class="w-full flex flex-col items-center md:gap-y-10 bg-white">
-                    <div class="relative w-full h-32 bg-black md:h-64 dot-white">
-                        <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-3xl">
-                            <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()" id="originalProfile">
-                        </div>      
-                    </div>
+                    {% comment %} banner section {% endcomment %}
+                    {% include "includes/banner.html" %}
 
                     <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md md:ml-auto w-full gap-y-2">
                         <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
@@ -62,14 +61,16 @@
                             <button class="px-4 py-2 bg-[#6feb85] rounded-md" onclick="openEdit()">
                                 Edit Profile
                             </button>
-                        {% else %}
-                        <a href="javascript:void(0);" class="follow-btn px-4 py-2 bg-[#6feb85] rounded-md" data-user-id="{{ userinfo_obj.id }}">
+                        {% else %} <!--bg-[#464646]-->
                             {% if user.info|is_following:userinfo_obj %}
-                            <span class="btn-text px-4 py-2 bg-[#6feb85] rounded-md">&lt;Unfollow/&gt;</span>
+                            <a href="javascript:void(0);" class="follow-btn px-4 py-2 rounded-md bg-[#464646] text-white" data-user-id="{{ userinfo_obj.id }}">
+                                <span class="btn-text px-4 py-2 rounded-md">&lt;Unfollow/&gt;</span>
+                            </a> 
                             {% else %}
-                                <span class="btn-text px-4 py-2 bg-[#6feb85] rounded-md">&lt;Follow/&gt;</span>
+                            <a href="javascript:void(0);" class="follow-btn px-4 py-2 rounded-md bg-[#6feb85]" data-user-id="{{ userinfo_obj.id }}">
+                                <span class="btn-text px-4 py-2 rounded-md">&lt;Follow/&gt;</span>
+                            </a>
                             {% endif %}
-                        </a> 
                         {% endif %}
                         </div>
                     </div>
@@ -424,8 +425,6 @@
                     </div>
                 </div>
             </div>
-
-
             {% comment %}Trending project section {% endcomment %}    
             <div class="flex flex-col pb-20 bg-white md:pb-4 gap-y-3 md:w-1/2 lg:w-full">
                 <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
@@ -451,7 +450,6 @@
                 </div>
                 {% endfor %}
             </div>
-            
         </div>
     </div>
 
@@ -461,7 +459,7 @@
             <img src="{{userinfo_obj.profile_image.url}}" alt=""
                 class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-3xl border-4 border-[#00000070]">
             <button
-                class="absolute -right-3 -top-3 md:top-0 md:right-0 rounded-full w-8 h-8 bg-gray-300" onclick="closeProfile()"><img src="{% static 'assets/close.svg' %}" alt=""></button>
+                class="absolute -right-3 -top-3 md:top-0 md:right-0 rounded-full w-8 h-8 bg-gray-400" onclick="closeProfile()"><img src="{% static 'assets/close.svg' %}" alt=""></button>
         </div>
     </div>
 
@@ -521,7 +519,7 @@
     {% endif %}
 
 
-    <script>
+    {% comment %} <script>
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
@@ -549,9 +547,13 @@
                     success: function (response) {
                         if (response.status === "followed") {
                             btn.find(".btn-text").text("<Unfollow/>");
+                            btn.removeClass("bg-[#6feb85]");
+                            btn.addClass("bg-[#464646] text-white")
                         } 
                         else if (response.status === "unfollowed") {
                             btn.find(".btn-text").text("<Follow/>");
+                            btn.removeClass('bg-[#464646] text-white')
+                            btn.addClass("bg-[#6feb85]")
                         }
 
                         $(`.followers-count`).text(`${response.followers_count} Followers`);
@@ -563,6 +565,6 @@
                 });
             });
         });    
-    </script>
+    </script> {% endcomment %}
 </body>
 {% endblock %}

@@ -36,7 +36,7 @@
                         <span class="like-count">{{ post.total_likes }}</span>
                     </div>
 
-                    <div class="commentBtn flex items-center space-x-2 cursor-pointer hover:text-[#6feb85]">
+                    <div class="commentBtn flex items-center space-x-2 cursor-pointer hover:text-[rgb(111,235,133)]">
                         <i class="text-xl fa-solid fa-comment"></i> <span id='postCommentCount{{post.id}}'>{{post.tot_comments}}</span>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                 <form method='post' action="{% url 'save_comment' %}" class="postCommentForm flex items-center space-x-2 mt-3" data-post-id="{{ post.id }}">
                     {% csrf_token %}
                     <input type="hidden" name="post_id" value="{{ post.id }}">
-                    <input type="text" name="comment" placeholder="Write a comment..." class="flex-1 border p-2 rounded-lg outline-none">
+                    <input type="text" name="comment" placeholder="Write a comment..." class="flex-1 border p-2 rounded-lg outline-none" required>
                     <button type='submit' class="bg-black text-white px-3 py-2 rounded-md transition hover:scale-105">Post</button>
                 </form>
 
@@ -60,11 +60,18 @@
                 <div class="flex flex-col gap-y-4 mt-6"  id ='postCommentContainer{{ post.id }}'>
                     {% for comment in post.comments.all %}
                     <!-- single comment -->
-                    <div class="flex items-start space-x-2">
+                    <div class="flex items-start space-x-2" id="postComment{{ comment.id }}" >
                         <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
-                        <div class="bg-gray-50 p-2 rounded-lg w-full">
-                            <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>
-                            <p class="text-sm mt-2">{{comment.content}}</p>
+                        <div class="bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between">
+                            <div>
+                                <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>
+                                <p class="text-sm mt-2">{{comment.content}}</p>
+                            </div>
+                            {% if comment.user == user.info %}
+                            <button class="deletePostComment" data-comment-id="{{ comment.id }}">
+                                <img src='{% static "assets/trash-bin.svg" %}' class='h-6 w-6 cursor-pointer'>
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                     <!-- end of single comment -->
@@ -83,10 +90,7 @@
             {% endif %}
         <p class='text-center text-lg text-gray-800 pb-20 -mt-3'>No Posts Yet...</p>
         {% endif %}
-
-
     </div>
-
 </div>
 {% endif %}
 

@@ -110,10 +110,10 @@
                     <!-- end of 1st project -->
                 </div>
                 {% else %}
-                <div class='ml-20 mt-20 flex flex-col gap-y-5'>
-                    <img src='{% static "assets/no-projects.svg" %}' class='w-1/2 h-1/2'>
-                    <p class='text-2xl font-normal text-gray-800 mt-2'>No Saved Projects</p>
-                </div>
+                <div class="flex flex-col items-center justify-center mt-20">
+                    <img src="{% static 'assets/no-projects.svg' %}" class="w-1/2 md:w-1/3 lg:w-1/2">
+                    <p class="text-xl font-light text-gray-800 mt-4">No Saved Projects</p>
+                </div>                  
                 {% endif %}
             </div>
 
@@ -126,11 +126,20 @@
                     <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4">
                         <!-- User Info -->
                         <div class="flex items-center space-x-3">
-                            <img src="{{post.user.profile_image.url}}" alt="User" class="w-10 h-10 rounded-full object-cover">
+                            {% if post.user %}
+                            <a href='{% url "user_profile" post.user.user.username %}'><img src="{{post.user.profile_image.url}}" alt="User" class="w-10 h-10 rounded-lg object-cover"></a>
                             <div>
-                                <a class="font-semibold">{{post.user.user.first_name}} {{post.user.user.last_name}}</a>
+                               <a href='{% url "user_profile" post.user.user.username %}'class="font-semibold">{{post.user.user.first_name}} {{post.user.user.last_name}}</a>
                                 <p class="text-xs text-gray-500">{{post.created_at}}</p>
                             </div>
+                            {% endif %}
+                            {% if post.Organization %}
+                            <a href='{% url "organization_detail" post.Organization.id %}'><img src="{{post.Organization.logo.url}}" alt="User" class="w-10 h-10 rounded-lg object-cover"></a>
+                            <div>
+                                <a href='{% url "organization_detail" post.Organization.id %}'class="font-semibold">{{post.Organization.name}}</a>
+                                <p class="text-xs text-gray-500">{{post.created_at}}</p>
+                            </div>
+                            {% endif %}
                         </div>
 
                         <!-- Post Content -->
@@ -194,15 +203,17 @@
                 </div>
                 {% else %}
                 <div class='mt-20 flex flex-col gap-y-10'>
-                    <img src='{% static "assets/no-saved-post.svg" %}' class='w-1/4 h-1/4 ml-10 '>
-                    <p class='text-2xl mt-2 ml-24'>No Post Saved</p>
+                    <img src='{% static "assets/no-saved-post.svg" %}' class='w-1/2 h-1/2 md:w-1/4 md:h-1/4 ml-10'>
+                    <p class='text-xl mt-2 ml-24 font-light'>No saved Posts</p>
                 </div>
+
                 {% endif %}
             </div>
 
 
             {% comment %} events section {% endcomment %}
             <div id='savedEventSection' class='hidden'>
+                {% if saved_events %}
                 {% for event in saved_events %}                        
                 <div class="flex flex-col w-full md:w-[34rem] bg-white p-3 pb-4">
                     <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative dot">
@@ -227,7 +238,7 @@
 
                             <div class="flex gap-x-2 items-center">
                                 <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
-                                <p class='text-[#686868]'>{{event.start_time|date:"M j, Y"}}</p>
+                                <p class='text-[#686868]'>{{ event.start_date|date:"F j, Y" }}</p>
                             </div>
 
                         </div>
@@ -243,9 +254,14 @@
                     </div>
                 </div><br>
                 {% endfor %}
+                {% else %}
+                <div class="flex flex-col items-start mt-20 ">
+                    <img src="{% static 'assets/no-event-undraw.svg' %}" class="w-1/2 md:w-1/3 lg:w-1/4 ml-10 ">
+                    <p class="text-xl font-light text-gray-800 mt-6 ml-24">No events Saved</p>
+                </div>
+                {% endif %}
             </div>
 
-            
         </div>
     </div>
 

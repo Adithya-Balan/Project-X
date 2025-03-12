@@ -2,7 +2,7 @@
 {% load static %}
 {% load custom_filter %}
 
-{% block title %}{{user.username}}{% endblock %} 
+{% block title %}{{org.name}}{% endblock %} 
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 {% block script %}
@@ -22,7 +22,7 @@
 
         <!-- list section -->
         <div class="relative flex mt-32 lg:mt-32 md:w-full px-2 flex-[5] pb-16">
-            <a href = '{% url "organization_page" org.id %}' class="transition border-black hover:bg-white border hover:border-black hover:text-black absolute -top-12  right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded">
+            <a href = '{% url "organization_detail" org.id %}' class="transition border-black hover:bg-white border hover:border-black hover:text-black absolute -top-12  right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded">
                 <i class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Back</span></a>
                     
             <div class="flex flex-col items- gap-y-10 w-full">
@@ -94,122 +94,34 @@
         </div>
 
         <!-- skill project section -->
-        <div
-            class=" hidden lg:flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:w-full md:gap-x-5 md:mr-3 rounded-md">
+        <div class=" hidden lg:flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:w-full md:gap-x-5 md:mr-3 rounded-md">
 
-            <div class="flex flex-col px-2 py-4 pb-20 bg-white md:pb-4 gap-y-5 md:w-1/2 lg:w-full rounded-md">
-                <h1 class="text-xl font-bold text-center">Projects;</h1>
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
+            <div class="flex flex-col pb-20 bg-white md:pb-4 gap-y-5 md:w-1/2 lg:w-full rounded-md">
+                <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
+                {% for project in suggested_project %}
+                <div class="flex flex-col gap-y-2 border border-[#6868682f] mx-2 p-2 rounded-md">
                     <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
+                        <div class="md:w-20 h-20">
+                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='rounded-xl h-16 w-16'></a>
                         </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
+                        <div class="flex flex-col w-4/5 gap-y-1">
+                            <div class="font-semibold">{{project.title}}</div>
+                            <a href='{% url "project_detail" project.id %}'><div class="break-words">{{project.description|slice:":80"}}...</div></a>
                         </div>
                     </div>
                     <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
+                        <div class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
                         </div>
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View</div>
+                        <a href='{% url "explore-project" %}?domain={{ project.domain.id }}' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
+                            {{project.domain}}</a>
                     </div>
                 </div>
-
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr class="border-t border-gray-200">
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr class="border-t border-gray-200">
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="projects.jpeg" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr class="border-t border-gray-200">
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="w-20 h-20 lg:w-1/5">
-                            <img src="profile.webp" class="rounded-md" alt="">
-                        </div>
-                        <div class="flex flex-col w-4/5 gap-y-2">
-                            <div class="font-semibold">Project Name</div>
-                            <div class="text-justify">est tempore temporibdolorum a aut quas labore...</div>
-                        </div>
-                    </div>
-                    <hr class="border-t border-gray-200">
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#edaa191e] px-2 py-1 border border-[#edab19] text-[#edab19] rounded-md">Progress
-                        </div>
-
-                        <div
-                            class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
-                            View
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}    
             </div>
         </div>
+
+
     </div>
     <script>
         $.ajaxSetup({

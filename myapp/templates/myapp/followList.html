@@ -5,10 +5,6 @@
 {% block title %}{{user.username}}{% endblock %} 
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
-{% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-{% endblock %} 
 
 {% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
@@ -24,7 +20,7 @@
     </div>
 
     <!-- main section -->
-    <div class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
+    <div id='entireSection' class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
 
@@ -48,28 +44,30 @@
 
                     {% if not grp %}
                         {% for people in user_list %}
-                        <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
+                        <div class="bg-white px-3 py-3 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
                             <div class="flex gap-x-5 ">
                                 <div class="">
                                     <div><a href="{% url 'user_profile' people.user.username %}"><img src="{{people.profile_image.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
                                 </div>
                                 <div class="flex flex-col gap-y-1 ">
-                                    <a href="{% url 'user_profile' people.user.username %}" class="font-bold cursor-pointer hover:underline transition">{{people.user.first_name}} {{people.user.last_name}}</a>
+                                    <a href="{% url 'user_profile' people.user.username %}" class="font-semibold cursor-pointer hover:underline transition text-base">{{people.user.first_name}} {{people.user.last_name}}</a>
                                     <p>@{{people.user.username}}</p>
                                     <p class="break-words">#mood...</p>
                                 </div>
                             </div>
-                            <div class="self-center">
+                            <div class="self-center mt-4">
                                 {% if user.info == people %}
-                                <a href='{% url "user_profile" user.username %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View Profile</a>
+                                <a href='{% url "user_profile" user.username %}' class="bg-[#303034] px-6 py-2 rounded-md text-white font-bold border  transition">View</a>
                                 {% else %}
-                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black" data-user-id="{{ people.id }}">
-                                    {% if user.info|is_following:people %}
-                                        <span class="btn-text">Unfollow</span>
-                                    {% else %}
-                                        <span class="btn-text">Follow</span>
+                                {% if user.info|is_following:people %}
+                                    <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white py-2 text-center rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
+                                        <span class="btn-text">&lt;Unfollow/&gt;</span>
+                                    </a>
+                                {% else %}
+                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] text-center py-2 rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
+                                        <span class="btn-text">&lt;Follow/&gt;</span>
+                                    </a>
                                     {% endif %}
-                                </a>
                                 {% endif %}
                             </div>
                         </div>
@@ -79,24 +77,29 @@
                         <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
                             <div class="flex gap-x-5 ">
                                 <div class="">
-                                    <div><a href="{% url 'organization_page' org.id %}"><img src="{{org.logo.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
+                                    <div><a href="{% url 'organization_detail' org.id %}"><img src="{{org.logo.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
                                 </div>
                                 <div class="flex flex-col gap-y-1 ">
-                                    <a href="{% url 'organization_page' org.id %}" class="font-bold cursor-pointer hover:underline transition">{{org.name}}</a>
+                                    <a href="{% url 'organization_detail' org.id %}" class="font-semibold text-base cursor-pointer hover:underline transition">{{org.name}}</a>
                                     <p>{{org.get_industry_display}}</p>
                                     {% comment %} <p class="break-words">#mood...</p> {% endcomment %}
                                 </div>
                             </div>
                             <div class="self-center">
                                 {% if org in user.organization.all %}
-                                <a href="{% url 'organization_page' org.id %}" class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View</a>
+                                <a href="{% url 'organization_detail' org.id %}" class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View</a>
                                 {% else %}
-                                <button class="px-4 py-2 rounded-md follow-toggle {% if user.info|is_following_org:org %}bg-gray-500 text-white unfollow{% else %}bg-[#6feb85] follow{% endif %}" 
-                                    data-org-id="{{ org.id }}"
-                                    data-follow-url="{% url 'follow_organization' org.id %}"
-                                    data-unfollow-url="{% url 'unfollow_organization' org.id %}">
-                                {% if user.info|is_following_org:org %}Unfollow{% else %}Follow{% endif %}
-                                </button>
+                                    {% if user.info|is_following_org:org %}
+                                    <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-[100px] text-center flex justify-center" 
+                                        data-org-id="{{ org.id }}">
+                                        Unfollow
+                                    </a>
+                                    {% else %}
+                                    <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#6feb85] w-[100px] text-center flex justify-center"  
+                                        data-org-id="{{ org.id }}">
+                                        Follow
+                                    </a>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -105,7 +108,7 @@
 
                 </div>
 
-                    {% comment %} pagination {% endcomment %}
+                {% comment %} pagination {% endcomment %}
                 {% if user_list %}
                 <div class="flex justify-center mt-6">
                     <div class="flex items-center space-x-4">
@@ -165,97 +168,9 @@
             </div>
         </div>
     </div>
-    <script>
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-            }
-        });
-        $(document).ready(function () {
-            $(".follow-btn").click(function (){
-                let btn = $(this);
-                let userId = btn.data("user-id");
-                let actionUrl;
-                let isFollowing = btn.find(".btn-text").text().trim() === "Unfollow";
 
-                if (isFollowing) {
-                    actionUrl = `/unfollow/${userId}/`;
-                }else {
-                    actionUrl = `/follow/${userId}/`;   // URL for follow
-                }
-
-                $.ajax({
-                    url: actionUrl,
-                    type: "POST",
-                    data: {
-                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
-                    },
-                    success: function (response) {
-                        if (response.status === "followed") {
-                            btn.find(".btn-text").text("Unfollow");
-                        } 
-                        else if (response.status === "unfollowed") {
-                            btn.find(".btn-text").text("Follow");
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Error:", xhr.responseText);
-                    }
-                });
-            });
-        });    
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        
-        $(document).ready(function() {
-            $('.follow-toggle').click(function(e) {
-                e.preventDefault();
-                const button = $(this);
-                const orgId = button.data('org-id');
-                const isFollow = button.text().trim() === 'Follow';
-                
-                $.ajax({
-                    url: isFollow ? button.data('follow-url') : button.data('unfollow-url'),
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.status === 'success') {
-                            // Toggle button appearance
-                            button.toggleClass('bg-[#6feb85] bg-gray-500');
-                            button.text(isFollow ? 'Unfollow' : 'Follow');
-                            
-                            // Update followers count if available
-                            if (data.followers_count !== undefined) {
-                                $('#followers-count').text(`${data.followers_count} Followers`);
-                            }
-                        }
-                        /*if (data.message) {
-                            alert(data.message);
-                        }*/
-                    },
-                    error: function(xhr) {
-                        alert(xhr.responseJSON?.message || 'An error occurred');
-                    }
-                });
-            });
-        });
-    </script>
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 </body>
 
 {% endblock  %}

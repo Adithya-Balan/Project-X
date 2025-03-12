@@ -68,10 +68,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'DevMate.urls'
 
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.tz', 
             ],
         },
     },
@@ -152,7 +155,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # print("DB_NAME:", env('DB_NAME'))  # Add this temporarily to check if it's being read
 
 LOGIN_REDIRECT_URL = '/home'
-LOGOUT_REDIRECT_URL = '/home'
+LOGOUT_REDIRECT_URL = '/login'
 LOGIN_URL = '/login'
 
 AUTHENTICATION_BACKENDS = [
@@ -175,3 +178,11 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'scope': 'user repo read:org'},
     },
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'adithyabalan05@gmail.com'  # Replace with your Gmail
+EMAIL_HOST_PASSWORD = 'xqtm ttpp otsx rpat'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

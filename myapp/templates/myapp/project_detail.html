@@ -184,17 +184,22 @@
                 {% if comments %}
                     <!-- single comment -->
                     {% for comment in comments %}    
-                    <div class="flex flex-col gap-y-8 px-3">
+                    <div class="flex flex-col gap-y-8 px-3" id="comment-{{ comment.id }}">
                         <!-- question -->
-                        <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md">
-                            <div class="flex gap-x-2 items-center">
+                        <div class="bg-[#0000002d] shadow-md w-[95%] md:w-3/4 px-3 py-2 rounded-md">
+                            <div class="flex gap-x-3 items-center relative">
                                 <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
                                 <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
-                                <p class="text-[#686868]">{{comment.created_at|date:"M j, Y"}}</p>
+                                <p class="text-[#686868] text-xs">{{comment.created_at|date:"M j, Y"}}</p>
+                                {% if comment.user == user.info %}
+                                    <button class="absolute right-0 delete-project-comment" data-id="{{ comment.id }}" data-type = "project_comment">
+                                        <img src="{% static 'assets/trash-bin.svg' %}" class="h-6 w-6 cursor-pointer">
+                                    </button>
+                                {% endif %}
                             </div>
-                            <div class="flex items-end justify-between gap-x-3 relative pb-5">
-                                <div class="break-word mt-3" id='comment-{{comment.id}}'>
-                                {{comment.content}}
+                            <div class="flex flex-col gap-y-2 relative pb-5">
+                                <div class="break-word mt-3">
+                                    <p class="flex-1">{{ comment.content }}</p>
                                 </div>
                                 <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
                             </div>
@@ -208,15 +213,20 @@
                                 <!-- single reply -->
 
                                 {% for reply in comment.replies.all %}
-                                <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3">
-                                    <div class="flex gap-x-2 items-center">
-                                        <img src="{{reply.user.profile_image.url}}" alt="" class="w-12 h-12 rounded-full">
-                                        <p class="font-bold">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3 shadow-md relative" id='reply-{{reply.id}}'>
+                                    <div class="flex gap-x-4 items-center">
+                                        <img src="{{reply.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                        <p class="font-bold pr-10 pl-2">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                        {% if reply.user == user.info %}
+                                        <button class="right-2 delete-reply-comment absolute" data-id="{{ reply.id }}" data-type = "project_reply">
+                                            <img src="{% static 'assets/trash-bin.svg' %}" class="h-6 w-6 cursor-pointer">
+                                        </button>
+                                        {% endif %}
                                     </div>
-                                    <div class="break-word" id='reply-{{reply.id}}'>
-                                        {{reply.content}}
+                                    <div class="break-word">
+                                        <p>{{reply.content}}</p>
                                     </div>
-                                    <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
+                                    <p class="text-[#686868] text-xs text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
                                 </div>
                                 {% endfor %}
                                     
@@ -261,6 +271,62 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $(".delete-project-comment").click(function () {
+                var commentID = $(this).data("id");
+                var form_type = $(this).data("type");
+                var commentBox = $("#comment-" + commentID);
+                
+                $.ajax({
+                    url: "{% url 'delete_data' %}",  
+                    type: "POST",
+                    data: {
+                        'comment_id': commentID,
+                        'form_type': form_type,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            commentBox.fadeOut(300, function () { $(this).remove(); });
+                        } else {
+                            alert("Error deleting comment.");
+                        }
+                    },
+                    error: function () {
+                        alert("Something went wrong!");
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $(".delete-reply-comment").click(function () {
+                var replyID = $(this).data("id");
+                var form_type = $(this).data("type");
+                var commentBox = $("#reply-" + replyID);
+        
+                $.ajax({
+                    url: "{% url 'delete_data' %}", 
+                    type: "POST",
+                    data: {
+                        'comment_id': replyID,
+                        'form_type': form_type,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            commentBox.fadeOut(300, function () { $(this).remove(); });
+                        } else {
+                            alert("Error deleting comment.");
+                        }
+                    },
+                    error: function () {
+                        alert("Something went wrong!");
+                    }
+                });
+            });
+        });
     </script>
 </body>
 {% endblock  %}

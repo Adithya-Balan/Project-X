@@ -7,11 +7,6 @@
 {% block style %}
 <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 {% endblock  %}
-    
-{% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-{% endblock %} 
 
 {% block content %}
 
@@ -30,9 +25,7 @@
 
 
     <!-- main section -->
-
-    <div id="entireSection"
-        class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start">
+    <div id="entireSection" class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start">
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
 
@@ -77,7 +70,7 @@
                                     <div class="text-[#686868] flex gap-x-3 items-center"><i class="text-lg fa-solid fa-location-dot"></i><span>{{organization.location}}</span></div>
                                     {% endif %}
                             <div class="flex gap-x-2">
-                                <a href='{% url "org_follow_list" organization.id %}' id='followers-count' class="followers-count border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{organization.get_followers.count}} Followers</a>
+                                <a href='{% url "org_follow_list" organization.id %}' id='followers-count-{{organization.id}}' class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">{{organization.get_followers.count}} Followers</a>
                             </div>
                         </div>
                         {% if request.user == organization.user %}
@@ -87,12 +80,17 @@
                             </button>
                         </div>
                         {% else %}
-                        <button class="px-4 py-2 rounded-md follow-toggle {% if user.info|is_following_org:organization %}bg-gray-500 text-white unfollow{% else %}bg-[#6feb85] follow{% endif %}" 
-                            data-org-id="{{ organization.id }}"
-                            data-follow-url="{% url 'follow_organization' organization.id %}"
-                            data-unfollow-url="{% url 'unfollow_organization' organization.id %}">
-                            {% if user.info|is_following_org:organization %}Unfollow{% else %}Follow{% endif %}
-                        </button>
+                            {% if user.info|is_following_org:organization %}
+                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white" 
+                                data-org-id="{{ organization.id }}" data-type = 'normal'>
+                                Unfollow
+                            </a>
+                            {% else %}
+                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#6feb85]"  data-org-id="{{ organization.id }}">
+                                Follow
+                            </a>
+                            {% endif %}
+
                         {% endif %}
                     </div>
                 </div>
@@ -113,10 +111,9 @@
                     </div>
 
                     <!-- overview section -->
-                    
                     {% if section == 'overview' or section == '' %}
                     <div class="flex flex-col px-3 py-2 bg-white rounded-md md:px-5 gap-y-10">
-                        <div class="flex flex-col text-justify gap-y-3">
+                        <div class="flex flex-col text-justify gap-y-3 mt-3">
                             <h1 class="text-xl font-bold">{ Description }</h1>
                             <p class="break-words">
                                 {{organization.description}}
@@ -196,7 +193,11 @@
                     </div>
                     {% endif %}
 
-                    <!-- event section yet to be done -->
+                    <!-- posts -->
+                    {% include "myapp/org-post-section.html" %}
+
+                    {% comment %} events {% endcomment %}
+                    {% include "myapp/org-event-section.html" %}
 
                 </div>
             </div>
@@ -215,18 +216,25 @@
                     <!-- single Orgainization -->
                     <div class="flex gap-x-3  justify-between items-center border w-full px-2 py-4 rounded-md">
                         <div class="flex gap-x-3 items-start">
-                            <a href='{% url "organization_page" org.id %}' class="flex-shrink-0"><img src="{{org.logo.url}}" class="h-14 rounded-md w-14"></a>
+                            <a href='{% url "organization_detail" org.id %}' class="flex-shrink-0"><img src="{{org.logo.url}}" class="h-14 rounded-md w-14"></a>
                             <div class="flex flex-col gap-y-3">
-                                <a href='{% url "organization_page" org.id %}' class="underline font-bold">{{org.name}}</a>
-                                <p>{{org.get_industry_display}}</p>
-                                {% comment %} laptop {% endcomment %}
-                                <a href='{% url "organization_page" org.id %}' class="hover:bg-black hover:text-white transition max-[450px]:flex hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl lg:flex gap-x-2 items-center">
-                                    <i class="fa fa-eye" aria-hidden="true"></i><span>View</span></a> 
+                                <a href='{% url "organization_detail" org.id %}' class="underline font-bold">{{org.name}}</a>
+                                <div>
+                                    <p>{{org.get_industry_display}}</p>
+                                    <p class='mt-1' id='followers-count-{{org.id}}'>{{org.get_followers.count}} Followers</p>
+                                </div>
+                                {% if user.info|is_following_org:org %}
+                                <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-fit" data-org-id="{{ org.id }}">
+                                    Unfollow
+                                </a>
+                                {% else %}
+                                <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#6feb85] w-fit"  data-org-id="{{ org.id }}">
+                                    Follow
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
-                        <a href='{% url "organization_page" org.id %}'
-                            class="hover:bg-black hover:text-white transition max-[450px]:hidden lg:hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl flex gap-x-2 items-center"><i
-                                class="fa-solid fa-eye"></i><span>View</span></a>
+                        
                     </div>
                     <!-- end of single Orgainization -->
                     {% endfor %}
@@ -254,59 +262,148 @@
         </div>
     </div>
 
+    {% comment %} edit profile post {% endcomment %}
+    {% if organization.user == request.user%}
+    <div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="editContainer">
+        <form method='POST' enctype="multipart/form-data"
+            class="relative flex flex-col gap-y-3 h-full overflow-y-scroll py-10 bg-white w-full lg:w-1/2 px-5 border">
+            {% csrf_token %}
+            <div class="cursor-pointer absolute top-5 right-5" onclick="closeEdit()"><i
+                    class="text-3xl fa-solid fa-circle-xmark"></i></div>
+            <div class="max-[500px]:self-stretch self-center flex flex-col gap-y-3 w-full lg:w-[85%]">
+                <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
+                    Edit Details
+                </h1>
+                <div class="self-center mb-4">
+                    <div class="flex gap-x-3 items-center max-[500px]:flex-col gap-y-3">
+                        <div class="relative">
+                            <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-40 h-40" id="image">
+                            <label id="imageContainer" for="imgInput"
+                                class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
+                                    src="{% static 'assets/edit.svg' %}" alt="" class="w-7 h-7"></label>
+                        </div>
+                        <div class="hidden gap-y-2 items-center flex-col" id="cropImgContainer">
+                            <p class="bold underline">crop image</p>
+                            <img src="" alt="" class="w-40 h-40" id="croppingImg">
+                        </div>
+                        <input type="file" name="profileImg" class="hidden" id="imgInput" accept="image/*">
+                        {% comment %} {{ep_form.profile_image}} {% endcomment %}
+                        <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn"
+                            onclick="crop()">Done</div>
+                    </div>
+                </div>
+                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <input type ='hidden' name = 'form_type' value='editprofile'>
+                        <p>{{ep_form.first_name.label}}</p>
+                        {{ep_form.first_name}}
+                        {% if ep_form.first_name.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in ep_form.first_name.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.last_name.label}}</p>
+                        {{ep_form.last_name}}
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col gap-y-1">
+                        <p>{{ep_form.username.label}}</p>
+                        {{ep_form.username}}
+                        {% if ep_form.username.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in ep_form.username.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col gap-y-1">
+                        <p>{{ep_form.bio.label}}</p>
+                        {{ep_form.bio}}
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col gap-y-1">
+                        <p>{{ep_form.dob.label}}</p>
+                        {{ep_form.dob}}
+                    </div>
+                </div>
+                <div>
     
-    <script>
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        
-        $(document).ready(function() {
-            $('.follow-toggle').click(function(e) {
-                e.preventDefault();
-                const button = $(this);
-                const orgId = button.data('org-id');
-                const isFollow = button.text().trim() === 'Follow';
-                
-                $.ajax({
-                    url: isFollow ? button.data('follow-url') : button.data('unfollow-url'),
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.status === 'success') {
-                            // Toggle button appearance
-                            button.toggleClass('bg-[#6feb85] bg-gray-500');
-                            button.text(isFollow ? 'Unfollow' : 'Follow');
-                            
-                            // Update followers count if available
-                            if (data.followers_count !== undefined) {
-                                $('#followers-count').text(`${data.followers_count} Followers`);
-                            }
-                        }
-                        /*if (data.message) {
-                            alert(data.message);
-                        }*/
-                    },
-                    error: function(xhr) {
-                        alert(xhr.responseJSON?.message || 'An error occurred');
-                    }
-                });
-            });
-        });
-        </script>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.location.label}}</p>
+                        {{ep_form.location}}
+                    </div>
+                </div>
+                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.contact_email.label}}</p>
+                        {{ep_form.contact_email}}
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.phone.label}}</p>
+                       {{ep_form.phone}}
+                    </div>
+                </div>
+                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.gender.label}}</p>
+                        {{ep_form.gender}}
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.status.label}}</p>
+                        {{ep_form.status}}
+                    </div>
+                </div>
+                <div class="flex gap-x-3 gap-y-3">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.website.label}}</p>
+                        {{ep_form.website}}
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.linkedin.label}}</p>
+                        {{ep_form.linkedin}}
+                    </div>
+                </div>
+                <div class="flex gap-x-3 gap-y-3">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.github.label}}</p>
+                        {{ep_form.github}}
+                    </div>
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <p>{{ep_form.stackoverflow.label}}</p>
+                        <input type="text" name="stackoverflow" placeholder="Stackoverflow"
+                            class="outline-none border border-black px-2 py-1">
+                    </div>
+                </div>
     
+                {% if ep_form.errors %}
+                <div class="text-red-500">
+                    <strong>Form Errors:</strong>
+                    <ul>
+                        {% for field, errors in ep_form.errors.items %}
+                            <li>{{ field }}: {{ errors|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                {% endif %}
+                <div class="self-center">
+                    <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 </body>
 {% endblock %}

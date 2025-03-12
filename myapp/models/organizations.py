@@ -10,75 +10,75 @@ class organization(models.Model):
     ORGANIZATION_TYPES = [
         ('Private', 'Private Company'),
         ('Open', 'Open Organization'),
-        ('Club', 'Club/Group'),
+        ('Club Groups', 'Club/Group'),
         ('Startup', 'Startup'),
         ('NonProfit', 'Non-Profit Organization'), 
         ('Gov', 'Government Institution'),  
         ('Education', 'Educational Institution'), 
-        ('Research', 'Research Lab'), 
+        ('Research Lab', 'Research Lab'), 
     ]
     
     INDUSTRY_CHOICES = [
-    # Technology & Software
-    ('Software', 'Software & IT Services'),
-    ('AI_ML', 'Artificial Intelligence & Machine Learning'),
-    ('Cloud', 'Cloud Computing & Infrastructure'),
+    ('Software & IT Services', 'Software & IT Services'),
+    ('Artificial Intelligence & Machine Learning', 'Artificial Intelligence & Machine Learning'),
+    ('Cloud Computing & Infrastructure', 'Cloud Computing & Infrastructure'),
     ('Cybersecurity', 'Cybersecurity'),
-    ('Blockchain', 'Blockchain, Crypto & Web3'),
-    ('GameDev', 'Game Development'),
-    ('Fintech', 'Financial Technology (Fintech)'),
-    ('EdTech', 'Education Technology'),
-    ('HealthTech', 'Healthcare & Medical Technology'),
-    ('Hardware', 'Hardware & Electronics'),
-    ('Telecom', 'Telecommunications'),
-    ('Ecommerce', 'E-commerce & Retail Tech'),
-    ('Marketing', 'Marketing & Advertising Technology'),
-    ('Media', 'Media & Entertainment'),
-    ('Automotive', 'Automotive & Mobility Tech'),
-    ('Aerospace', 'Aerospace & Defense'),
-    ('IoT_Robotics', 'IoT, Robotics & Automation'),
-    ('GreenTech', 'GreenTech & Sustainable Energy'),
-    ('AR_VR', 'Augmented Reality & Virtual Reality'),
-    
+    ('Blockchain, Crypto & Web3', 'Blockchain, Crypto & Web3'),
+    ('Game Development', 'Game Development'),
+    ('Financial Technology (Fintech)', 'Financial Technology (Fintech)'),
+    ('Education Technology', 'Education Technology'),
+    ('Healthcare & Medical Technology', 'Healthcare & Medical Technology'),
+    ('Hardware & Electronics', 'Hardware & Electronics'),
+    ('Telecommunications', 'Telecommunications'),
+    ('E-commerce & Retail Tech', 'E-commerce & Retail Tech'),
+    ('Marketing & Advertising Technology', 'Marketing & Advertising Technology'),
+    ('Media & Entertainment', 'Media & Entertainment'),
+    ('Automotive & Mobility Tech', 'Automotive & Mobility Tech'),
+    ('Aerospace & Defense', 'Aerospace & Defense'),
+    ('IoT, Robotics & Automation', 'IoT, Robotics & Automation'),
+    ('GreenTech & Sustainable Energy', 'GreenTech & Sustainable Energy'),
+    ('Augmented Reality & Virtual Reality', 'Augmented Reality & Virtual Reality'),
+
     # Government & Public Sector
-    ('Gov', 'Government & Public Sector'),
-    ('Defense', 'Defense & Military'),
-    ('LawEnforcement', 'Law Enforcement & Security'),
-    ('PublicTransport', 'Public Transportation'),
-    ('PublicHealth', 'Public Health & Safety'),
+    ('Government & Public Sector', 'Government & Public Sector'),
+    ('Defense & Military', 'Defense & Military'),
+    ('Law Enforcement & Security', 'Law Enforcement & Security'),
+    ('Public Transportation', 'Public Transportation'),
+    ('Public Health & Safety', 'Public Health & Safety'),
 
     # Education & Research
-    ('HigherEd', 'Higher Education & Universities'),
-    ('K12', 'K-12 Schools & Educational Institutions'),
-    ('Research', 'Research & Development'),
-    
+    ('Higher Education & Universities', 'Higher Education & Universities'),
+    ('K-12 Schools & Educational Institutions', 'K-12 Schools & Educational Institutions'),
+    ('Research & Development', 'Research & Development'),
+
     # Clubs & Communities
-    ('TechClub', 'Tech Clubs & Developer Communities'),
-    ('Cultural_Sports', 'Cultural, Arts & Sports Organizations'),
-    ('SocialClub', 'Social & Networking Clubs'),
+    ('Tech Clubs & Developer Communities', 'Tech Clubs & Developer Communities'),
+    ('Cultural, Arts & Sports Organizations', 'Cultural, Arts & Sports Organizations'),
+    ('Social & Networking Clubs', 'Social & Networking Clubs'),
 
     # Non-Profits & NGOs
-    ('NonProfit', 'Non-Profit & Humanitarian Organizations'),
-    ('Environmental', 'Environmental & Sustainability'),
-    
+    ('Non-Profit & Humanitarian Organizations', 'Non-Profit & Humanitarian Organizations'),
+    ('Environmental & Sustainability', 'Environmental & Sustainability'),
+
     # Business & Consulting
-    ('Startup', 'Startup & Entrepreneurship'),
-    ('Consulting', 'IT & Business Consulting'),
-    ('VentureCapital', 'Venture Capital & Investment'),
-    ('Legal', 'Legal & Compliance Services'),
-    ('SupplyChain', 'Supply Chain & Logistics'),
-    ('RealEstate', 'Real Estate & Property Management'),
-    ('Manufacturing', 'Manufacturing & Industrial Technology'),
+    ('Startup & Entrepreneurship', 'Startup & Entrepreneurship'),
+    ('IT & Business Consulting', 'IT & Business Consulting'),
+    ('Venture Capital & Investment', 'Venture Capital & Investment'),
+    ('Legal & Compliance Services', 'Legal & Compliance Services'),
+    ('Supply Chain & Logistics', 'Supply Chain & Logistics'),
+    ('Real Estate & Property Management', 'Real Estate & Property Management'),
+    ('Manufacturing & Industrial Technology', 'Manufacturing & Industrial Technology'),
 
     # Miscellaneous
-    ('Agritech', 'Agriculture & Food Tech'),
-    ('HumanResources', 'Human Resources & Talent Management'),
-    ('Journalism', 'Journalism & Publishing'),
-    ('Entertainment', 'Entertainment & Performing Arts'),
-    ('Religion', 'Religious Organizations'),
-    ('Hospitality', 'Hospitality & Tourism'),
+    ('Agriculture & Food Tech', 'Agriculture & Food Tech'),
+    ('Human Resources & Talent Management', 'Human Resources & Talent Management'),
+    ('Journalism & Publishing', 'Journalism & Publishing'),
+    ('Entertainment & Performing Arts', 'Entertainment & Performing Arts'),
+    ('Religious Organizations', 'Religious Organizations'),
+    ('Hospitality & Tourism', 'Hospitality & Tourism'),
     ('Other', 'Other'),
 ]
+
     user = models.ForeignKey(User, related_name='organization', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=250)
     description = models.TextField()
@@ -101,7 +101,7 @@ class organization(models.Model):
         return f"{self.id} {self.name }"
 
     def get_absolute_url(self):
-        return reverse("organization_page", kwargs={"id": self.pk})
+        return reverse("organization_detail", kwargs={"id": self.pk})
     
     def is_followed_by(self, userinfo):
         return self.followers.filter(id=userinfo.id).exists()

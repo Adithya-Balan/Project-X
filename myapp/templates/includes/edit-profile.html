@@ -65,12 +65,17 @@
                     {{ep_form.bio}}
                 </div>
             </div>
-            <div>
-                <div class="flex flex-col gap-y-1">
+            <div class="flex gap-x-3 gap-y-3">
+                <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.dob.label}}</p>
                     {{ep_form.dob}}
                 </div>
+                <div class="flex flex-col gap-y-1 w-full">
+                    <p>{{ep_form.availability.label}}</p>
+                    {{ep_form.availability}}
+                </div>
             </div>
+
             <div>
 
                 <div class="flex flex-col gap-y-1 w-full">
@@ -186,11 +191,14 @@
             </div> 
             </div>
         </div>
-        <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
+        <div class="self-center flex flex-row gap-x-5">
+            <button type="submit" name="action" value="save" class="bg-[#6feb85] text-black px-3 py-1 rounded-lg cursor-pointer">Save</button>
+            {% if cp_form.name.value and cp_form.role.value %}
+            <button type="submit" name="action" value="delete" class="bg-red-600 text-white px-3 py-1 rounded-lg cursor-pointer">Delete</button>
+            {% endif %}
+        </div>
     </div>
 </form>
-
-
 
 <!-- edit experience -->
 <form method = 'POST' class=" hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editExp">
@@ -293,7 +301,12 @@
             {{edu_form.till_now}}
             <label for="presentDate">{{edu_form.till_now.label}}</label>
         </div>
-        <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
+        <div class="self-center flex flex-row gap-x-5">
+            <button type="submit" name="action" value="save" class="bg-[#6feb85] text-black px-3 py-1 rounded-lg cursor-pointer">Save</button>
+            {% if edu_form.name.value %}
+            <button type="submit" name="action" value="delete" class="bg-red-600 text-white px-3 py-1 rounded-lg cursor-pointer">Delete</button>
+            {% endif %}
+        </div>
     
     </div>
 </form>

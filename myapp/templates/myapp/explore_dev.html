@@ -53,10 +53,10 @@
                     <div class="text-[#686868] text-[18px] ">({{total_result}} Results)</div>
                     <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
                     <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
-                        <div class="flex gap-x-3 items-center">
-                            <input type="text" class="md:w-72 w-full outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-2 py-1 text-black" placeholder="Search..">
-                                <img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6">
-                        </div>
+                        <form method="GET" action="{% url 'explore_dev' %}" class="flex gap-x-3 items-center">
+                            <input type="text"  name="q" value="{{ query }}" class="w-80 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
+                                <button type="submit"><img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6"></button>
+                        </form>
                         <div class="lg:hidden flex" onclick="openFilter()">
                             <button class="flex items-center gap-x-2"><i class="fa-solid fa-filter"></i> <span
                                     class="hidden md:block">Filter</span></button>
@@ -75,18 +75,30 @@
                                 <div class="flex gap-x-3 w-full">
                                     <a href='{% url "user_profile" dev.user.username %}' class="w-14 h-14"><img src="{{dev.profile_image.url}}" alt="" class="rounded-lg"></a>
                                     <div class="flex flex-col gap-y-1 w-full">
-                                        <a href='{% url "user_profile" dev.user.username %}' class="font-bold cursor-pointer text-lg hover:underline">{{dev.user.first_name}} {{dev.user.last_name}}</a>
+                                        <a href='{% url "user_profile" dev.user.username %}' class="font-semibold cursor-pointer text-lg hover:underline">{{dev.user.first_name}} {{dev.user.last_name}}</a>
                                         <p class="text-[#686868]">@{{dev.user.username}}</p>
                                         <p class="text-[#686868] w-full break-words">#Mood</p>
                                     </div>
                                 </div>
-                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition" data-user-id="{{ dev.id }}">
-                                    {% if user.info|is_following:dev %}
-                                        <span class="btn-text">Unfollow</span>
-                                    {% else %}
-                                        <span class="btn-text">Follow</span>
-                                    {% endif %}
+                                {% if user.info|is_following:dev %}
+                                    <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white self-center px-2 py-2 w-[110px] text-center rounded-md max-[450px]:m-auto hover:scale-110 transition" data-user-id="{{ dev.id }}">
+                                        <span class="btn-text">&lt;Unfollow/&gt;</span>
+                                    </a>
+                                {% else %}
+                                    <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] self-center px-2 py-2 w-[120px] text-center rounded-md max-[450px]:m-auto hover:scale-110 transition" data-user-id="{{ dev.id }}">   
+                                        <span class="btn-text">&lt;Follow/&gt;</span>
+                                    </a>
+                                {% endif %}
+
+                                {% comment %} {% if user.info|is_following:userinfo_obj %}
+                                <a href="javascript:void(0);" class="follow-btn px-4 py-2 rounded-md bg-[#464646] text-white" data-user-id="{{ userinfo_obj.id }}">
+                                    <span class="btn-text px-4 py-2 rounded-md">&lt;Unfollow/&gt;</span>
+                                </a> 
+                                {% else %}
+                                <a href="javascript:void(0);" class="follow-btn px-4 py-2 rounded-md bg-[#6feb85]" data-user-id="{{ userinfo_obj.id }}">
+                                    <span class="btn-text px-4 py-2 rounded-md">&lt;Follow/&gt;</span>
                                 </a>
+                                {% endif %} {% endcomment %}
                                 
                                 {% comment %} {% if user.info|is_following:dev %}
                                 <a href='{% url "unfollow_user" dev.id %}' class="bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition">Unfollow</a>
@@ -123,7 +135,7 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="flex flex-col items-center justify-center p-4">
+                <div class="flex flex-col items-center justify-center p-4 -mt-20">
                     <span class="text-lg md:text-xl lg:text-2xl font-normal text-gray-700 mb-4">
                         Oops! No results Found!
                     </span>
@@ -149,7 +161,7 @@
                     <h1 class="text-xl font-bold">Status</h1>
                     <div class="flex flex-wrap gap-2 items-center">
                         {% for state in status %}
-                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-semibold">
                             {{state.name}}</a>
                         {% endfor %}
                     </div>
@@ -159,18 +171,17 @@
                     <h1 class="text-xl font-bold">skill</h1>
                     <div class="flex flex-wrap gap-2">
                         {% for skill in top_skill %}
-                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-semibold">
                             {{skill.name}}</a>
                         {% endfor %}
                     </div>
                 </div>
-
-
+                
                 <div class="flex flex-col gap-y-3">
                     <h1 class="text-xl font-bold">Domains</h1>
                     <div class="flex flex-wrap gap-2">
                         {% for domain in top_domains %}
-                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
+                        <a href='' class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-semibold">
                             {{domain.name}}</a>
                         {% endfor %}
                     </div>
@@ -183,46 +194,6 @@
     {% include "includes/create-post.html" %}
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 
-    <script>
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-            }
-        });
-        $(document).ready(function () {
-            $(".follow-btn").click(function (){
-                let btn = $(this);
-                let userId = btn.data("user-id");
-                let actionUrl;
-                let isFollowing = btn.find(".btn-text").text().trim() === "Unfollow";
-
-                if (isFollowing) {
-                    actionUrl = `/unfollow/${userId}/`;
-                }else {
-                    actionUrl = `/follow/${userId}/`;   // URL for follow
-                }
-
-                $.ajax({
-                    url: actionUrl,
-                    type: "POST",
-                    data: {
-                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
-                    },
-                    success: function (response) {
-                        if (response.status === "followed") {
-                            btn.find(".btn-text").text("Unfollow");
-                        } 
-                        else if (response.status === "unfollowed") {
-                            btn.find(".btn-text").text("Follow");
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Error:", xhr.responseText);
-                    }
-                });
-            });
-        });    
-    </script>
 
 </body>
 {% endblock  %}

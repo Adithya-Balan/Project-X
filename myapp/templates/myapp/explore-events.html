@@ -50,20 +50,19 @@
 
             <div class="flex flex-col gap-y-10 w-full mb-16">
                 <!-- top section, search bar and filter option -->
-                <div
-                    class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
+                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
+                    <div class="text-[#686868] text-[18px] ">({{result_count}} Results)</div>
                     <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
-                        <div class="flex gap-x-3 items-center">
-                            <input type="text" class="md:w-96 w-full outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-2 py-1 text-black" placeholder="Search..">
-                                <img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6">
-                        </div>
+                        <form method="GET" action="{% url 'explore_events' %}" class="flex gap-x-3 items-center">
+                            <input type="text" name="q" value="{{ query }}" class="w-80 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
+                                <button type="submit"><img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6"></button>
+                        </form>
                         <div class="lg:hidden flex" onclick="openFilter()">
                             <button class="flex items-center gap-x-2"><i class="fa-solid fa-filter"></i> <span
                                     class="hidden md:block">Filter</span></button>
                         </div>
                     </div>
                 </div>
-
                 <!-- events area fill all the events inside this div -->
                 <div class="flex flex-col justify-center items-center  w-full gap-y-10">
 
@@ -92,7 +91,7 @@
 
                                 <div class="flex gap-x-2 items-center">
                                     <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
-                                    <p class='text-[#686868]'>{{event.start_time|date:"M j, Y"}}</p>
+                                    <p class='text-[#686868]'>{{ event.start_date|date:"F j, Y" }}</p>
                                 </div>
 
                             </div>
@@ -111,6 +110,36 @@
                     {% endfor %}
                     <!-- end of 1st event -->
                 </div>
+            </div>
+
+            <div>
+                {% comment %} Paginator nav links {% endcomment %}
+                {% if result_count %}
+                <div class="flex justify-center mt-6 pb-20">
+                    <div class="flex items-center space-x-4">
+                        {% if filtered_event.has_previous %}
+                            <a href="?page=1" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                            <a href="?page={{filtered_event.previous_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                        {% endif %}
+                
+                        <span class="text-black">
+                            <span class="font-semibold">Page {{ filtered_event.number }}</span> of {{ filtered_event.paginator.num_pages }}
+                        </span>
+                
+                        {% if filtered_event.has_next %}
+                            <a href="?page={{filtered_event.next_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>
+                            <a href="?page={{filtered_event.paginator.num_pages}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="flex flex-col items-center justify-center p-4">
+                    <span class="text-lg md:text-xl lg:text-2xl font-normal text-gray-700 mb-4">
+                        Oops! No results Found!
+                    </span>
+                    <img src="{% static 'assets/not-found.png' %}" alt="Not Found" class="w-full rounded-2xl max-w-xs md:max-w-sm lg:max-w-md">
+                </div>
+                {% endif %}     
             </div>
         </div>
 

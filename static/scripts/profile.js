@@ -164,10 +164,19 @@ const openEditSkill = () => {
     console.log(editSkill)
 }
 
+const closeEditSkill = () => {
+    const entireSection = document.getElementById('entireSection')
+    const editSkill = document.getElementById('editskill')
+    entireSection.classList.remove('blur-md')
+    editSkill.classList.add('hidden')
+    editSkill.classList.remove('flex')
+    console.log(editSkill)
+}
+
  // Project type dropdown
- function toggleProjectDropdown() {
+function toggleProjectDropdown() {
     document.getElementById("dropdown-project-menu").classList.toggle("hidden");
-    }
+}
 
 // #skill for select2
 // $(document).ready(function() {

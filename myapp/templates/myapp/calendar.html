@@ -1,0 +1,128 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+{% load custom_filter %}
+
+{% block title %}Calendar{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+   
+
+{% block content %}
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "includes/navbar.html" %}
+
+    <!-- popup -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+
+    <!-- main section -->
+    <div id="entireSection" class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start justify-between">
+        <!-- sidenav -->
+        {% include "includes/sidenav.html" %}
+        <!-- middle section -->
+        <div class="w-full lg:w-4/5 px-4 lg:px-10 py-4 flex flex-col gap-8 mt-20">
+            <div class="">
+                <h2 class="text-3xl font-bold mb-2">Calendar</h2>
+                <hr class="border-t border-gray-300">
+                <div class="flex gap-x-1 flex-wrap gap-y-2 mt-8 relative">
+                    <div class="flex flex-col gap-y-2 items-center">
+                        <div class="flex gap-x-1 items-center bg-black text-white px-2 py-2 rounded-lg">
+                            <div id="exploreTitle" onclick="getAgenda()" class="cursor-pointer">{% if section == "" %}Upcoming Events{% else %}Joined Projects{% endif %}</div>
+                            <img src="{% static 'assets/down.svg' %}" alt="" class="w-5 h-5"  onclick="getAgenda()">
+                        </div>
+                        <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded"
+                            id="allAgenda">
+                            <a href="{% url 'calendar_page' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer text-white">
+                                Upcoming Events</a>
+                            <a href="?section=joined-projects"
+                                class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer text-white">Joined Projects
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-10">
+                <!-- all projects and events shown here -->
+                {% if section == "" or section == 'upcoming-events' %}
+                    {% if grouped_events %}
+                    {% for event_date, events in grouped_events.items %}
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="bg-black text-white py-4 px-6 rounded-lg font-bold text-center md:static sticky top-20 z-[1] max-[w-100]">
+                            {{ event_date|date:"M d Y" }}
+                        </div>
+                        <div class="flex flex-col gap-6 md:w-5/6 p-5 md:p-0">
+
+                            {% for event in events %}
+                            <div class="relative flex flex-col md:flex-row w-full gap-5 bg-white p-3 pb-5 rounded-2xl">
+                                <div class="max-[500px]:w-full w-96 aspect-video overflow-hidden bg-[#d4d4d4] relative border">
+                                    <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover object-top">
+                                </div>
+                                <div class="flex flex-col gap-y-3 items-start w-full">
+                                    <div class="flex justify-between pt-2 items-end">
+                                        <div class="flex flex-col gap-y-2 mt-2">
+                                            <div class="flex gap-x-2 items-center">
+                                                <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-7 h-7">
+                                                <div class="font-bold">{{event.title}}</div>
+                                            </div>
+                                            <div class="flex gap-x-2 items-start">
+                                                <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
+                                                <div class="text-[#686868]">{{event.get_event_type_display}}</div>
+                                            </div>
+                                            <div class="flex gap-x-2 items-start">
+                                                <img src="{% static 'assets/organization.svg' %}" alt="" class="w-7 h-7">
+                                                <div class="text-[#686868]">{{event.short_description|truncatewords:25}}</div>
+                                            </div>
+                                            <div class="flex gap-x-2 items-center">
+                                                <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
+                                                <p class='text-[#686868]'>{{event.start_date}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='flex flex-row mt-1 justify-between w-full items-center'>
+                                        <a href='{% url "event_detail" event.id %}'
+                                            class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center">
+                                            View
+                                        </a>
+                                        <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
+                                            <i class="text-xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <!-- if no project and events -->
+                    <div class="flex  flex-col w-full justify-center">
+                        <div>
+                            <img src="{% static 'assets/sad1.svg' %}" alt="" class="w-56 lg:w-70">
+                        </div>
+                        <div class="text-lg mt-10 font-light ">You currently have no upcoming events</div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- create post -->
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+    <script>
+    //get agenda in calender.html
+    function getAgenda() {
+        const allAgenda = document.getElementById('allAgenda')
+        console.log(this)
+        allAgenda.classList.toggle('flex')
+        allAgenda.classList.toggle('hidden')
+    }
+    </script>
+</body>
+{% endblock  %}

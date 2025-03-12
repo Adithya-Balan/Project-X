@@ -1,0 +1,191 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+{% load custom_filter %}
+
+{% block title %}Create Event{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+{% endblock %} 
+    
+
+{% block content %}
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+    <!-- navbar -->
+    {% include "includes/navbar.html" %}
+
+    <!-- phone navbar popup -->
+    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20 lg:hidden" id="popup">
+        <div class="flex flex-col gap-y-2">
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
+        </div>
+    </div>
+
+
+    <!-- phone navbar -->
+    <div class="z-10 fixed bottom-0 w-full py-2 bg-[#00000057] backdrop-blur lg:hidden">
+        <div class="flex justify-around">
+            <div><i class="text-xl fa-solid fa-house"></i></div>
+            <div><i class="text-xl fa-regular fa-compass"></i></div>
+            <div><i class="text-xl fa-solid fa-house"></i></div>
+            <div><i class="text-xl fa-regular fa-circle-user"></i></div>
+        </div>
+    </div>
+
+
+    <!-- main section -->
+    <div class="mt-24 w-full pb-20 lg:pb-10" id='entireSection'>
+        <div class="flex justify-center flex-col items-center gap-y-10 w-[90%] md:w-1/2 lg:w-[40%] bg-white lg:p-14 p-3  mx-auto">
+            <div>
+                <h1 class="text-3xl">Post the Event</h1>
+            </div>
+            <div class="w-full">
+                <form method='post' enctype="multipart/form-data" class="flex flex-col gap-y-3 w-full">
+                    {% csrf_token %}
+                    <div class="flex flex-col gap-y-3">
+                        <label for="eventName">{{event_form.title.label}}</label>
+                        {{event_form.title}}
+                        {% if event_form.title.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in event_form.title.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-y-3">
+                        <label for="eventDescription">{{event_form.short_description.label}}</label>
+                       {{event_form.short_description}}
+                        {% if event_form.short_description.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in event_form.short_description.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-y-3">
+                        <label>{{event_form.event_type.label}}</label>
+                        {{event_form.event_type}}
+                    </div>
+                    <div class="flex gap-x-3 items-center">
+                        <div class="flex flex-col gap-y-1 w-full">
+                            <label>{{event_form.mode.label}}</label>
+                            {{event_form.mode}}
+                        </div>
+                        <div class="flex flex-col gap-y-1 w-full">
+                            <label>{{event_form.location.label}}</label>
+                            {{event_form.location}}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-y-1 w-full">
+                        <label>{{event_form.registration_link.label}}</label>
+                        {{event_form.registration_link}}
+                        {% if event_form.registration_link.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in event_form.registration_link.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-y-3">
+                        <label>{{event_form.banner.label}}</label>
+                       {{event_form.banner}}
+                       {% if event_form.banner.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in event_form.banner.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if event_form.banner.value %}
+                        <p class='text-indigo-950'>Current: <a href="{{event_form.banner.value.url}}" target="_blank" class="underline">{{event_form.banner.value}}</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-y-3">
+                        <label>{{event_form.description.label}}</label>
+                       {{event_form.description}}
+                       {% if event_form.description.errors %}
+                            <div class="text-red-500 text-sm">
+                                {% for error in event_form.description.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div><hr class="border-t border-gray-200 my-8">
+
+                    <!--Timings-->
+                    <h2 class="text-xl font-light text-black mb-4 mx-auto border-b pb-2">Event Schedule</h2>
+                    <div class="flex gap-x-3"> <!--Start date & time-->
+                        <div class="flex flex-col gap-y-1 w-full"> 
+                            <label for="">Event Date</label>
+                            {{event_form.start_date}}
+                        </div>
+                        <div class="flex flex-col gap-y-1 w-1/2"> 
+                            <label for="">{{event_form.start_time.label}} <span class='text-gray-500'></span></label>
+                            {{event_form.start_time}}
+                        </div>
+                    </div>
+                    {% if event_form.start_date.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in event_form.start_date.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="flex gap-x-3">
+                        <div class="flex flex-col gap-y-1 w-full"> 
+                            <label>{{event_form.end_date.label}}</label>
+                            {{event_form.end_date}}
+                        </div>
+                        <div class="flex flex-col gap-y-1 w-1/2"> 
+                            <label>{{event_form.end_time.label}} <span class='text-gray-500'></span></label>
+                            {{event_form.end_time}}
+                        </div>
+                    </div><hr class="border-t border-gray-200 my-6">
+
+                    <!--Organizers Detail-->
+                    <h2 class="text-xl font-light text-black mb-4 mx-auto border-b pb-2">Organizer Details</h2>
+                    <div class="flex flex-col gap-y-3">
+                        <label for="eventOrganizerName">{{event_form.contact_name.label}}</label>
+                       {{event_form.contact_name}}
+                    </div>
+                    <div class="flex gap-x-3">
+                        <div class="flex flex-col gap-y-3 w-full">
+                            <label for="organizerEmail">{{event_form.contact_email.label}}</label>
+                            {{event_form.contact_email}}
+                            {% if event_form.contact_email.errors %}
+                                <div class="text-red-500 text-sm">
+                                    {% for error in event_form.contact_email.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex flex-col gap-y-3 w-full">
+                            <label for="organizerPhone">{{event_form.contact_phone.label}}</label>
+                            {{event_form.contact_phone}}
+                            {% if event_form.contact_phone.errors %}
+                                <div class="text-red-500 text-sm">
+                                    {% for error in event_form.contact_phone.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="self-center mt-4">
+                        <button  class="bg-[#6feb85] px-6 py-2 rounded-lg" type="submit">Save</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+    
+{% endblock  %}

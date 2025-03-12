@@ -1,17 +1,20 @@
 import base64
 import uuid
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.utils import timezone
+import pytz
+from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm
 from django.contrib.auth.models import User
 from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from itertools import groupby
 # from django.contrib.postgres.search import TrigramSimilarity
 
 # Create your views here.
@@ -32,6 +35,7 @@ class sign_up(View):
             userinfo.objects.create(user=user)
             current_position.objects.create(user = user.info)
             education.objects.create(user = user.info)
+            SavedItem.objects.create(user = user.info)
             # user.save()
             
             username = form.cleaned_data.get("username") #Authenticate the user:
@@ -48,7 +52,17 @@ class sign_up(View):
         return render(request, 'registration/sign_up.html', context)
         
 def index(request):
-    return render(request, 'myapp/index.html') 
+    context = {
+        'active_navlink': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]"
+    }
+    user_tz_str = request.user.info.timezone  # e.g., "America/New_York"
+    user_tz = pytz.timezone(user_tz_str)
+
+    # Get current time in UTC (Django returns an aware datetime in UTC)
+    now_utc = timezone.now()
+    user_local_now = now_utc.astimezone(user_tz)
+    print(user_tz_str, user_tz, now_utc, user_local_now)
+    return render(request, 'myapp/index.html', context) 
 
 #profile-page
 @login_required
@@ -66,7 +80,6 @@ def user_profile(request, user_name):
     skill_list = userinfo_obj.skills.all()
     exp_obj = userinfo_obj.experiences.all().order_by('-start_date')
     post_form = PostForm()
-    
     
     section = request.GET.get('section', 'overview') 
     if section == 'projects':
@@ -94,7 +107,7 @@ def user_profile(request, user_name):
         exp_form = EditExperienceForm()
         editprofile_form = EditProfileForm(instance=request.user.info)
         project_form = UserProjectForm()
-        skill_form = EditSkillForm()
+        skill_form = EditSkillForm(instance=request.user.info)
         cp_form = EditCurrentPositionForm(instance=request.user.info.current_position)
         
         
@@ -110,16 +123,23 @@ def user_profile(request, user_name):
             else:
                 open_exp_flag = True
         elif form_type == 'education':
-            edu_form = EditEducationForm(request.POST, instance=request.user.info.education)
-            if edu_form.is_valid():
-                edu_form.save()
-            else:
-                open_edu_flag = True
+            action = request.POST.get('action')
+            print(action)
+            if action == 'save':
+                edu_form = EditEducationForm(request.POST, instance=request.user.info.education)
+                if edu_form.is_valid():
+                    edu_form.save()
+                else:
+                    open_edu_flag = True
+            elif action == 'delete':
+                request.user.info.education.delete()
+                education.objects.create(user = request.user.info)
+                
         elif form_type == 'editprofile':
             editprofile_form = EditProfileForm(request.POST, request.FILES, instance = request.user.info)
             if editprofile_form.is_valid():
-                print(request.FILES['profileImg'])
-                editprofile_form.profile_image = request.FILES['profileImg']
+                # print(request.FILES['profileImg'])
+                # editprofile_form.profile_image = request.FILES['profileImg']
                 editprofile_form.save()
                 redirect_url = reverse("user_profile", args=[request.user.username])
                 return redirect(redirect_url)
@@ -137,16 +157,22 @@ def user_profile(request, user_name):
             else:
                 open_project_flag = True
         elif form_type ==  'current_position':
-            cp_form = EditCurrentPositionForm(request.POST, instance=request.user.info.current_position)
-            if cp_form.is_valid():
-                form = cp_form.save()
+            action = request.POST.get('action')
+            if action == 'save':
+                cp_form = EditCurrentPositionForm(request.POST, instance=request.user.info.current_position)
+                if cp_form.is_valid():
+                    form = cp_form.save()       
+                else: 
+                    open_cp_flag = True   
+            elif action == 'delete':
+                request.user.info.current_position.delete()
+                current_position.objects.create(user = request.user.info)      
+        elif form_type == 'skill':
+            skill_form = EditSkillForm(request.POST, instance=request.user.info)
+            if skill_form.is_valid():
+                skill_form.save()
                 redirect_url = reverse('user_profile', args=[request.user.username])
-                return redirect(f'{redirect_url}')       
-            else: 
-                open_cp_flag = True   
-                
-                                                                  
-            
+                return redirect(f'{redirect_url}')  
         # elif form_type == 'skill':
         #     skill_form   = EditSkillForm(request.POST)
                 
@@ -173,6 +199,7 @@ def user_profile(request, user_name):
         'skill_form': skill_form,
         'project_form': project_form,
         'cp_form': cp_form,
+        'skill_list': skill_list,
         'flag': {'open_edu_flag': open_edu_flag, 'open_exp_flag': open_exp_flag, 'open_editprofile_flag': open_editprofile_flag, 'open_project_flag': open_project_flag, 'open_cp_flag': open_cp_flag}
     }
     return render(request, 'myapp/user-profile_1.html', context)
@@ -200,6 +227,7 @@ def follow_user(request, otheruserinfo_id):
 @login_required
 def follow_list(request, username):
         userinfo_obj = userinfo.objects.get(user__username = username) #user-profile list
+        post_form = PostForm()
         l = request.GET.get('list')
         grp = False
         if l == None:
@@ -209,7 +237,8 @@ def follow_list(request, username):
         elif l == 'following':   
             list = userinfo_obj.get_following()
         elif l == 'org':
-            list = userinfo_obj.followed_organization.all()
+            list = userinfo_obj.followed_organization.all()[::-1]
+            print(list)
             grp = True
         
         if request.user.info.skills.all():
@@ -227,6 +256,7 @@ def follow_list(request, username):
             'l': l,
             'grp': grp,
             'suggested_project': suggested_project,
+            'post_form': post_form,
         }
         
         return render(request, 'myapp/followList.html', context)
@@ -239,7 +269,7 @@ def create_organization(request):
             org = form.save(commit=False)
             org.user = request.user
             org.save()
-            return redirect('organization_page', id=org.id)
+            return redirect('organization_detail', id=org.id)
     else:
         form = OrganizationForm()      
     context  = {'form': form}
@@ -247,16 +277,42 @@ def create_organization(request):
         
 @login_required
 def explore_organization(request):
+    filtered_org = organization.objects.all()
+    query = request.GET.get('q', '').strip()
+    if query:
+        filtered_org = filtered_org.filter(
+            Q(name__icontains=query) |  
+            Q(organization_type__icontains=query) |  
+            Q(industry__icontains=query) |  
+            Q(description__icontains=query) | 
+            Q(location__icontains=query) 
+        ).distinct()
+    
+    p = Paginator(filtered_org, 5)
+    page_number = request.GET.get("page")
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        page_obj = p.page(1)
+    
+    result_count = filtered_org.count()
+    post_form = PostForm()
     context = {
-        
+        'filtered_org': page_obj,
+        'post_form': post_form,
+        'active_explore': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
+        'result_count': result_count,
+        'query': query,
     }
     return render(request, 'myapp/explore-organization.html', context)
         
 @login_required
-def organization_page(request, id):
+def organization_detail(request, id):
     organization_obj = get_object_or_404(organization, id = id)
-    link_available = False
+    org_post = org_events= link_available = False
+    post_form = PostForm()
     section = request.GET.get('section', 'overview') 
+    print(section)
     social_links = { 
         'github': organization_obj.github if organization_obj.github else None,
         'linkedin': organization_obj.linkedin if organization_obj.linkedin else None,
@@ -265,15 +321,26 @@ def organization_page(request, id):
         'instagram': organization_obj.instagram if organization_obj.instagram else None
     }
     suggested_org = organization.objects.filter(industry=organization_obj.industry, organization_type=organization_obj.organization_type).exclude(Q(id=organization_obj.id) | Q(user=request.user) | Q(followers=request.user.info)).order_by('?')[:5]
+    # suggested_org = organization.objects.all()
     if social_links.get('github') or social_links.get('linkedin') or social_links.get('x-twitter') or social_links.get('discord') or social_links.get('instagram'):
             link_available = True
+            
+    if section == 'posts':
+        org_post = post.objects.filter(Organization = organization_obj).order_by('-created_at')
+        
+    if section == 'events':
+        org_events = event.objects.filter(organization = organization_obj).order_by('-created_at')
+    print(org_events)
     context = {
         'organization': organization_obj,
         'section': section,
         'social_links': social_links,
         'link_available': link_available,
+        'org_post': org_post,
+        'org_events': org_events,
         'color_active' : "bg-black text-white font-bold",
-        'suggested_org': suggested_org
+        'suggested_org': suggested_org,
+        'post_form': post_form,
     }
     return render(request, 'myapp/organization-profile.html', context)
 
@@ -281,6 +348,7 @@ def organization_page(request, id):
 def org_follow_list(request, org_id):
     org = get_object_or_404(organization, id = org_id)
     list = org.get_followers()
+    print(list)
     if request.user.info.skills.all():
             suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
     else:
@@ -304,7 +372,7 @@ def follow_organization(request, organization_id):
         user_info = request.user.info 
         if user_info not in org.followers.all():
             org.followers.add(user_info)
-            return JsonResponse({'status': 'success', 'action': 'follow', 'message': 'You are now following this organization.', 'followers_count': org.get_followers().count()})
+            return JsonResponse({'status': 'followed', 'action': 'follow', 'message': 'You are now following this organization.', 'followers_count': org.get_followers().count()})
         else:
             return JsonResponse({'status': 'error', 'message': 'You are already following this organization.'}, status=400)
     except org.DoesNotExist:
@@ -317,11 +385,55 @@ def unfollow_organization(request, organization_id):
         user_info = request.user.info
         if user_info in org.followers.all():
             org.followers.remove(user_info)
-            return JsonResponse({'status': 'success', 'action': 'unfollow', 'message': 'You have unfollowed this organization.', 'followers_count': org.get_followers().count()})
+            return JsonResponse({'status': 'unfollowed', 'action': 'unfollow', 'message': 'You have unfollowed this organization.', 'followers_count': org.get_followers().count()})
         else:
             return JsonResponse({'status': 'error', 'message': 'You are not following this organization.'}, status=400)
     except org.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Organization not found.'}, status=404)
+    
+@login_required
+def org_event_form(request,id):
+    organization_obj = get_object_or_404(organization, id = id)
+    createdByUser = True if organization_obj.user == request.user else False
+    if createdByUser:
+        form = EventForm()
+        if request.method == 'POST':
+            form = EventForm(request.POST, request.FILES)
+            if form.is_valid():
+                print(True, 2)
+                event_obj = form.save(commit=False)
+                event_obj.organization = organization_obj
+                event_obj.save()
+                return redirect('event_detail', event_obj.id)
+    else:
+        return redirect('/home')
+    context = {
+        'event_form': form,
+        'is_edit': False,
+    }
+    return render(request, 'myapp/org-event-form.html', context)
+
+@login_required
+def event_form_edit(request, org_id, event_id):
+    organization_obj = get_object_or_404(organization, id = org_id)
+    event_obj = get_object_or_404(event, id = event_id)
+    createdByUser = True if organization_obj.user == request.user else False
+    if createdByUser:
+        form = EventForm(instance=event_obj)
+        print(event_obj.__dict__)
+        if request.method == 'POST':
+            form = EventForm(request.POST, request.FILES, instance=event_obj)
+            print(form)
+            if form.is_valid():
+                form.save()
+                return redirect('event_detail', event_obj.id)
+    else:
+        return redirect('/home')
+    context = {
+        'event_form': form,
+        'is_edit': True
+    }
+    return render(request, 'myapp/org-event-form.html', context)
 
 @login_required
 def edit_profile(request):
@@ -334,7 +446,6 @@ def edit_profile(request):
 #explore page:
 @login_required
 def explore_project(request):
-    
     #filter
     domain_filter = request.GET.get('domain') #id
     type_filter = request.GET.get('type') #name
@@ -357,6 +468,18 @@ def explore_project(request):
     
     if not applied_filter:
         filter_project = projects.objects.all()[:20]
+
+    query = request.GET.get('q', '').strip()
+    if query:
+        projects_qs = projects.objects.all()
+        filter_project = projects_qs.filter(
+            Q(title__icontains=query) |  # Partial match on name
+            Q(description__icontains=query) |  # Partial match on description
+            Q(skill_needed__name__icontains=query) |  # Partial match on skills
+            Q(domain__name__icontains=query) | 
+            Q(type__icontains = query) |# Partial match on domain
+            Q(level__icontains=query)  # Exact match on level (adjust if partial needed)
+        ).distinct()
     
     #Pagination
     p = Paginator(filter_project, 7)
@@ -381,7 +504,9 @@ def explore_project(request):
         'levels': ['Beginner', 'Intermediate', 'Expert'],
         'top_skill': top_skill,
         'applied_filter': applied_filter,
-        'post_form': post_form
+        'post_form': post_form,
+        'query': query,
+        'active_explore': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]"
     }
     # print(request.GET)
     return render(request,"myapp/explore-projects.html", context)
@@ -477,11 +602,21 @@ def join_project(request, id):
 @login_required
 def explore_dev(request):
     filter_dev = userinfo.objects.all().exclude(user=request.user)
-    
+    query = request.GET.get('q', '').strip()
+    if query:
+        filter_dev = filter_dev.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(user__username__iexact=query) |
+            Q(skills__name__iexact=query) |
+            Q(domains__name__icontains=query) |
+            Q(availability__icontains=query) |
+            Q(status__name__iexact=query) |
+            Q(about_user__icontains=query)
+        ).distinct()
     top_domain = Domain.objects.all()[:10]
     top_skill= skill.objects.all()[:10]
     status = user_status.objects.all()
-    
     #Pagination
     p = Paginator(filter_dev, 10)
     page_number = request.GET.get('page')
@@ -498,23 +633,47 @@ def explore_dev(request):
         'status': status,    
         'total_result': r,  
         'post_form': post_form,  
+        'query': query,
+        'active_explore_dev': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]"
     }
     return render(request, 'myapp/explore_dev.html', context)
 
 #Explore event and single page event
 def explore_events(request):
-    filtered_events = event.objects.all()
+    filtered_events = event.objects.all()   
+    query = request.GET.get('q', '').strip()
+    if query:
+        filtered_events = filtered_events.filter(
+            Q(title__icontains=query) |
+            Q(event_type__icontains=query) |
+            Q(organization__name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(short_description__icontains=query) |
+            Q(location__icontains=query) |
+            Q(mode__iexact=query)
+        ).distinct()
+    p = Paginator(filtered_events, 2)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)
+    except PageNotAnInteger:
+        page_obj = p.page(1)
+    result_count = filtered_events.count()
     post_form = PostForm()
+    
     context = {
         'post_form': post_form,
-        'filtered_event': filtered_events
+        'filtered_event': page_obj,
+        'result_count': result_count,
+        'query': query,
+        'active_explore': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
     }
     return render(request, 'myapp/explore-events.html', context)
 
 def event_detail(request, id):
     event_obj = get_object_or_404(event, pk=id)
     post_form = PostForm()
-    comments = event_obj.forum.all()
+    comments = event_obj.forum.all()[::-1]
     context = {
         'event_obj': event_obj,
         'post_form' : post_form,
@@ -559,6 +718,38 @@ def saved_page(request):
         'saved_events': saved_event,
     }
     return render(request, 'myapp/saved.html', context)
+
+def calendar_page(request):
+    post_form = PostForm()
+    followed_orgs = request.user.info.followed_organization.all()
+    grouped_events = {}
+    projects_qs = False
+    
+    section = request.GET.get('section', '')
+    
+    if section == "joined-projects":
+        projects_qs = projects.objects.filter(members=request.user.info)[::-1]
+    else:
+        events_qs = event.objects.filter(organization__in=followed_orgs, start_date__gte=timezone.now()).order_by('start_date')
+        # print(events_qs)
+        events = list(events_qs)
+        for event_date, group in groupby(events, key=lambda e: e.start_date):
+            grouped_events[event_date] = list(group)
+    context = {
+        'grouped_events': grouped_events,
+        'post_form': post_form,
+        'section': section,
+        'joined_projects': projects_qs,
+    }
+    return render(request, 'myapp/calendar.html', context)
+
+@login_required
+def settings_page(request):
+    userinfo_obj = request.user.info
+    context = {
+        'userinfo_obj': userinfo_obj
+    }
+    return render(request, 'myapp/account_setting.html', context)
 
 @login_required
 def toggle_project_save(request, project_id):
@@ -634,11 +825,34 @@ def save_comment(request):
     data = {
         'username': comment.user.user.username,
         'comment': comment.content,
+        'comment_id': comment.id,
         'created_at': comment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
         'profile_image_url': profile_image_url,
         'comments_count': Post_obj.tot_comments(),
     }
     return JsonResponse(data)
+
+@login_required
+def delete_post_comment(request, comment_id):
+    if request.method == 'DELETE':
+        try:
+            comment = post_comments.objects.get(id=comment_id)
+            post_id = comment.Post.id
+            if comment.user == request.user.info:
+                comment.delete()
+                # Optionally, update comment count
+                comments_count = post_comments.objects.filter(Post__id=post_id).count()
+                return JsonResponse({
+                    'message': 'Comment deleted',
+                    'post_id': post_id,
+                    'comments_count': comments_count
+                })
+            else:
+                return
+        except post_comments.DoesNotExist:
+            return JsonResponse({'error': 'Comment not found'}, status=404)
+    else:
+        return HttpResponseNotAllowed(['DELETE'])
 
 @login_required
 def toggle_post_save(request, post_id):
@@ -656,3 +870,43 @@ def toggle_post_save(request, post_id):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+def delete_data(request):
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+        if form_type == 'project_comment':
+            comment_id = request.POST.get("comment_id")
+            try:
+                comment = project_comment.objects.get(id=comment_id, user=request.user.info)
+                comment.delete()
+                return JsonResponse({"success": True})
+            except project_comment.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Comment not found"})
+        elif form_type == 'project_reply':
+                reply_id = request.POST.get("comment_id")
+                print(reply_id)
+                try:
+                    comment = project_reply.objects.get(id=reply_id, user=request.user.info)
+                    comment.delete()
+                    return JsonResponse({"success": True})
+                except project_reply.DoesNotExist:
+                    return JsonResponse({"success": False, "error": "Comment not found"})
+        elif form_type == 'event_comment':
+            comment_id = request.POST.get("comment_id")
+            try:
+                comment = event_comment.objects.get(id=comment_id, user=request.user.info)
+                comment.delete()
+                return JsonResponse({"success": True})
+            except event_comment.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Comment not found"})
+        elif form_type == 'event_reply':
+            reply_id = request.POST.get("comment_id")
+            try:
+                comment = event_reply.objects.get(id=reply_id, user=request.user.info)
+                comment.delete()
+                return JsonResponse({"success": True})
+            except event_reply.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Comment not found"})
+        
+    return JsonResponse({"success": False, "error": "Invalid request"})
+

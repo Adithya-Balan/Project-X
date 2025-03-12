@@ -186,6 +186,90 @@ const closePost = () => {
     createPost.classList.remove('flex')
 }
 
+
+
+//Toggle for follow or unfollow users
+$(document).ready(function () {
+    $(".follow-btn").click(function (){
+        let btn = $(this);
+        let userId = btn.data("user-id");
+        let actionUrl;
+        let isFollowing = btn.find(".btn-text").text().trim().includes("Unfollow");
+
+        if (isFollowing) {
+            actionUrl = `/unfollow/${userId}/`;
+        }else {
+            actionUrl = `/follow/${userId}/`;   // URL for follow
+        }
+
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            success: function (response) {
+                if (response.status === "followed") {
+                    btn.find(".btn-text").text("<Unfollow/>");
+                    btn.removeClass("bg-[#6feb85]");
+                    btn.addClass("bg-[#464646] text-white")
+                } 
+                else if (response.status === "unfollowed") {
+                    btn.find(".btn-text").text("<Follow/>");
+                    btn.removeClass('bg-[#464646] text-white')
+                    btn.addClass("bg-[#6feb85]")
+                }
+
+                $(`.followers-count`).text(`${response.followers_count} Followers`);
+                $(`.following-count`).text(`${response.following_count} Following`);
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    });
+}); 
+
+//Follow Toggle for organization
+$(document).ready(function() {
+    $('.follow-toggle-org').click(function(e) {
+        e.preventDefault();
+        const button = $(this);
+        const orgId = button.data('org-id');
+        const type = button.data('type');
+        console.log(type);
+        const isFollow = button.text().trim() === 'Follow';
+        if (isFollow) {
+            actionUrl =  `/organization/${orgId}/follow/`
+        }else {
+            actionUrl = `/organization/${orgId}/unfollow/`   // URL for follow
+        }
+        
+        $.ajax({
+            url: actionUrl,
+            method: 'POST',
+            headers: {
+                "X-CSRFToken": getCSRFToken()
+            },
+            success: function(data) {
+                if (data.status === 'followed') {
+                    // Toggle button appearance
+                    button.text('Unfollow')
+                    button.removeClass("bg-[#6feb85]");
+                    button.addClass("bg-[#464646] text-white");
+                   
+                } else if (data.status === 'unfollowed') {
+                    button.text('Follow');
+                    button.removeClass('bg-[#464646] text-white');
+                    button.addClass("bg-[#6feb85]");
+                }
+                $(`#followers-count-${orgId}`).text(`${data.followers_count} Followers`);
+            },
+            error: function(xhr) {
+                alert(xhr.responseJSON?.message || 'An error occurred');
+            }
+        });
+    });
+});
+
 // #Toggle like for post
 $(document).ready(function() {
     $(".like-container").click(function() {
@@ -217,7 +301,7 @@ $(document).ready(function() {
 });
 
 
-// for toggling the comments
+//For toggling the comments
 const commentBtn = document.querySelectorAll('.commentBtn')
 const commentsSection = document.querySelectorAll('.commentsSection')
 commentBtn.forEach((element, i) => {
@@ -231,12 +315,19 @@ commentBtn.forEach((element, i) => {
     })
 });
 
-//for saving post comments
+//For saving post comments
 $(document).ready(function(){
     $(document).on("submit", ".postCommentForm", function(event){
         event.preventDefault();
         var form = $(this);
         var commentText = form.find("input[name='comment']").val();
+
+        if(commentText.trim() === "") {
+            alert("Comment cannot be empty!");
+            return;
+        }
+
+        
         var postId = form.data("post-id");
         var csrftoken = form.find("input[name='csrfmiddlewaretoken']").val();
 
@@ -249,13 +340,18 @@ $(document).ready(function(){
                 'csrfmiddlewaretoken': csrftoken
             },
             success: function(response) {
-                var commentHTML = "<div class='flex items-start space-x-2 mt-2'>" +
+                var commentHTML = "<div class='flex items-start space-x-2 mt-2' id='postComment" + response.comment_id + "'>" +
                                         "<a href='/user-profile/" + response.username + "'/>" +
                                            "<img src='" + response.profile_image_url + "' alt='User' class='w-8 h-8 rounded-sm object-cover'>" +
                                         "</a>" +
-                                        "<div class='bg-gray-50 p-2 rounded-lg w-full'>" +
-                                            "<a href='/user_profile/" + response.username + "/' class='text-sm font-semibold -mt-2'>" + response.username + "</a>" +
-                                            "<p class='text-sm mt-2'>" + response.comment + "</p>" +
+                                        "<div class='bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between'>" +
+                                            "<div>" +
+                                                "<a href='/user_profile/" + response.username + "/' class='text-sm font-semibold -mt-2'>" + response.username + "</a>" +
+                                                "<p class='text-sm mt-2'>" + response.comment + "</p>" +
+                                            "</div>" +
+                                            "<button class='deletePostComment' data-comment-id='" + response.comment_id + "'>" +
+                                            "<img src='/static/assets/trash-bin.svg' class='h-6 w-6 cursor-pointer'></img>" +
+                                            "</button>" +
                                         "</div>" +
                                     "</div>";
 
@@ -270,6 +366,33 @@ $(document).ready(function(){
         });
     });
 });
+
+//for deleting posts comments
+$(document).ready(function(){
+    $(document).on("click", ".deletePostComment", function(event){
+        console.log(true)
+        event.preventDefault();
+        var commentId = $(this).data("comment-id");
+        var csrftoken = $("input[name='csrfmiddlewaretoken']").val(); // Ensure your CSRF token is accessible
+
+        $.ajax({
+            url: '/delete-post-comment/' + commentId + '/',  // Ensure this URL matches your Django URL conf
+            type: 'DELETE',
+            headers: {
+                "X-CSRFToken": csrftoken  // Pass the CSRF token in the header
+            },
+            success: function(response) {
+
+                $("#postComment" + commentId).remove();
+                $("#postCommentCount" + response.post_id).text(response.comments_count);
+            },
+            error: function(xhr, errmsg, err) {
+                console.error("Error deleting comment: " + errmsg);
+            }
+        });
+    });
+});
+
 
 // Post save Toggle
 $(document).ready(function() {

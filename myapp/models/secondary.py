@@ -7,20 +7,20 @@ from phonenumber_field.modelfields import PhoneNumberField
     
 class projects(models.Model):
     TYPES = [
-    ('O', 'Open-Source'),
-    ('F', 'Freelance'),
-    ('P', 'Paid'),
-    ('L', 'Learning')
+    ('Open-Source', 'Open-Source'),
+    ('Freelance', 'Freelance'),
+    ('Paid', 'Paid'),
+    ('Learning', 'Learning')
 ]
     LEVELS = [
-        ('B', 'Beginner'),
-        ('I', 'Intermediate'),
-        ('E', 'Expert')
+        ('Beginner', 'Beginner'),
+        ('Intermediate', 'Intermediate'),
+        ('Expert', 'Expert')
     ]
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, db_index=True)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to="project/thumbnail", height_field=None, width_field=None)
-    type = models.CharField(max_length=1, blank=True, null= True, choices=TYPES)
+    type = models.CharField(max_length=50, blank=True, null= True, choices=TYPES)
     creator = models.ForeignKey(userinfo, related_name='created_projects', on_delete=models.CASCADE)
     members = models.ManyToManyField(userinfo , related_name='joined_projects', blank=True)
     file = models.FileField(upload_to='project/files', blank=True, null=True)
@@ -30,7 +30,7 @@ class projects(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     skill_needed = models.ManyToManyField(skill, related_name='projects')
     domain = models.ForeignKey(Domain, related_name='projects', on_delete=models.SET_NULL, null=True)
-    level = models.CharField(max_length=1, blank=True, null= True, choices=LEVELS)
+    level = models.CharField(max_length=50, blank=True, null= True, choices=LEVELS, db_index=True)
     
     class Meta:
         verbose_name_plural = "projects"
@@ -86,7 +86,7 @@ class post(models.Model):
     Organization = models.ForeignKey(organization, related_name='all_post', on_delete=models.CASCADE, null=True, blank=True)
     # post_type = models.CharField(max_length=10, choices=POST_TYPE, default='img')
     def __str__(self):
-        return f"Post by {self.user or self.organization} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+        return f"Post by {self.user or self.Organization} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
     
     def total_likes(self):
         return self.likes.count()
@@ -115,9 +115,14 @@ class event(models.Model):
         ('meetup', 'Meetup'),
         ('hackathon', 'Hackathon'),
         ('bootcamp', 'Bootcamp'),
-        ('pitch', 'Startup Pitch'),
+        ('startup Pitch', 'Startup Pitch'),
         ('networking', 'Networking'),
         ('other', 'Other'),
+    ]
+    EVENT_MODE = [
+        ('online', 'online'),
+        ('offline', 'offline'),
+        ('hybrid', 'Hybrid (Online & Offline)'),
     ]
     title = models.CharField(max_length=255)
     short_description = models.TextField(max_length=255, help_text="A brief overview of the event", null=True)
@@ -125,14 +130,17 @@ class event(models.Model):
     organization = models.ForeignKey(organization, related_name='events', on_delete=models.CASCADE)
     event_type = models.CharField(max_length=20, choices=EVENT_TYPE_CHOICES, default='other')
     location = models.CharField(max_length=255, blank=True, null=True)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(blank=True, null=True)
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     banner = models.ImageField(upload_to='events', help_text="Optional Banner for the event.", blank=True, default='events/default-event-banner.png')
-    mode = models.CharField(max_length=50, null=True, blank=True)
+    mode = models.CharField(max_length=50, choices=EVENT_MODE,null=True, blank=True)
     registration_link = models.URLField(blank=True, null=True)   
     
+    contact_name = models.CharField(max_length=50, blank=True, null=True)
     contact_email =  models.EmailField(blank=True, null=True)
     contact_phone = PhoneNumberField(blank=True, null=True)
     

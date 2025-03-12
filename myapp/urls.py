@@ -18,10 +18,12 @@ urlpatterns = [
     path("join-project/<int:id>/", views.join_project, name="join_project"),
     
     path("create-org", views.create_organization, name="create_organiation"),
-    path("organization/<int:id>", views.organization_page, name="organization_page"),
+    path("organization/<int:id>", views.organization_detail, name="organization_detail"),
     path("<int:org_id>/follow-list", views.org_follow_list, name="org_follow_list"),
     path('organization/<int:organization_id>/follow/', views.follow_organization, name='follow_organization'),
     path('organization/<int:organization_id>/unfollow/', views.unfollow_organization, name='unfollow_organization'),
+    path("event-form/<int:id>", views.org_event_form, name="org_event_form"),
+    path("event-form-edit/<int:org_id>/<int:event_id>", views.event_form_edit, name="event_form_edit"),
     
     path("event/<int:id>", views.event_detail, name = 'event_detail'),
     path("event/<int:id>/forum", views.event_forum, name="event_forum"),
@@ -39,4 +41,9 @@ urlpatterns = [
     path("toggle_post_save/<int:post_id>/", views.toggle_post_save, name="toggle_post_save"),
     path("save-post", views.save_post, name="save_post"),
     path("save-comment/", views.save_comment, name="save_comment"),
+    path('delete-post-comment/<int:comment_id>/', views.delete_post_comment, name='delete_post_comment'),
+    
+    path("calendar", views.calendar_page, name="calendar_page"),
+    path("settings", views.settings_page, name="settings_page"),
+    path('delete-data', views.delete_data, name = 'delete_data')
 ]

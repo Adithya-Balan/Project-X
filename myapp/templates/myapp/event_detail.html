@@ -1,6 +1,8 @@
 {% extends "myapp/base.html" %} 
 {% load static %}
+{% load custom_filter %}
 
+{% block html_class %}class="scroll-smooth scroll-pt-[50vh]"{% endblock %}
 {% block title %}{{event_obj.title}}{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
@@ -19,10 +21,7 @@
         </div>
     </div>
 
-    <div id = 'entireSection' class="mt-20 w-full pb-20 flex flex-col gap-y-10">
-        <a href="{% url 'explore_events' %}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black ml-3 mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i
-                class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">More Events</span></a>
-
+    <div id = 'entireSection' class="mt-20 w-full pb-20 flex flex-col gap-y-5">
         <div class="flex flex-col gap-y-10">
             <!-- add events section here -->
 
@@ -35,9 +34,20 @@
                                 <img src="{{event_obj.banner.url}}" alt="">
                             </div>
                             <div class="flex flex-col gap-y-5">
-                                <div class="flex gap-x-3 items-center">
-                                    <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-8 h-8">
-                                    <h1 class='text-lg font-semibold underline underline-offset-2'>{{event_obj.title}}</h1>
+                                <div class='flex flex-row justify-between'>
+                                    <div class="flex gap-x-3 items-center">
+                                        <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-8 h-8">
+                                        <h1 class='text-lg font-semibold underline underline-offset-2'>{{event_obj.title}}</h1>
+                                    </div>
+                                    {% if event_obj.organization in user.organization.all %}
+                                    <a href='{% url "event_form_edit" event_obj.organization.id event_obj.id %}' class="flex items-center gap-x-2 bg-gray-900 text-white px-2 py-1 rounded-lg hover:bg-gray-800 transition md:px-3 md:py-1 text-sm">
+                                        <img src="{% static 'assets/pencil-white.svg' %}" alt="Edit" class="w-4 h-4 md:w-3 md:h-3">
+                                        <p class="text-white font-medium text-sm hidden md:block">
+                                            Edit
+                                        </p>
+                                    </a>
+                                    {% endif %}
+                                                            
                                 </div>
                                 <div class="flex gap-x-3 ">
                                     <img src="{% static 'assets/description.svg' %}" alt="" class="w-7 h-7">
@@ -65,7 +75,7 @@
 
                                 <div class="flex gap-x-3 items-center">
                                     <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
-                                    <p>{{event_obj.start_time|date:"M j, Y"}}</p>
+                                    <p>{{ event_obj.start_date|date:"F j, Y" }}</p>
                                 </div>
                                 
                                 <div class="flex justify-between items-center">
@@ -86,7 +96,7 @@
                         <div class="flex flex-col gap-y-3 bg-white p-5">
                             <div class="font-bold text-2xl">Information</div><hr class="border-gray-300">
                             <div style="white-space: pre-wrap;">{{event_obj.description}}</div>
-                            <div class="flex flex-col items-center w-fit px-3 py-1 rounded bg-[#d2d2d2]">{{ event_obj.start_time|date:"M d, Y" }} at {{ event_obj.start_time|time:"g:i A" }} - {{ event_obj.end_time|date:"M d, Y" }} at {{ event_obj.end_time|time:"g:i A" }}</div>
+                            <div class="flex flex-col items-center w-fit px-3 py-1 rounded bg-[#d2d2d2]">{% if event_obj.start_date %}{{event_obj.start_date}} {{ event_obj.start_time|time:"g:i A" }}{% endif %}  {% if event_obj.end_date %} -- {{event_obj.end_date}} {{ event_obj.end_time|time:"g:i A" }}{% endif %} (UTC)</div>
                         </div>
                     </div>
                 </div>
@@ -94,52 +104,66 @@
 
                 <div class="lg:w-[30%] flex flex-col gap-y-5 w-full sticky top-20">
                     <div class="flex flex-col gap-y-2 bg-white">
-                        <h1 class="text-2xl bg-black text-white rounded text-center px-5 py-1">Organized By</h1>
-                        <div class="flex gap-x-3 px-3">
+                        <h1 class="text-2xl bg-[#282828] text-white rounded text-center px-5 py-1">Organized By</h1>
+                        <div class="flex gap-x-3 px-5">
                             <div class="bg-white w-full">
                                 <div class="flex gap-x-3 justify-between items-end w-full py-4 rounded-md">
                                     <div class="flex gap-x-4 items-start">
-                                        <img src="{{event_obj.organization.logo.url}}" class="w-14 h-14 rounded-md">
+                                        <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank'><img src="{{event_obj.organization.logo.url}}" class="w-14 h-14 rounded-md"></a>
                                         <div class="flex flex-col gap-y-1">
-                                            <a href='{% url "organization_page" event_obj.organization.id %}' target = '_blank' class="font-bold text-xl">{{event_obj.organization.name}}</a>
+                                            <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank' class="font-bold text-xl">{{event_obj.organization.name}}</a>
                                             <p class="text-[#575656]">{{event_obj.organization.get_industry_display}}</p>
-                                            <p class='text-[#4f4e4e]'>{{event_obj.organization.get_followers.count}} Followers</p>
-                                            <a href='{% url "organization_page" event_obj.organization.id %}' class="hover:bg-black hover:text-white transition max-[450px]:flex hidden w-fit bg-[#6feb85] px-2 py-1 rounded-lg lg:flex gap-x-2 items-center mt-2">
-                                                <i class="fa fa-eye" aria-hidden="true"></i><span>View</span></a>
+                                            <p class='text-[#4f4e4e]' id = 'followers-count-{{event_obj.organization.id}}' >{{event_obj.organization.get_followers.count}} Followers</p>
+                                            {% if user.info|is_following_org:event_obj.organization %}
+                                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-fit" data-org-id="{{ event_obj.organization.id }}">
+                                                Unfollow
+                                            </a>
+                                            {% else %}
+                                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#6feb85] w-fit"  data-org-id="{{ event_obj.organization.id }}">
+                                                Follow
+                                            </a>
+                                            {% endif %}
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div><hr class="border-gray-300">
-
-                        {% if event_obj.contact_email or event_obj.contact_phone %}
-                        <div class="flex flex-col gap-y-3 mt-2 bg-white">
-                            <div class='flex flex-row gap-x-2 ml-5 items-center'>
-                                <div><img src="{% static 'assets/contact-us.svg' %}" alt="" class="h-6 w-6"></div>
-                                <h1 class="text-lg font-bold underline">Contact</h1>
-                            </div>
-                            <div class="flex gap-x-3 mt-2 pb-5">
-                                <div class="bg-white border border-black w-1 ml-3"></div>
-                                <div class="flex gap-x-5">
-                                    <div class="flex flex-col gap-y-1"> 
-                                        {% if event_obj.contact_email %}   
-                                        <div class='flex flex-row gap-2'>
-                                            <img src="{% static 'assets/email_icon.svg' %}" class='h-5 w-5'>
-                                            <a href="mailto:{{event_obj.contact_email}}"
-                                            class="text-[#686868] break-all">{{event_obj.contact_email}}</a>
-                                        </div>
-                                        {% endif %}
-                                        
-                                        {% if event_obj.contact_phone %}
-                                        <div class='flex flex-row gap-2'>
-                                            <img src="{% static 'assets/call-receive.svg' %}" class='h-5 w-5'>
-                                            <a href="tel:{{event_obj.contact_phone}}" class="text-[#686868]">{{event_obj.contact_phone}}</a>
-                                        </div>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {% if event_obj.contact_email or event_obj.contact_phone %}
+                        <div class="flex flex-col gap-y-4 mt-2 bg-[#282828] text-white p-5 shadow-md rounded-lg border border-gray-700">
+                            <!-- Header -->
+                            <div class="flex items-center gap-x-3">
+                                <img src="{% static 'assets/contact-us-white.svg' %}" alt="Contact Icon" class="h-6 w-6">
+                                <h1 class="text-xl font-semibold uppercase tracking-wide border-b-2 border-gray-500 pb-2">Contact</h1>
+                            </div>
+                        
+                            <!-- Contact Name -->
+                            <p class="text-lg font-medium text-gray-300">{% if event_obj.contact_name %}{{ event_obj.contact_name }}{% endif %}</p>
+                        
+                            <!-- Contact Details -->
+                            <div class="flex items-start gap-x-4 mt-1 border-l-4 border-gray-600 pl-4">
+                                <div class="flex flex-col gap-y-3 text-gray-400">
+                                    {% if event_obj.contact_email %}
+                                    <div class="flex items-center gap-2">
+                                        <img src="{% static 'assets/contact_email-white.svg' %}" class="h-5 w-5">
+                                        <a href="mailto:{{ event_obj.contact_email }}" class="text-gray-300 hover:text-white hover:underline break-all transition duration-200">
+                                            {{ event_obj.contact_email }}
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                        
+                                    {% if event_obj.contact_phone %}
+                                    <div class="flex items-center gap-2">
+                                        <img src="{% static 'assets/call-receive-white.svg' %}" class="h-5 w-5">
+                                        <a href="tel:{{ event_obj.contact_phone }}" class="text-gray-300 hover:text-white hover:underline transition duration-200">
+                                            {{ event_obj.contact_phone }}
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
                         {% endif %}
                     </div>
                 </div>
@@ -168,16 +192,21 @@
                     {% if comments %}
                         <!-- single comment -->
                         {% for comment in comments %}    
-                        <div class="flex flex-col gap-y-8 px-3 pb-5">
+                        <div class="flex flex-col gap-y-8 px-3 pb-5" id='comment-{{comment.id}}'>
                             <!-- question -->
-                            <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md">
-                                <div class="flex gap-x-2 items-center">
+                            <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md" >
+                                <div class="flex gap-x-3 items-center relative">
                                     <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
                                     <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
-                                    <p class="text-[#686868]">{{comment.created_at|date:"M j, Y"}}</p>
+                                    <p class="text-[#686868] text-xs">{{comment.created_at|date:"M j, Y"}}</p>
+                                    {% if comment.user == user.info %}
+                                        <button class="absolute right-0 delete-event-comment" data-id="{{ comment.id }}" data-type = "event_comment">
+                                            <img src="{% static 'assets/trash-bin.svg' %}" class="h-6 w-6 cursor-pointer">
+                                        </button>
+                                    {% endif %}
                                 </div>
                                 <div class="flex items-end justify-between gap-x-3 relative pb-5">
-                                    <div class="break-word mt-3" id='comment-{{comment.id}}'>
+                                    <div class="break-word mt-3">
                                     {{comment.content}}
                                     </div>
                                     <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
@@ -192,12 +221,17 @@
                                     <!-- single reply -->
 
                                     {% for reply in comment.replies.all %}
-                                    <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3">
-                                        <div class="flex gap-x-2 items-center">
+                                    <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3 relative" id='reply-{{reply.id}}'>
+                                        <div class="flex gap-x-4 items-center">
                                             <img src="{{reply.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
-                                            <p class="font-bold">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                            <p class="font-bold pr-10 pl-2">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
+                                            {% if reply.user == user.info %}
+                                            <button class="right-2 delete-event-reply absolute" data-id="{{ reply.id }}" data-type = "event_reply">
+                                                <img src="{% static 'assets/trash-bin.svg' %}" class="h-6 w-6 cursor-pointer">
+                                            </button>
+                                            {% endif %}
                                         </div>
-                                        <div class="break-word" id='reply-{{reply.id}}'>
+                                        <div class="break-word">
                                             {{reply.content}}
                                         </div>
                                         <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
@@ -221,5 +255,63 @@
     </div>
     {% include "includes/create-post.html" %}
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+
+    <script>
+    $(document).ready(function () {
+        $(".delete-event-comment").click(function () {
+            var commentID = $(this).data("id");
+            var form_type = $(this).data("type");
+            var commentBox = $("#comment-" + commentID);
+    
+            $.ajax({
+                url: "{% url 'delete_data' %}", 
+                type: "POST",
+                data: {
+                    'comment_id': commentID,
+                    'form_type': form_type,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        commentBox.fadeOut(300, function () { $(this).remove(); });
+                    } else {
+                        alert("Error deleting comment.");
+                    }
+                },
+                error: function () {
+                    alert("Something went wrong!");
+                }
+            });
+        });
+    });
+    
+    $(document).ready(function () {
+        $(".delete-event-reply").click(function () {
+            var replyID = $(this).data("id");
+            var form_type = $(this).data("type");
+            var commentBox = $("#reply-" + replyID);
+    
+            $.ajax({
+                url: "{% url 'delete_data' %}", 
+                type: "POST",
+                data: {
+                    'comment_id': replyID,
+                    'form_type': form_type,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        commentBox.fadeOut(300, function () { $(this).remove(); });
+                    } else {
+                        alert("Error deleting comment.");
+                    }
+                },
+                error: function () {
+                    alert("Something went wrong!");
+                }
+            });
+        });
+    });
+    </script>
 </body>
 {% endblock  %}

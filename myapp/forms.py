@@ -3,7 +3,13 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import re
 from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position
+from django.forms.widgets import ClearableFileInput
 # from django_select2.forms import Select2MultipleWidget
+class CustomClearableFileInput(ClearableFileInput):
+    clear_checkbox_label = ''
+    initial_text = ''
+    input_text = 'Change'
+    template_name = 'widgets/custom_file_input.html'  # Optional for more customization
 
 class RegistrationForm(UserCreationForm):
     class Meta:
@@ -86,7 +92,7 @@ class EditProfileForm(forms.ModelForm):
     
     class Meta:
         model = userinfo
-        exclude = ['user', 'years_of_experience', 'skills', 'domains']
+        exclude = ['user', 'years_of_experience', 'skills', 'domains', 'timezone']
         
         widgets = {
             'bio': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Bio...'}),
@@ -95,6 +101,7 @@ class EditProfileForm(forms.ModelForm):
             'contact_email': forms.EmailInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Email'}),
             'phone': forms.TextInput(attrs={'type': 'tel','class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Phone'}),
             'gender': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white', }),
+            'availability': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white', }),
             'status': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white', }),
             'website': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'www.samplesite.in'}),
             'linkedin': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Linkedin URL'}),
@@ -283,9 +290,85 @@ class PostForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = event
-        exclude = ['organization']
-
-        
+        exclude = ['organization', 'created_at', 'updated_at']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'Event Title',
+                'id': 'eventName'
+            }),
+            'short_description': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-20',
+                'placeholder': 'Event Description',
+                'id': 'eventShortDescription'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-42',
+                'placeholder': 'Give a Brief Overview of the Event, details, rewards...',
+                'id': 'eventDescription'
+            }),
+            'event_type': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'id': 'eventType'
+            }),
+            'mode': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'id': 'eventMode'
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'Location',
+                'id': 'eventLocation',
+            }),
+            'start_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'id': 'eventStartdate'
+            }),
+            'start_time': forms.TimeInput(attrs={
+                'type': 'time',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'id': 'eventStartTime',
+            }),
+            'end_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'id': 'eventEnddate'
+            }),
+            'end_time': forms.TimeInput(attrs={
+                'type': 'time',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'id': 'eventEndTime',
+            }),
+            'registration_link': forms.URLInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'https://register-link.com',
+                'id': 'regLink'
+            }),
+            'contact_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'Organizer Name',
+                'id': 'eventOrganizerName'
+            }),
+            'contact_email': forms.EmailInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'Organizer Email',
+                'id': 'eventOrganizerEmail'
+            }),
+            'contact_phone': forms.TextInput(attrs={
+                'type': 'tel',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'Organizer Phone',
+                'id': 'eventOrganizerPhone'
+            }),
+            'banner': forms.FileInput(attrs={
+                'class': 'w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 file:bg-black file:text-white file:border-none file:px-4 file:py-2 file:rounded-md file:cursor-pointer hover:file:bg-[#d2d2d2] hover:file:text-black transition'
+            }),
+        }
+        labels = {
+            'title': 'Event Name',
+            'start_time':'Event Time'
+        }
 # skills = forms.ModelMultipleChoiceField(
     #     queryset=skill.objects.all(),
     #     widget=forms.SelectMultiple(attrs={'class': 'form-control', 'id': 'skills-select'}),

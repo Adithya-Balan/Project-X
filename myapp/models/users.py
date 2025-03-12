@@ -40,6 +40,7 @@ class userinfo(models.Model):
         ('Unavailable', 'Unavailable'),
     ], blank=True, null=True)
     # mood = models.CharField(max_length=50, blank=True, null=True)
+    timezone = models.CharField(max_length=100, default='UTC')
     
     def __str__(self):
         return self.user.username

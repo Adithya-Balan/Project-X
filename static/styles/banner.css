@@ -1,0 +1,333 @@
+.developer-banner {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    font-family: 'Orbitron', sans-serif;
+    position: relative;
+    border: 2px solid rgba(111, 235, 133, 0.4);
+    width: 100%;
+    max-width: 1200px;
+    height: 400px;
+}
+
+.circuit-pattern {
+    position: absolute;
+    opacity: 0.15;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><path d="M0 15h8v15m8-15h8v15m8-15h8" stroke="#6feb85" stroke-width="1.5"/></svg>') repeat;
+    animation: circuitShift 20s linear infinite;
+}
+
+.glow-text {
+    text-shadow: 0 0 12px #6feb85, 0 0 24px #6feb85;
+    color: #6feb85;
+    animation: glitch 2s infinite alternate;
+}
+
+.code-snippet {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.375rem 0.625rem;
+    font-family: 'Courier New', Courier, monospace;
+    color: #6feb85;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    border-radius: 3px;
+    border: 1px solid rgba(111, 235, 133, 0.3);
+}
+
+.terminal-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: #6feb85;
+    box-shadow: 0 0 4px #6feb85;
+    display: inline-block;
+    margin-right: 0.1875rem;
+    animation: pulse 1.5s infinite;
+}
+
+.binary-stream {
+    position: absolute;
+    color: #6feb85;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    opacity: 0.25;
+    letter-spacing: 1px;
+    animation: binaryFlow 4s linear infinite;
+}
+
+.pixel-burst {
+    position: absolute;
+    width: 3.125rem;
+    height: 3.125rem;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="none" stroke="#6feb85" stroke-width="0.8"/></svg>') repeat;
+    opacity: 0.2;
+    animation: burst 3s infinite;
+}
+
+.gear-icon {
+    opacity: 0.5;
+    animation: rotate 6s linear infinite;
+}
+
+.terminal-icon {
+    opacity: 0.5;
+    animation: pulse 2s infinite;
+}
+
+.dot-swarm {
+    position: absolute;
+    color: #6feb85;
+    opacity: 0.4;
+    font-size: 1rem;
+    animation: swarm 5s infinite;
+}
+
+.slogan {
+    font-family: 'Orbitron', sans-serif;
+    color: #6feb85;
+    font-size: 1.125rem;
+    opacity: 0.9;
+    text-shadow: 0 0 6px #6feb85;
+    animation: fadeInOut 3s infinite;
+}
+
+.glitch-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: rgba(111, 235, 133, 0.3);
+    opacity: 0;
+    animation: glitchLine 1s infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes binaryFlow {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes burst {
+    0% {
+        transform: scale(1);
+        opacity: 0.2;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.4;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.2;
+    }
+}
+
+@keyframes swarm {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(0.625rem, -0.625rem);
+    }
+
+    50% {
+        transform: translate(-0.625rem, 0.625rem);
+    }
+
+    75% {
+        transform: translate(0.625rem, 0.625rem);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+    }
+
+    40% {
+        transform: translate(2px, -2px);
+    }
+
+    60% {
+        transform: translate(-2px, -2px);
+    }
+
+    80% {
+        transform: translate(2px, 2px);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}
+
+@keyframes glitchLine {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.5;
+    }
+
+    20% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0.9;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 0.9;
+    }
+}
+
+@keyframes circuitShift {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 30px 30px;
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .developer-banner {
+        height: 50vh;
+    }
+
+    .glow-text {
+        font-size: 2.5rem;
+    }
+
+    .slogan {
+        font-size: 1rem;
+    }
+
+    .code-snippet {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .terminal-dot {
+        width: 0.3rem;
+        height: 0.3rem;
+    }
+
+    .binary-stream {
+        font-size: 0.65rem;
+    }
+
+    .pixel-burst {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .dot-swarm {
+        font-size: 0.875rem;
+    }
+
+    .gear-icon svg,
+    .terminal-icon svg {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .developer-banner {
+        height: 30vh;
+    }
+
+    .glow-text {
+        font-size: 1.5rem;
+    }
+
+    .slogan {
+        font-size: 0.875rem;
+    }
+
+    .code-snippet {
+        font-size: 0.5rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .terminal-dot {
+        width: 0.25rem;
+        height: 0.25rem;
+    }
+
+    .binary-stream {
+        font-size: 0.5rem;
+    }
+
+    .pixel-burst {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .dot-swarm {
+        font-size: 0.75rem;
+    }
+
+    .gear-icon svg,
+    .terminal-icon svg {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .glitch-line {
+        height: 1px;
+    }
+}

@@ -11,8 +11,8 @@
 {% block content %}
 
 <div class="flex justify-center items-center min-h-screen bg-black">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 class="text-3xl font-bold text-center text-black mb-6">Login</h2>
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md m-8">
+        <h2 class="text-3xl font-bold text-center text-black mb-6">DevMate</h2>
         
         <form method='post'>
             {% csrf_token %}
@@ -39,14 +39,17 @@
                 Login
             </button>
 
-            <a href="{% provider_login_url 'google' %}?next=/home">
-            <p class='underline mt-5'>Log In with Google</p>
-            <div class='flex items-center justify-between'>
-                    <img class = 'mt-2 h-8 w-8' src='{% static "assets/google_icon.png" %}'> 
+            <div class="flex flex-row justify-between items-center mb-4 mt-4">
+                <a href='{% url "account_reset_password" %}' class="underline">Forgot Password?</a>
+                <p>No account? <a href="{% url 'sign_up' %}" class="underline">Sign up</a></p>
+            </div>
+            
+            <div class="flex flex-col items-center mt-5">
+                <a href="{% provider_login_url 'google' %}?next=/home" class="flex flex-col items-center text-center">
+                    <p class="text-gray-600 mb-2">Log In with Google</p>
+                    <img class="h-8 w-8" src="{% static 'assets/google_icon.png' %}" alt="Google Icon">
                 </a>
-
-                <p class='ml-4'>No account? <a href="{% url 'sign_up' %}" class='underline'>Sign up</a></p>
-            </div>                
+            </div>       
                 {% comment %} <a href="{% provider_login_url 'github' %}?next=/home">Login with GitHub</a> {% endcomment %}
         </form>
     </div>
