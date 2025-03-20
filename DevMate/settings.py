@@ -163,6 +163,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
 ]
 
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 
 SOCIALACCOUNT_PROVIDERS = {
     "google":{

@@ -1,0 +1,49 @@
+<!-- templates/account/email_confirm.html -->
+{% extends "myapp/base.html" %}
+{% load static %}
+
+{% block content %}
+<body>
+<div class="flex items-center justify-center min-h-screen bg-black">
+  <!-- Blurred Background -->
+  <div class="absolute inset-0 bg-gray-900/70 backdrop-blur-lg"></div>
+
+  <!-- Confirmation Box -->
+  <div class="relative bg-white text-gray-800 rounded-xl shadow-2xl p-8 max-w-md w-full border border-gray-200 transform transition-all duration-300 hover:shadow-3xl">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center tracking-tight">Confirm Your Email</h1>
+
+    {% if confirmation %}
+      <p class="text-center text-gray-600 mb-8 leading-relaxed">
+        Please verify that <span class="font-semibold text-green-600">{{ confirmation.email_address.email }}</span> is your email address.
+      </p>
+
+      <form method="post" action="{% url 'account_confirm_email' confirmation.key %}" class="flex justify-center">
+        {% csrf_token %}
+        <button type="submit" 
+                class="px-8 py-3 bg-[#6feb85] text-black font-semibold rounded-lg shadow-md 
+                       hover:bg-green-600 hover:text-white focus:ring-4 focus:ring-green-300 
+                       transition-all duration-300 transform hover:scale-105">
+          Confirm Email
+        </button>
+      </form>
+    {% else %}
+      <div class="text-center">
+        <p class="text-red-500 font-medium mb-4">Oops! This link is invalid or has expired.</p>
+        <a href="{% url 'account_email' %}" 
+           class="inline-block px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-200">
+          Manage Emails
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<body>
+{% endblock %}
+
+{% block style %}
+<style>
+  .shadow-3xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  }
+</style>
+{% endblock %}

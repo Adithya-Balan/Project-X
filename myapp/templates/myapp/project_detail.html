@@ -31,7 +31,7 @@
                     </div>
                     <div class="flex flex-col gap-y-2">
                         <div><span>Issued by</span> <span>@{{project.creator.user.username}}</span></div>
-                        <div class="text-[#686868]">{{project.created_at}}</div>
+                        <div class="text-[#686868]">{{project.created_at|date:"F j, Y" }}</div>
                     </div>
                     <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]  ml-auto" data-project-id = "{{ project.id }}">
                         <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
@@ -110,7 +110,7 @@
                         <div><i class="fa-solid fa-map-marker-alt"></i> &nbsp;{{project.creator.location}}</div>
                     </div>
 
-                    <div class='text-base'><span class="font-bold" id='membercount'>{{project.tot_member}}</span> <span>Members</span></div>
+                    <a href='{% url "project_joined_members" project.id %}' class='text-base'><span class="font-bold" id='membercount'>{{project.tot_member}}</span> <span>Members</span></a>
 
                     <div class="flex gap-x-2 bg-[#6feb8627] px-3 py-2">
                         <div class="w-1 bg-[#6feb85]"></div>

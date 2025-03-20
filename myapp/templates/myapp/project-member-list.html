@@ -1,16 +1,21 @@
 {% extends "myapp/base.html" %} 
 {% load static %}
+{% load custom_filter %}
 
-{% block html_class %}class="scroll-smooth scroll-pt-[50vh]"{% endblock %}
-{% block title %}{{project.title}}{% endblock %} 
-{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+
+{% block title %}{{project_obj.title}}-Joined{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+<link rel="stylesheet" href="{% static 'styles/banner.css' %}"/>
+{% endblock %} 
+
 
 {% block content %}
+        
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
-    <!-- z-20 -->
+    <!-- popup -->
     <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
         <div class="flex flex-col gap-y-2">
             <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
@@ -19,13 +24,142 @@
         </div>
     </div>
 
-    <div id = 'entireSection' class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
-        <div class='mx-auto flex flex-col gap-y-2'>
-            <p>{{project.title}}</p>
-            <img src='{{project.image.url}}' class='w-1/3 h-1/3'>
+    <!-- main section -->
+    <div id="entireSection" class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
+        <!-- sidenav -->
+        {% include "includes/sidenav.html" %}
+        <!-- list section -->
+        <div class="relative flex mt-24 lg:mt-24 md:w-full px-2 flex-[5] pb-16 w-full justify-center items-start max-[1300px]:flex-col-reverse max-[1300px]:item-center gap-5 max-[1300px]:items-center">
+        
+            <div class="flex flex-col w-full md:w-[500px]">
+                <div class="flex flex-col gap-y-3 mt-4 p-2 bg-white rounded-md">
+                    {% for member in joined_members %}        
+                    <div class="px-3 py-2 rounded-md flex w-full items-center gap-x-4 gap-y-2 justify-between min-[360px]:flex-row max-[320px]:items-start">
+                        <div class="flex gap-x-4 items-center">
+                            <div class="shrink-0">
+                                <a href='{% url "user_profile" member.user.username %}'>
+                                    <img src="{{ member.profile_image.url }}" class="rounded-lg w-14 h-14 shrink-0" alt="">
+                                </a>
+                            </div>
+                            <div class="flex flex-col w-[75%] gap-y-1">
+                                <a href='{% url "user_profile" member.user.username %}' class="font-bold cursor-pointer hover:underline transition">
+                                    {{ member.user.first_name }} {{ member.user.last_name }}
+                                </a>
+                                <p class="text-[#686868]">@{{ member.user.username }}</p>
+                            </div>
+                        </div>
+                        <div class="shrink-0">
+                            {% if user.info|is_following:member %}
+                            <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white px-3 py-2 w-[110px] text-center rounded-md hover:scale-105 transition" data-user-id="{{ member.id }}">
+                                <span class="btn-text">&lt;Unfollow/&gt;</span>
+                            </a>
+                            {% else %}
+                            <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] text-black px-3 py-2 w-[120px] text-center rounded-md hover:scale-105 transition" data-user-id="{{ member.id }}">   
+                                <span class="btn-text">&lt;Follow/&gt;</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if not forloop.last %}
+                        <hr class="border-t border-gray-300">
+                    {% endif %}                
+                    {% endfor %}
+                </div>
+                {% comment %} pagination {% endcomment %}
+                <div class="flex justify-center mt-16 pb-8">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
+                        {% if joined_members.has_previous %}
+                            <a href="?page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
+                                &laquo; First
+                            </a>
+                            <a href="?page={{ joined_members.previous_page_number }}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
+                                Previous
+                            </a>
+                        {% endif %}
+                
+                        <span class="text-black font-medium">
+                            Page <span class="font-semibold">{{ joined_members.number }}</span> of {{ joined_members.paginator.num_pages }}
+                        </span>
+                
+                        {% if joined_members.has_next %}
+                            <a href="?page={{ joined_members.next_page_number }}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
+                                Next
+                            </a>
+                            <a href="?page={{ joined_members.paginator.num_pages }}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
+                                Last &raquo;
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                
+            </div>
+            
+            <!-- your event ui -->
+            <div class="flex flex-col w-full md:w-[34rem] rounded-lg shadow-lg overflow-hidden max-[1300px]:static sticky top-20">
+                <svg class="w-full h-48" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#000000; stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1a1a1a; stop-opacity:1" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+            
+                    <rect width="100%" height="100%" fill="url(#bgGradient)" rx="5" ry="5" />
+            
+                    <text x="50%" y="40%" fill="white" font-size="24" font-weight="bold" text-anchor="middle" font-family="Arial">
+                        {{ project_obj.title }}
+                    </text>
+            
+                    <text x="50%" y="65%" fill="#6FEB85" font-size="18" text-anchor="middle" font-family="Arial" filter="url(#glow)">
+                        {{ project_obj.tot_member }} Users Joined
+                    </text>
+            
+                    <text x="15" y="30" fill="#6FEB85" font-size="20" font-family="Arial">
+                        &lt;/&gt;
+                    </text>
+            
+                    <path d="M 0 190 Q 50 140, 100 190 T 200 190 T 300 190 T 400 190 T 500 190 T 600 190" 
+                          stroke="#6FEB85" stroke-width="2" fill="none" stroke-dasharray="6,6">
+                        <animate attributeName="d" values="
+                            M 0 190 Q 50 140, 100 190 T 200 190 T 300 190 T 400 190 T 500 190 T 600 190;
+                            M 0 195 Q 50 145, 100 195 T 200 195 T 300 195 T 400 195 T 500 195 T 600 195;
+                            M 0 190 Q 50 140, 100 190 T 200 190 T 300 190 T 400 190 T 500 190 T 600 190"
+                            dur="3s" repeatCount="indefinite"/>
+                    </path>
+            
+                    <circle cx="80" cy="160" r="5" fill="#6FEB85">
+                        <animate attributeName="cy" values="160;155;160" dur="2.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="450" cy="155" r="5" fill="#6FEB85">
+                        <animate attributeName="cy" values="135;130;135" dur="3.2s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            
+                <div class="flex justify-between p-4 bg-white">
+                    <div class="border px-4 py-2 border-black rounded-md text-center text-gray-800 font-medium">
+                        {{project_obj.created_at|date:"F j, Y" }}
+                    </div>
+                    <a href='{% url "project_detail" project_obj.id %}' class="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition font-medium">
+                        View
+                    </a>
+                </div>
+            </div>
+               
         </div>
+
     </div>
 
+    <!-- create post -->
     {% include "includes/create-post.html" %}
+
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+</body>
 {% endblock  %}

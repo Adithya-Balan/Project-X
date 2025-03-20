@@ -12,7 +12,6 @@
 
 
 {% block content %}
-
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
@@ -53,7 +52,7 @@
                     <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
                     <div class="flex items-center gap-x-2  w-fit justify-center max-[450px]:w-full">
                         <form method="GET" action="{% url 'explore-project' %}" class="flex gap-x-3 items-center">
-                            <input type="text"  name="q" value="{{ query }}" class="w-80 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
+                            <input type="text"  name="q" value="{{ query }}" class="w-70 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
                                 <button type="submit"><img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6"></button>
                         </form>
                         <div class="lg:hidden flex" onclick="openFilter()">
@@ -70,24 +69,22 @@
                     {% for project in filtered_project %}
                     <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full">
                         <div class="flex items-center justify-between gap-x-5">
-                            <div class="flex items-start w-full gap-x-1">
-
-                                <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover"></a>
+                            <div class="flex justify-start items-start w-full md:gap-x-5 gap-x-2">
+                                <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
                                 <div class="w-5/6 md:w-[90%]">
-                                    <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a><br>
-                                    <div class='break-words mt-2'>{{project.description|truncatechars:200}}</div>
+                                    <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a>
+                                    <div>{{project.description|truncatewords:25}}</div>
                                     <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
                                         <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
-                                            <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span> <span>{{project.tot_member}} Users</span>
+                                            <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span>
+                                            <span>{{project.tot_member}} Users</span>
                                         </div>
                                         <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="absolute right-3 top-2 flex items-start gap-x-5">
-                                {% comment %} <i class="text-xl fa-solid fa-certificate">F</i> {% endcomment %}
                                 <p class="text-xs text-gray-700">{{project.type|default:""}}</p>
-
                                 <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
                                     <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
                                 </div>
@@ -102,7 +99,6 @@
                                 <div class="underline">{{project.domain.name}}</div>
                             </div>
                             <div class="flex items-center gap-x-2 text-[#686868]">
-
                                 <!-- <p class="px-2 py-1 text-black border border-black rounded-md">Free</p> -->
                                 <a href='{% url "project_detail" project.id%}' class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.2]">View</a>
                             </div>

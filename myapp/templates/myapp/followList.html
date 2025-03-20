@@ -158,8 +158,8 @@
                     </div>
                     <hr class="border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
-                        </div>
+                        <a href='{% url "project_joined_members" project.id %}' class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
+                        </a>
                         <a href='{% url "explore-project" %}?domain={{ project.domain.id }}' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
                             {{project.domain}}</a>
                     </div>

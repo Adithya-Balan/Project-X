@@ -14,7 +14,7 @@
     <!-- popup -->
     <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
         <div class="flex flex-col gap-y-2">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
+            <a href = "{% url 'settings_page' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Account center</a>
             <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
             <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
         </div>
@@ -32,7 +32,7 @@
                 <div class="flex gap-x-1 flex-wrap gap-y-2 mt-8 relative">
                     <div class="flex flex-col gap-y-2 items-center">
                         <div class="flex gap-x-1 items-center bg-black text-white px-2 py-2 rounded-lg">
-                            <div id="exploreTitle" onclick="getAgenda()" class="cursor-pointer">{% if section == "" %}Upcoming Events{% else %}Joined Projects{% endif %}</div>
+                            <div id="exploreTitle" onclick="getAgenda()" class="cursor-pointer">{% if section == "joined-projects" %}Joined Projects{% else %}Upcoming Events{% endif %}</div>
                             <img src="{% static 'assets/down.svg' %}" alt="" class="w-5 h-5"  onclick="getAgenda()">
                         </div>
                         <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded"
@@ -46,69 +46,132 @@
                     </div>
                 </div>
             </div>
+            {% if section == 'joined-projects' %}
             <div class="space-y-10">
-                <!-- all projects and events shown here -->
-                {% if section == "" or section == 'upcoming-events' %}
-                    {% if grouped_events %}
-                    {% for event_date, events in grouped_events.items %}
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="bg-black text-white py-4 px-6 rounded-lg font-bold text-center md:static sticky top-20 z-[1] max-[w-100]">
-                            {{ event_date|date:"M d Y" }}
-                        </div>
-                        <div class="flex flex-col gap-6 md:w-5/6 p-5 md:p-0">
 
-                            {% for event in events %}
-                            <div class="relative flex flex-col md:flex-row w-full gap-5 bg-white p-3 pb-5 rounded-2xl">
-                                <div class="max-[500px]:w-full w-96 aspect-video overflow-hidden bg-[#d4d4d4] relative border">
-                                    <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover object-top">
-                                </div>
-                                <div class="flex flex-col gap-y-3 items-start w-full">
-                                    <div class="flex justify-between pt-2 items-end">
-                                        <div class="flex flex-col gap-y-2 mt-2">
-                                            <div class="flex gap-x-2 items-center">
-                                                <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-7 h-7">
-                                                <div class="font-bold">{{event.title}}</div>
+                {% if joined_projects %}
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex flex-col gap-6 md:w-5/6 p-5 md:p-0">
+                        <!-- Event Card 1 -->       
+                        {% for project in joined_projects %}
+                        <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full">
+                            <div class="flex items-center justify-between gap-x-5">
+                                <div class="flex justify-start items-start w-full md:gap-x-5 gap-x-2">
+                                    <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
+                                    <div class="w-5/6 md:w-[90%]">
+                                        <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a>
+                                        <div>{{project.description|truncatewords:25}}</div>
+                                        <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
+                                            <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
+                                                <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span>
+                                                <span>{{project.tot_member}} Users</span>
                                             </div>
-                                            <div class="flex gap-x-2 items-start">
-                                                <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
-                                                <div class="text-[#686868]">{{event.get_event_type_display}}</div>
-                                            </div>
-                                            <div class="flex gap-x-2 items-start">
-                                                <img src="{% static 'assets/organization.svg' %}" alt="" class="w-7 h-7">
-                                                <div class="text-[#686868]">{{event.short_description|truncatewords:25}}</div>
-                                            </div>
-                                            <div class="flex gap-x-2 items-center">
-                                                <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
-                                                <p class='text-[#686868]'>{{event.start_date}}</p>
-                                            </div>
+                                            <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
                                         </div>
                                     </div>
-                                    <div class='flex flex-row mt-1 justify-between w-full items-center'>
-                                        <a href='{% url "event_detail" event.id %}'
-                                            class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center">
-                                            View
-                                        </a>
-                                        <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
-                                            <i class="text-xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
-                                        </div>
+                                </div>
+                                <div class="absolute right-3 top-2 flex items-start gap-x-5">
+                                    <p class="text-xs text-gray-700">{{project.type|default:""}}</p>
+                                    <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
+                                        <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
+                            <hr class="border-t border-gray-200">
+                            <div class="flex items-center justify-between gap-x-5">
+                                <div class="flex items-center gap-x-5">
+                                    {% if project.github_link %}
+                                    <a href='{{project.github_link}}' target='_blank'><i class="text-2xl fa-brands fa-github cursor-pointer"></i></a>
+                                    {% endif %}  
+                                    <div class="underline">{{project.domain.name}}</div>
+                                </div>
+                                <div class="flex items-center gap-x-2 text-[#686868]">
+                                    <!-- <p class="px-2 py-1 text-black border border-black rounded-md">Free</p> -->
+                                    <a href='{% url "project_detail" project.id%}' class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.2]">View</a>
+                                </div>
+                            </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <!-- if no project and events -->
+                </div>
+                {% else %}
+                <div class="flex  flex-col w-full justify-center">
+                    <div>
+                        <img src="sad.svg" alt="" class="w-96">
+                    </div>
                     <div class="flex  flex-col w-full justify-center">
                         <div>
                             <img src="{% static 'assets/sad1.svg' %}" alt="" class="w-56 lg:w-70">
                         </div>
-                        <div class="text-lg mt-10 font-light ">You currently have no upcoming events</div>
+                        <div class="text-lg mt-10 font-light ">Currenty You didn't Join in any Projects. <a class='text-base underline' href='{% url "explore-project" %}'>Explore Projects</a></div>
                     </div>
-                    {% endif %}
+                </div>
+                {% endif %}
+
+            </div>
+            {% else %}
+            <div class="space-y-10">
+                <!-- all projects and events shown here -->
+                {% if grouped_events %}
+                {% for event_date, events in grouped_events.items %}
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="bg-black text-white py-4 px-6 rounded-lg font-bold text-center md:static sticky top-20 z-[1] max-[w-100]">
+                        {{ event_date|date:"M d Y" }}
+                    </div>
+                    <div class="flex flex-col gap-6 md:w-5/6 p-5 md:p-0">
+
+                        {% for event in events %}
+                        <div class="relative flex flex-col md:flex-row w-full gap-5 bg-white p-3 pb-5 rounded-2xl">
+                            <div class="max-[500px]:w-full w-96 aspect-video overflow-hidden bg-[#d4d4d4] relative border">
+                                <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="flex flex-col gap-y-3 items-start w-full">
+                                <div class="flex justify-between pt-2 items-end">
+                                    <div class="flex flex-col gap-y-2 mt-2">
+                                        <div class="flex gap-x-2 items-center">
+                                            <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-7 h-7">
+                                            <div class="font-bold">{{event.title}}</div>
+                                        </div>
+                                        <div class="flex gap-x-2 items-start">
+                                            <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
+                                            <div class="text-[#686868]">{{event.get_event_type_display}}</div>
+                                        </div>
+                                        <div class="flex gap-x-2 items-start">
+                                            <img src="{% static 'assets/organization.svg' %}" alt="" class="w-7 h-7">
+                                            <div class="text-[#686868]">{{event.short_description|truncatewords:25}}</div>
+                                        </div>
+                                        <div class="flex gap-x-2 items-center">
+                                            <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
+                                            <p class='text-[#686868]'>{{event.start_date}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='flex flex-row mt-1 justify-between w-full items-center'>
+                                    <a href='{% url "event_detail" event.id %}'
+                                        class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center">
+                                        View
+                                    </a>
+                                    <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
+                                        <i class="text-xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- if no project and events -->
+                <div class="flex  flex-col w-full justify-center">
+                    <div>
+                        <img src="{% static 'assets/sad1.svg' %}" alt="" class="w-56 lg:w-70">
+                    </div>
+                    <div class="text-lg mt-10 font-light ">You currently have no upcoming events</div>
+                </div>
                 {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
 

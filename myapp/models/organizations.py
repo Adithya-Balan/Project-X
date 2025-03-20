@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import User
 from . import userinfo
 from django.urls import reverse
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 # Create your models here.    
@@ -89,7 +90,7 @@ class organization(models.Model):
     organization_type = models.CharField(max_length=50, choices=ORGANIZATION_TYPES, default='Private')
     founded_date = models.DateField(null=True, blank=True)
     contact_email = models.EmailField(null=True, blank=True)
-    phone = models.CharField(max_length=14, blank=True, null=True)
+    phone = PhoneNumberField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)  
     linkedin = models.URLField(blank=True, null=True) 
     twitter = models.URLField(blank=True, null=True) 

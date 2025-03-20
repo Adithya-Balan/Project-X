@@ -91,6 +91,13 @@
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.phone.label}}</p>
                    {{ep_form.phone}}
+                   {% if ep_form.phone.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.phone.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
@@ -186,8 +193,8 @@
                 <p>{{cp_form.end_date.label}}</p>
                {{cp_form.end_date}}
                <div class="flex gap-x-2">
-                {{exp_form.till_now}}
-                <label for="presentDate">{{exp_form.till_now.label}}</label>
+                {{cp_form.till_now}}
+                <label for="presentDate">{{cp_form.till_now.label}}</label>
             </div> 
             </div>
         </div>
@@ -287,20 +294,23 @@
             {{edu_form.degree}}
         </div>
 
-        <div class="flex gap-x-3 w-full" id="dateSecEducation">
+        <div class="flex gap-x-3 w-full">
             <div class="flex flex-col gap-y-1 w-full">
                 <p>{{edu_form.start_date.label}}</p>
                 {{edu_form.start_date}}
             </div>
             <div class="flex flex-col gap-y-1 w-full">
                 <p>{{edu_form.end_date.label}}</p>
-                {{ edu_form.end_date }}
+               {{edu_form.end_date}}
             </div>
         </div>
-        <div class="flex gap-x-2">
-            {{edu_form.till_now}}
-            <label for="presentDate">{{edu_form.till_now.label}}</label>
-        </div>
+        {% if edu_form.errors %}
+                <div class="text-red-500 text-sm">
+                    {% for error in edu_form.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         <div class="self-center flex flex-row gap-x-5">
             <button type="submit" name="action" value="save" class="bg-[#6feb85] text-black px-3 py-1 rounded-lg cursor-pointer">Save</button>
             {% if edu_form.name.value %}
@@ -385,10 +395,6 @@
             <div class="flex flex-col gap-y-1 w-full">
                 <p>{{project_form.end_date.label}}</p>
                {{project_form.end_date}}
-                <div class="flex gap-x-2">
-                    {{project_form.till_now}}
-                    <label for="presentDate">{{project_form.till_now.label}}</label>
-                </div>
             </div>
         </div>
         <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>

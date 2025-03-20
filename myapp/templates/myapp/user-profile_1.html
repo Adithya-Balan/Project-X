@@ -89,10 +89,9 @@
 
                     <!-- overview section -->
                     {% if section == 'overview' or section == '' %}
-                    <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-10">
+                    <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-9">
                         <div class="flex flex-col text-justify gap-y-3">
-                            <h1 class="text-xl font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>
-                            <p class="text-justify">
+                            {% if userinfo_obj.user.first_name %}<h1 class="text-xl font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>{% else %}<h1 class="text-xl font-bold">{{userinfo_obj.user.username}}</h1>{% endif %}                            <p class="text-justify">
                                 {% if userinfo_obj.bio %}{{userinfo_obj.bio}}{% else %}Not Updated Yet...{% endif %}
                             </p>
                         </div>
@@ -104,10 +103,9 @@
                             <div class="flex flex-wrap gap-x-5 gap-y-2">
                                 {% for link, url in social_links.items %}
                                 {% if url %}
-                                <a href="{{url}}" target="_blank"
-                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
-                                    <i class="text-2xl fa-brands fa-{{link}}"></i>
-                                    <p class="text-[#6feb85] hidden md:block">{{link|capfirst}}</p>
+                                <a href="{{ url }}" target="_blank" class="flex items-center gap-x-3 bg-green-100 px-3 py-2 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">
+                                    <i class="text-2xl fa-brands fa-{{ link }}"></i>
+                                    <p class="hidden md:block">{{ link|capfirst }}</p>
                                 </a>
                                 {% endif %}
                                 {% endfor %}
@@ -124,34 +122,35 @@
                             <div class="absolute right-0 top-5 cursor-pointer"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""
                                     class="h-7 w-7" onclick="openEditCurrentPosition()"></div>
                             {% endif %}
-                            <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="text-xl font-light text-gray-600">Current Position</h1>
-                            </div>
+                            <h1 class="text-xl font-semibold mb-2">{Current Position}</h1>
                             {% if userinfo_obj.current_position.name%}
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
-                                    <img src="{% static 'assets/current-position-logo.png' %}" alt=""
-                                        class="rounded-lg w-14 h-14">
+                                    <img src="{% static 'assets/work-exp.svg' %}" alt=""
+                                        class="rounded-lg w-12 h-12">
                                 </div>
                                 <div class="w-4/5">
                                     <h1 class="text-xl font-semibold">{{userinfo_obj.current_position.name}}</h1>
                                     <p class="text-[#686868]">{{userinfo_obj.current_position.role}}</p>
-                                    <div class='mt-2'>{{userinfo_obj.current_position.description}}</div>
+                                    <div class='mt-2 text-[#686868]'>{{userinfo_obj.current_position.description}}</div>
                                     <div class='{% if userinfo_obj.current_position.description %}mt-4{% endif %}'>
-                                        {% if userinfo_obj.current_position.start_date and userinfo_obj.current_position.end_date %}
-                                        <div class="text-[#686868]">{{userinfo_obj.current_position.start_date|date:"F Y"}} - {{userinfo_obj.current_position.end_date|date:"F Y"}}</div>
+                                    <div class="text-[#686868]">
+                                        {% if userinfo_obj.current_position.start_date and userinfo_obj.current_position.end_date and not userinfo_obj.current_position.till_now %}
+                                            {{ userinfo_obj.current_position.start_date|date:"F Y" }} - {{ userinfo_obj.current_position.end_date|date:"F Y" }}
+                                        {% elif userinfo_obj.current_position.start_date and userinfo_obj.current_position.till_now %}
+                                            {{ userinfo_obj.current_position.start_date|date:"F Y" }} - Present
                                         {% elif userinfo_obj.current_position.start_date %}
-                                        <div class="text-[#686868]">{{userinfo_obj.current_position.start_date|date:"F Y"}} - Present</div>
-                                        {% elif userinfo_obj.current_position.end_date%}
-                                        <div class="text-[#686868]">{{userinfo_obj.current_position.end_date|date:"F Y"}}</div>
+                                            {{ userinfo_obj.current_position.start_date|date:"F Y" }}
+                                        {% elif userinfo_obj.current_position.end_date %}
+                                            {{ userinfo_obj.current_position.end_date|date:"F Y" }}
                                         {% endif %}
+                                    </div>
                                     </div>
                                 </div>
                             </div>
                             {% else %}
                             <div class='flex items-start justify-start gap-x-5'>
-                                <img src="{% static 'assets/current-position-logo.png' %}" alt=""
-                            class="rounded-lg w-14 h-14">
+                                <img src="{% static 'assets/work-exp.svg' %}" alt="" class="rounded-lg w-12 h-12">
                             <p class="text-base font-light text-gray-600 pb-3 mt-3">Not Updated Yet...</p>
                             </div>
                             {% endif %}
@@ -165,11 +164,11 @@
                                     class="h-7 w-7" onclick="openEditEducation()"></div>
                             {% endif %}
                             <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="text-xl font-light text-gray-600">Education</h1>
+                                <h1 class="text-xl font-semibold">Education</h1>
                             </div>
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
-                                    <img src="{% static 'assets/college-logo.png' %}" alt=""
+                                    <img src="{% static 'assets/degree-hat.svg' %}" alt=""
                                         class="rounded-lg w-14 h-14">
                                 </div>
                                 <div class="w-4/5" id = 'edu'>
@@ -182,11 +181,14 @@
                                             <p class="text-[#686868]">{{userinfo_obj.education.field_of_study}}</p>
                                         {% endif %}
 
-                                        {% if userinfo_obj.education.start_date == none or userinfo_obj.education.end_date == none %}
-                                            <p class="text-[#686868]">{% if userinfo_obj.education.start_date %}{{ userinfo_obj.education.start_date|date:"Y" }}{% else %}{{userinfo_obj.education.end_date|date:"Y"}}{% endif %}</p>
-                                        {% else %}
-                                            <p class="text-[#686868]">{{ userinfo_obj.education.start_date|date:"Y" }} - {{userinfo_obj.education.end_date|date:"Y"}}</p>
-                                        {% endif %}
+                                        <p class="text-[#686868]">
+                                            {% if userinfo_obj.education.start_date and userinfo_obj.education.end_date %}
+                                                {{ userinfo_obj.education.start_date|date:"Y" }} - {{ userinfo_obj.education.end_date|date:"Y" }}
+                                            {% else %}
+                                                {{ userinfo_obj.education.start_date|date:"Y" }}{{ userinfo_obj.education.end_date|date:"Y" }}
+                                            {% endif %}
+                                        </p>
+                                        
                                         
                                     {% else %}
                                     <p class="text-base font-light text-gray-600 pb-3 mt-3">Not Updated Yet...</p>
@@ -197,44 +199,57 @@
                     </div>
 
                     <!-- experience section -->
-                    <div class="flex relative flex-[3] px-5 py-2 bg-white rounded-md gap-x-5">
+                    <div class="relative px-5 py-2 bg-white rounded-md">
                         {% if user == userinfo_obj.user %}
-                        <div class="absolute right-5 top-5 cursor-pointer"><img src="{% static 'assets/plus-edit.svg' %}" alt=""
-                                class="h-7 w-7" onclick="openEditExp()"></div>
+                        <div class="absolute right-5 top-5 cursor-pointer">
+                            <img src="{% static 'assets/plus-edit.svg' %}" alt="" class="h-7 w-7" onclick="openEditExp()">
+                        </div>
                         {% endif %}
-                        <div class="w-1 bg-[#00000096]"></div>
+                    
                         <div class="flex flex-col gap-y-5">
                             <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="mt-5 text-xl font-bold">{ Experience }</h1>
+                                <h1 class="mt-5 text-xl font-bold pb-2">{ Experience }</h1>
                             </div>
+                    
                             {% if exp_obj %}
                             {% for exp in exp_obj %}
-                            <div class="flex items-start justify-start gap-x-5">
-                                <div class="">
-                                    <img src="{% static 'assets/work-exp.png' %}" alt="" class="rounded-lg w-14 h-14">
-                                </div>
-                                <div class="w-4/5">
-                                    <div class='flex flex-row gap-3 items-center'>
-                                        <h1 class="text-xl font-bold">{{exp.name}}</h1> 
-                                        {% if user == userinfo_obj.user %}<div class="cursor-pointer"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt="" class="h-5 w-5" onclick="openEditExp()"></div>{% endif %}
-                                    </div>                                    
-                                    <p class="text-[#686868]">{{exp.role}}</p><br>
+                            <!-- Experience Entry -->
+                            <div class="flex gap-x-5 items-start border-l-4 border-black pl-5">
+                                <img src="{% static 'assets/work-exp.svg' %}" alt="" class="w-12 h-12">
+                    
+                                <div class="w-full min-w-0">
+                                    <h1 class="text-xl font-bold">{{ exp.name }}</h1>
+                    
+                                    <p class="text-[#686868]">{{ exp.role }}</p>
+                                    {% if exp.description %}<p class="text-[#686868] mt-3">{{ exp.description|default:""}}</p>{% endif %}
                                     {% if exp.start_date and exp.end_date %}
-                                    <div class="text-[#686868]">{{exp.start_date|date:"Y"}} - {{exp.end_date|date:"Y"}}</div>
+                                    <div class="text-[#686868] mt-5">{{ exp.start_date|date:"M Y" }} - {{ exp.end_date|date:"M Y" }}</div>
                                     {% elif exp.start_date %}
-                                    <div class="text-[#686868]">{{exp.start_date|date:"Y"}} - Present</div>
-                                    {% elif exp.end_date%}
-                                    <div class="text-[#686868]">{{exp.end_date|date:"Y"}}</div>
+                                    <div class="text-[#686868] mt-5">{{ exp.start_date|date:"M Y" }} - Present</div>
+                                    {% elif exp.end_date %}
+                                    <div class="text-[#686868] mt-5">{{ exp.end_date|date:"M Y" }}</div>
                                     {% endif %}
                                 </div>
+
+                                {% if user == userinfo_obj.user %}
+                                <form method="POST" action="{% url 'delete_data' %}" class="cursor-pointer">
+                                    {% csrf_token %}
+                                    <input type = 'hidden' name = 'form_type' value = 'delete_exp_obj'>
+                                    <input type = 'hidden' name='exp_id' value='{{exp.id}}'>
+                                    <button type="submit">
+                                        <img src="{% static 'assets/trash-bin.svg' %}" alt="Delete" class="h-6 w-6">
+                                    </button>
+                                </form>                                
+                                {% endif %}
                             </div>
-                            <hr class="border-t border-gray-300 {% if userinfo_obj.experience.objects.last == exp %}{% endif %}">
+                    
+                            <hr class="border-t border-gray-300">
                             {% endfor %}
                             {% else %}
                             <p class="text-base font-light text-gray-600 pb-3">Not Updated Yet...</p>
                             {% endif %}
                         </div>
-                    </div>
+                    </div>                    
                     {% endif %}
 
                     {% comment %} project section {% endcomment %}
@@ -442,8 +457,8 @@
                     </div>
                     <hr class="border-t border-gray-300">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-                        <div class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
-                        </div>
+                        <a href='{% url "project_joined_members" project.id %}' class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
+                        </a>
                         <a href='{% url "explore-project" %}?domain={{ project.domain.id }}' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] rounded-md">
                             {{project.domain}}</a>
                     </div>

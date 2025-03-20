@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.views import View
 from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
@@ -100,16 +100,15 @@ def user_profile(request, user_name):
     if request.user.info.skills.all():
         suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
     else:
-        suggested_project = projects.objects.all()[:5] #For user, with no skill
-    if request.user.info == userinfo_obj:
-        #Edit options
+        suggested_project = projects.objects.all()[:5] #For user, with no skill    
+           
+    if request.user.info == userinfo_obj: #Edit options
         edu_form = EditEducationForm(instance=request.user.info.education)
         exp_form = EditExperienceForm()
         editprofile_form = EditProfileForm(instance=request.user.info)
         project_form = UserProjectForm()
         skill_form = EditSkillForm(instance=request.user.info)
         cp_form = EditCurrentPositionForm(instance=request.user.info.current_position)
-        
         
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -134,6 +133,8 @@ def user_profile(request, user_name):
             elif action == 'delete':
                 request.user.info.education.delete()
                 education.objects.create(user = request.user.info)
+                redirect_url = reverse("user_profile", args=[request.user.username])
+                return redirect(f"{redirect_url}")
                 
         elif form_type == 'editprofile':
             editprofile_form = EditProfileForm(request.POST, request.FILES, instance = request.user.info)
@@ -166,7 +167,9 @@ def user_profile(request, user_name):
                     open_cp_flag = True   
             elif action == 'delete':
                 request.user.info.current_position.delete()
-                current_position.objects.create(user = request.user.info)      
+                current_position.objects.create(user = request.user.info)
+                redirect_url = reverse("user_profile", args=[request.user.username])
+                return redirect(f"{redirect_url}")
         elif form_type == 'skill':
             skill_form = EditSkillForm(request.POST, instance=request.user.info)
             if skill_form.is_valid():
@@ -542,23 +545,21 @@ def project_detail(request, id):
     return render(request, 'myapp/project_detail.html', context)
 
 @login_required
-def project_detail_members(request, id):
+def project_joined_members(request, id):
     project = get_object_or_404(projects, id = id)
     members =  project.members.all()
     post_form = PostForm()
     
-    p = Paginator(members, 10)
+    p = Paginator(members, 7)
     page_number = request.GET.get('page')
     try:
         page_obj = p.page(page_number)
     except PageNotAnInteger:
         page_obj = p.page(1)
     context = {
-        'project': project,
-        'joined_members': members,
+        'project_obj': project,
         'post_form': post_form,
-        'page_obj': page_obj,
-        
+        'joined_members': page_obj,
     }
     return render(request, 'myapp/project-member-list.html', context)
 @login_required
@@ -907,6 +908,11 @@ def delete_data(request):
                 return JsonResponse({"success": True})
             except event_reply.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Comment not found"})
+        elif form_type == 'delete_exp_obj':
+            Id = request.POST.get("exp_id")
+            print(Id)
+            experience.objects.get(id = Id).delete()
+            redirect_url = reverse("user_profile", args=[request.user.username])
+            return redirect(f"{redirect_url}")
         
     return JsonResponse({"success": False, "error": "Invalid request"})
-

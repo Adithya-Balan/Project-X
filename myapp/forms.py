@@ -1,3 +1,4 @@
+from datetime import datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -42,38 +43,45 @@ class OrganizationForm(forms.ModelForm):
     class Meta:
         model = organization
         exclude = ['user', 'followers']
-    
-        help_texts = {
-            'name': "Organization Name",
-            # ''
-        }
+
         widgets = {
             'logo': forms.ClearableFileInput(attrs={
                 'class': 'border border-gray-700 p-2 rounded-lg w-full file:bg-black file:text-white file:border-none file:px-4 file:py-2 file:rounded-lg cursor-pointer'
-            })
+            },),
+            "name": forms.TextInput(attrs={"placeholder": "Enter organization name"}),
+            "description": forms.Textarea(attrs={"placeholder": "Enter a brief description about your organization"}),
+            "phone": forms.TextInput(attrs={'type': 'tel', "placeholder": "Enter phone number (e.g., +1 234 567 890)"}),
+            "website": forms.URLInput(attrs={"placeholder": "organization website URL (if any)"}),
+            "linkedin": forms.URLInput(attrs={"placeholder": "https://www.linkedin.com/company/organization-name"}),
+            "github": forms.URLInput(attrs={"placeholder": "https://github.com/organization-name"}),
+            "twitter": forms.URLInput(attrs={"placeholder": "https://twitter.com/organization-handle"}),
+            "location": forms.TextInput(attrs={"placeholder": "Enter headquarters location (City, Country)"}),
+            'contact_email': forms.EmailInput(attrs={'placeholder': 'Email'}),
+            "instagram": forms.URLInput(attrs={"placeholder": "https://www.instagram.com/organization-name"}),
+            "discord": forms.URLInput(attrs={"placeholder": "https://discord.com/invite/organization-link"}),
         }
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
+    # def clean_phone(self):
+    #     phone = self.cleaned_data.get('phone')
         
-        if not phone:
-            return phone 
+    #     if not phone:
+    #         return phone 
         
-        # Ensure length is between 10 and 14
-        if not (10 <= len(phone) <= 14):
-            raise forms.ValidationError("Phone number must be between 10 and 14 digits.")
+    #     # Ensure length is between 10 and 14
+    #     if not (10 <= len(phone) <= 14):
+    #         raise forms.ValidationError("Phone number must be between 10 and 14 digits.")
 
-        # Check if phone number contains only digits, allowing an optional leading '+'
-        if not re.match(r'^\+?[0-9]+$', phone):
-            raise forms.ValidationError("Phone number can only contain digits and an optional leading '+'.")
+    #     # Check if phone number contains only digits, allowing an optional leading '+'
+    #     if not re.match(r'^\+?[0-9]+$', phone):
+    #         raise forms.ValidationError("Phone number can only contain digits and an optional leading '+'.")
 
-        # Ensure it starts correctly (either '+' for international or a valid starting digit)
-        if phone.startswith('+'):
-            if len(phone) < 11:  # Example: "+91XXXXXXXXXX"
-                raise forms.ValidationError("Invalid international phone number.")
-        elif not phone[0].isdigit() or phone[0] in "012345":
-            raise forms.ValidationError("Phone number must start with a valid digit (6-9 for India).")
+    #     # Ensure it starts correctly (either '+' for international or a valid starting digit)
+    #     if phone.startswith('+'):
+    #         if len(phone) < 11:  # Example: "+91XXXXXXXXXX"
+    #             raise forms.ValidationError("Invalid international phone number.")
+    #     elif not phone[0].isdigit() or phone[0] in "012345":
+    #         raise forms.ValidationError("Phone number must start with a valid digit (6-9 for India).")
 
-        return phone
+    #     return phone
 class ProjectCommentForm(forms.ModelForm):
     class Meta:
         model = project_comment
@@ -167,26 +175,33 @@ class EditEducationForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: Harvard University'}),
             'field_of_study': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: Computer Science'}),
             'degree': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: B.Tech'}),
-            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
-            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
-            'till_now': forms.CheckboxInput(attrs={'id': 'presentDate'}),
+            'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
+            'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
         }                                                               
         labels = {
             'name': 'University Name',
             'field_of_study': 'Course',
             'till_now': 'Currently Pursuing',
+            'end_date': 'End date (or expected)',
         }
         error_messages = {
             'name': {'required':'University name is required',},
             'field_of_study': {'required': 'Enter a Valid course',}
         }
-        def clean(self):
-            cleaned_data = super().clean()
-            present = cleaned_data.get('till_now')
-            if present:
-                cleaned_data['end_date'] = None
-            return cleaned_data
+    def clean_start_date(self):
+        print("hello")
+        start_date = self.cleaned_data.get("start_date")
+        print(start_date)
+        if start_date:
+            return datetime.strptime(start_date, "%Y-%m").date().replace(day=1)  # Convert YYYY-MM to YYYY-MM-01
+        return None
 
+    def clean_end_date(self):
+        end_date = self.cleaned_data.get("end_date")
+        if end_date:
+            return datetime.strptime(end_date, "%Y-%m").date().replace(day=1)  # Convert YYYY-MM to YYYY-MM-01
+        return None
+        
 class UserProjectForm(forms.ModelForm):
     class Meta:
         model = user_project
@@ -218,21 +233,28 @@ class EditCurrentPositionForm(forms.ModelForm):
             'name': 'Enter your Current Position',
             'role': 'Enter your Role',
             'description': 'Explain Your Role',
+            'till_now': 'Currently Working',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Company Name'}),               
             'role': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Role'}),      
             'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Briefly Describe your Role.'}),
-            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
-            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),                       
+            'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
+            'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),                       
         }
-        
-    def clean(self):
-        cleaned_data = super().clean()
-        present = cleaned_data.get('till_now')
-        if present:
-            cleaned_data['end_date'] = None
-        return cleaned_data
+    def clean_start_date(self):
+        print("hello")
+        start_date = self.cleaned_data.get("start_date")
+        print(start_date)
+        if start_date:
+            return datetime.strptime(start_date, "%Y-%m").date().replace(day=1)  # Convert YYYY-MM to YYYY-MM-01
+        return None
+
+    def clean_end_date(self):
+        end_date = self.cleaned_data.get("end_date")
+        if end_date:
+            return datetime.strptime(end_date, "%Y-%m").date().replace(day=1)  # Convert YYYY-MM to YYYY-MM-01
+        return None
 
 class EditExperienceForm(forms.ModelForm):
     class Meta:
@@ -247,19 +269,11 @@ class EditExperienceForm(forms.ModelForm):
             'role': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Role'}),
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
-            'till_now': forms.CheckboxInput(attrs={'id': 'presentDate'}),
         }
         error_messages = {
             'name': {'required':'Company name is required',},
             'role': {'required': 'Enter a Valid role',}
         }
-        
-    def clean(self):
-        cleaned_data = super().clean()
-        present = cleaned_data.get('till_now')
-        if present:
-            cleaned_data['end_date'] = None
-        return cleaned_data
 
 class EditSkillForm(forms.ModelForm):
     class Meta:

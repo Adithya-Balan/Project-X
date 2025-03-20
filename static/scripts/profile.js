@@ -134,26 +134,6 @@ const closeEditEducation = () => {
     console.log(editEducation)
 }
 
-// till now function when the check box is clicked for experience
-document.getElementById("presentDate").addEventListener("click", function () {
-    if (this.checked) {
-        tillNow();
-    } else {
-        notTillNow();
-    }
-});
-
-// if check box is clicked
-const tillNow = () => {
-    document.getElementById('endDate').classList.add('hidden')
-    document.getElementById('dateSec').classList.add('items-center')
-}
-
-// if check box is not clicked
-const notTillNow = () => {
-    document.getElementById('endDate').classList.remove('hidden')
-    document.getElementById('dateSec').classList.remove('items-center')
-}
 
 const openEditSkill = () => {
     const entireSection = document.getElementById('entireSection')

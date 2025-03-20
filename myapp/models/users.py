@@ -79,7 +79,7 @@ class education(models.Model):
     def __str__(self):
         return f"{self.id}-{self.name}"
     
-class current_position(models.Model):
+class current_position(models.Model):  #Auto create.
     user = models.OneToOneField(userinfo, on_delete=models.CASCADE, related_name='current_position')
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)
@@ -103,16 +103,20 @@ class user_project(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(blank=True, null=True)
 
+    def __str__(self):
+        return self.name
 
-class experience(models.Model): #Auto create.
+class experience(models.Model): 
     user = models.ForeignKey(userinfo, related_name='experiences', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    role = models.TextField(max_length=500)
+    role = models.TextField(max_length=60)
     description = models.TextField(blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     till_now = models.BooleanField(default=False)
     
+    def __str__(self):
+        return self.name
 class follow(models.Model):
     follower = models.ForeignKey(userinfo, related_name='following', on_delete=models.CASCADE)
     following = models.ForeignKey(userinfo, related_name='followers', on_delete=models.CASCADE)

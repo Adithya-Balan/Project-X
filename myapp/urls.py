@@ -13,7 +13,7 @@ urlpatterns = [
     path("explore-events", views.explore_events, name="explore_events"),
     
     path("project/<int:id>", views.project_detail, name="project_detail"),
-    path("project/<int:id>/members", views.project_detail_members, name="project_detail_members"),
+    path("project/<int:id>/members", views.project_joined_members, name="project_joined_members"),
     path("project/<int:id>/forum", views.project_forum, name="project_forum"),
     path("join-project/<int:id>/", views.join_project, name="join_project"),
     
