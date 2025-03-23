@@ -13,9 +13,12 @@
         </div>
 
         <div class="flex gap-x-10">
-            <div>
+            <a href="{% url 'notification_page' %}" class="relative inline-block">
                 <i class="text-xl fa-solid fa-bell"></i>
-            </div>
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 items-center justify-center hidden text-center" id="notification-badge">
+                    0
+                </span>
+            </a>
             <div>
                 <i class="text-xl fa-solid fa-square-plus" onclick="showPostOption()"></i>
             </div>
@@ -29,12 +32,20 @@
     </nav>
     <div class="hidden top-20 right-10 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md" id="postOption">
         <div class="flex flex-col gap-y-1">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-black hover:text-white font-bold transition"
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition"
                 onclick="openPost()">Upload Post</div>
-            <div
-                class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-black hover:text-white font-bold transition">
-                Upload Project</div>
+            <a href = "{% url 'project_form_new' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition">
+                Upload Project</a>
         </div>
+    </div>
+</div>
+
+<!-- z-20 -->
+<div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
+    <div class="flex flex-col gap-y-2">
+        <a href = "{% url 'settings_page' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Account center</a>
+        <a href='{% url "manage_organization" %}' class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Manage Organization</a>
+        <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Dark Theme</div>
     </div>
 </div>
 

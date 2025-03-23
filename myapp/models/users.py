@@ -43,7 +43,7 @@ class userinfo(models.Model):
     timezone = models.CharField(max_length=100, default='UTC')
     
     def __str__(self):
-        return self.user.username
+        return self.user.username 
 
     def get_absolute_url(self):
         return reverse("user_info_detail", kwargs={"pk": self.pk})

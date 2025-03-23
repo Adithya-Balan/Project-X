@@ -11,3 +11,7 @@ def is_following(user,otheruser):
 @register.filter
 def is_following_org(userinfo, org):
     return org.followers.filter(id=userinfo.id).exists()
+
+@register.filter
+def lstrip(value):
+    return value.strip()

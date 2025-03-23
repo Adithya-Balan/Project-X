@@ -3,18 +3,40 @@
 {% if section == 'posts' %}
 <div class="mx-auto" id="savedPostSection">
     <div class="flex flex-col gap-y-6 gap-x-6 flex-wrap">
-        {% if user_post %}    
-        {% for post in user_post %}        
+        {% if post_qs %}    
+        {% for post in post_qs %}        
         <!-- Single Post -->
         <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4">
             <!-- User Info -->
-            <div class="flex items-center space-x-3">
-                <a href='{% url "user_profile" userinfo_obj.user.username  %}'>
-                <img src="{{post.user.profile_image.url}}" alt="User" class="w-10 h-10 rounded-lg object-cover"></a>
-                <div>
-                    <a href='{% url "user_profile" userinfo_obj.user.username %}' class="font-semibold">{{post.user.user.first_name}} {{post.user.user.last_name}}</a>
-                    <p class="text-xs text-gray-500">{{post.created_at}}</p>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href='{% url "user_profile" userinfo_obj.user.username %}'>
+                        <img src="{{ post.user.profile_image.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
+                    </a>
+                    <div>
+                        <a href='{% url "user_profile" userinfo_obj.user.username %}' class="font-semibold">
+                            {{ post.user.user.first_name }} {{ post.user.user.last_name }}
+                        </a>
+                        <p class="text-xs text-gray-500">{{ post.created_at }}</p>
+                    </div>
                 </div>
+                
+                <!-- More Options Button -->
+                {% if post.user == request.user.info %}
+                <div class="relative group">
+                    <button class="text-gray-500 hover:text-gray-700">
+                        •••
+                    </button>
+                    <div class="absolute right-0 bg-white shadow-md border border-gray-200 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200">
+                        <a href="{% url 'delete_post' post.id %}" class="flex items-center gap-x-1 px-4 py-2 text-red-800 hover:bg-red-100 hover:text-red-800 transition duration-200 w-full text-left">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <span>Delete</span>
+                        </a>
+                    </div>                
+                </div>
+                {% endif %}
             </div>
 
             <!-- Post Content -->

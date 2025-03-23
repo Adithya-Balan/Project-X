@@ -322,13 +322,13 @@
 </form>
 
 
-{% comment %} Edit or Add User Projects {% endcomment %}
-<form method = 'POST' class="hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editProject" enctype="multipart/form-data">
+{% comment %} Edit or Add User work {% endcomment %}
+<div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="editProject">
+<form method = 'POST' enctype="multipart/form-data" class="relative flex flex-col gap-y-3 h-full overflow-y-scroll py-10 bg-white w-full lg:w-2/5 px-5 border">
     {% csrf_token %}
-    <div class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full lg:w-2/5 px-5 border">
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditProject()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>
-        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Add Project</h1>
+        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Add Work</h1>
         <input type ='hidden' name = 'form_type' value='project'>
         <div class="flex flex-col gap-y-1 w-full">
             <p>{{project_form.name.label}}</p>
@@ -398,8 +398,8 @@
             </div>
         </div>
         <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
-    </div>
 </form>
+</div>
 
 {% comment %} Edit or skill form {% endcomment %}
 <form method = 'POST' class=" hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editSkill">

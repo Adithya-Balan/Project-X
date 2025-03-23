@@ -4,6 +4,7 @@ from .users import userinfo
 from .filter import Domain, skill
 from .organizations import organization
 from phonenumber_field.modelfields import PhoneNumberField
+from django.utils.timezone import now
     
 class projects(models.Model):
     TYPES = [
@@ -18,7 +19,7 @@ class projects(models.Model):
         ('Expert', 'Expert')
     ]
     title = models.CharField(max_length=100, db_index=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(null=True)
     image = models.ImageField(upload_to="project/thumbnail", height_field=None, width_field=None)
     type = models.CharField(max_length=50, blank=True, null= True, choices=TYPES)
     creator = models.ForeignKey(userinfo, related_name='created_projects', on_delete=models.CASCADE)
@@ -53,9 +54,8 @@ class project_comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-         return f"{self.id} Comment by {self.user.user.username} on {self.project.title}"
-     
-    
+        return f"{self.id} Comment by {self.user.user.username} on {self.project.title}"
+        
 class project_reply(models.Model):
     user = models.ForeignKey(userinfo, related_name='project_replies', on_delete=models.CASCADE)
     comment = models.ForeignKey(project_comment, related_name='replies', on_delete=models.CASCADE)
@@ -86,7 +86,7 @@ class post(models.Model):
     Organization = models.ForeignKey(organization, related_name='all_post', on_delete=models.CASCADE, null=True, blank=True)
     # post_type = models.CharField(max_length=10, choices=POST_TYPE, default='img')
     def __str__(self):
-        return f"Post by {self.user or self.Organization} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.id} Post by {self.user or self.Organization}"
     
     def total_likes(self):
         return self.likes.count()
@@ -190,6 +190,25 @@ class SavedItem(models.Model):
         tot_projects = self.project.all().count()
         tot_events = self.events.all().count()
         return {'posts': tot_posts, 'projects': tot_projects, 'events': tot_events}
+    
+class Notification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('like', 'Liked your post'),
+        ('comment', 'Commented on your post'),
+        ('follow', 'Started following you'),
+    )
+
+    user = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="notifications")
+    sender = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="sent_notifications")
+    notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=10)
+    post = models.ForeignKey(post, on_delete=models.CASCADE, null=True, blank=True)
+    post_comment = models.ForeignKey(post_comments, on_delete=models.CASCADE, null=True, blank=True) 
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"{self.sender} {self.get_notification_type_display()} {self.user}"
+
     
     
     

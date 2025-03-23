@@ -23,14 +23,6 @@
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
-    <!-- z-20 -->
-    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
-        <div class="flex flex-col gap-y-2">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
-        </div>
-    </div>
 
     <!-- main section -->
     <div id = 'entireSection' class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start justify-between">
@@ -206,7 +198,7 @@
                         </div>
                         {% endif %}
                     
-                        <div class="flex flex-col gap-y-5">
+                        <div class="flex flex-col gap-y-5 pb-4">
                             <div class="flex flex-col text-justify gap-y-3">
                                 <h1 class="mt-5 text-xl font-bold pb-2">{ Experience }</h1>
                             </div>
@@ -243,7 +235,9 @@
                                 {% endif %}
                             </div>
                     
-                            <hr class="border-t border-gray-300">
+                            {% if not forloop.last %}
+                                <hr class="border-t border-gray-300">
+                            {% endif %} 
                             {% endfor %}
                             {% else %}
                             <p class="text-base font-light text-gray-600 pb-3">Not Updated Yet...</p>
@@ -255,7 +249,7 @@
                     {% comment %} project section {% endcomment %}
                     {% if section == 'projects' %}
                         {% if user_project %}
-                        <div class="flex flex-col px-2 py-4 bg-white md:pb-4 gap-y-3 w-full">
+                        <div class="flex flex-col px-2 py-4 bg-white rounded-lg md:pb-4 gap-y-3 w-full">
 
                             <div class="relative inline-block">
                                 <!-- Dropdown trigger -->
@@ -279,29 +273,42 @@
                             </div>
 
                             {% for project in user_project %}
-                            <div class="flex flex-col gap-y-2 border border-[#6868682f] p-2 rounded-md">
-                                <div class="flex items-start w-full gap-x-3">
-                                    {% if project.media %}
-                                    <div class="w-16 h-16 flex items-center shrink-0 rounded-lg">
-                                        <img src="{{project.media.url}}" alt="" class="rounded-lg">
-                                    </div>
+                            <div class="flex flex-col gap-y-2 border border-[#6868682f] p-3 rounded-md">
+                                <div class="flex items-start w-full gap-x-1">
+                                    <div class="flex items-start w-full">
+                                        {% if project.media %}
+                                        <div class="w-16 h-16 flex items-center shrink-0 rounded-lg">
+                                            <img src="{{project.media.url}}" alt="" class="rounded-lg w-12 h-12 ml-1">
+                                        </div>
                                         {% else %}
                                         <div class="w-20 h-20">
-                                            <img src="{% static 'assets/programming-code.svg' %}" alt="" class="w-14 h-14">
+                                            <img src="{% static 'assets/programming-code.svg' %}" alt="" class="w-12 h-12 ml-1">
                                         </div>
                                         {% endif %}
-                                    <div class="flex flex-col w-4/5 gap-y-2">
-                                        <div class="font-semibold text-xl">{{project.name}}</div>
-                                        
-                                        {% if project.start_date and project.end_date %}
-                                        <div class="text-[#686868]">{{project.start_date|date:"F Y"}} - {{project.end_date|date:"F Y"}}</div>
-                                        {% elif project.start_date %}
-                                        <div class="text-[#686868]">{{project.start_date|date:"F Y"}} - Present</div>
-                                        {% elif project.end_date%}
-                                        <div class="text-[#686868]">{{project.end_date|date:"F Y"}}</div>
-                                        {% endif %}
-
-                                        <div class="pb-2">{{project.description}}</div>
+                                        <div class="flex flex-col flex-1 gap-y-2">
+                                            <div class="flex items-center w-full">
+                                                <div class="font-semibold text-xl">{{project.name}}</div>
+                                                {% if project.user == user.info %}
+                                                <form method="POST" action="{% url 'delete_data' %}" class="ml-auto">
+                                                    {% csrf_token %}
+                                                    <input type ='hidden' name='form_type' value='user_work'>
+                                                    <button type="submit" name='id' value='{{project.id}}'>
+                                                        <img src='{% static "assets/trash-bin.svg" %}' class='h-5 w-5 cursor-pointer'>
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            {% if project.start_date and project.end_date %}
+                                            <div class="text-[#686868]">{{project.start_date|date:"F Y"}} - {{project.end_date|date:"F Y"}}</div>
+                                            {% elif project.start_date %}
+                                            <div class="text-[#686868]">{{project.start_date|date:"F Y"}} - Present</div>
+                                            {% elif project.end_date %}
+                                            <div class="text-[#686868]">{{project.end_date|date:"F Y"}}</div>
+                                            {% endif %}
+                                
+                                            <div class="pb-2">{{project.description}}</div>
+                                        </div>
                                     </div>
                                 </div>
                                 {% if project.url or project.repo_link %}
@@ -310,15 +317,15 @@
                                 <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                                     
                                     {% if project.url %}
-                                    <a href= "{{project.url}}" target='_blank' class="bg-[#cecece] px-2 py-1 border  rounded-md flex gap-x-2">
-                                        <img src="{% static 'assets/link.svg' %}" alt="" class='w-5 h-5'>
-                                        <span>Link</span>
+                                    <a href= "{{project.url}}" target='_blank' class="bg-[#cecece] px-2 py-1 border flex items-center rounded-md gap-x-2">
+                                        <img src="{% static 'assets/link.svg' %}" alt="" class='w-4 h-4'>
+                                        <span class='text-sm'>Link</span>
                                     </a>
                                     {% endif %}
                                     {% if project.repo_link %}
-                                    <a href = "{{project.repo_link}}" target = '_blank' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] flex gap-x-2 rounded-md">
-                                        <img src="{% static 'assets/github.svg' %}" alt="" class='w-5 h-5'>
-                                        <span>Repo</span>
+                                    <a href = "{{project.repo_link}}" target = '_blank' class="cursor-pointer bg-[#00000031] px-2 py-1 border border-[#000000] text-[#000000] flex items-center gap-x-2 rounded-md">
+                                        <img src="{% static 'assets/github.svg' %}" alt="" class='w-4 h-4'>
+                                        <span class='text-sm'>Repo</span>
                                     </a>
                                     {% endif %}
                                 </div>
@@ -328,7 +335,7 @@
                         {% endif %}
 
                         {% if user_created_project %}
-                        <div class="flex flex-col px-2 py-4 bg-white md:pb-4 gap-y-3 w-full">
+                        <div class="flex flex-col px-2 py-4 bg-white rounded-lg md:pb-4 gap-y-3 w-full">
                             <div class="relative inline-block">
                                 <!-- Dropdown trigger -->
                                 <div class='flex flex-row items-center'>
@@ -351,7 +358,7 @@
                             </div>
                             <!-- start of 1st project -->
                             {% for project in user_created_project %}
-                            <div class="relative flex flex-col px-5 pt-3 pb-2 bg-white rounded-lg gap-y-4 w-full border border-gray-300">
+                            <div class="relative flex flex-col px-5 pt-3 pb-2 bg-white rounded-xl gap-y-4 w-full border border-gray-300">
                                 <div class="flex items-center justify-between gap-x-5 py-2">
                                     <div class="flex items-start w-full gap-x-1">
         
@@ -369,7 +376,7 @@
                                     </div>
                                     <div class="absolute right-3 top-2 flex items-start gap-x-5">
                                         {% comment %} <i class="text-xl fa-solid fa-certificate">F</i> {% endcomment %}
-                                        <p class="text-xl text-gray-700">{{project.type}}</p>
+                                        <p class="text-sm text-gray-700">{{project.type}}</p>
         
                                         <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
                                             <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>

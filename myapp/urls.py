@@ -6,6 +6,8 @@ urlpatterns = [
     path("sign-up", views.sign_up.as_view(), name="sign_up"),
     path("home", views.index, name="index"),
     path("edit-profile", views.edit_profile, name="edit_profile"),
+    path("notification", views.notification_page, name="notification_page"),
+    path('notifications/count/', views.get_notification_count, name='get_notification_count'),
     
     path("explore-dev", views.explore_dev, name="explore_dev"),
     path("explore-projects", views.explore_project, name="explore-project"),
@@ -16,8 +18,11 @@ urlpatterns = [
     path("project/<int:id>/members", views.project_joined_members, name="project_joined_members"),
     path("project/<int:id>/forum", views.project_forum, name="project_forum"),
     path("join-project/<int:id>/", views.join_project, name="join_project"),
+    path("project-form/<int:id>", views.project_form, name="project_form"), #For Existing Project
+    path('project-form', views.project_form, name='project_form_new'),   # For creating new project
     
     path("create-org", views.create_organization, name="create_organiation"),
+    path("manage-org", views.manage_organization, name="manage_organization"),
     path("organization/<int:id>", views.organization_detail, name="organization_detail"),
     path("<int:org_id>/follow-list", views.org_follow_list, name="org_follow_list"),
     path('organization/<int:organization_id>/follow/', views.follow_organization, name='follow_organization'),
@@ -40,6 +45,7 @@ urlpatterns = [
     path('toggle_like/<int:post_id>/', views.toggle_like, name = 'toggle_like'),
     path("toggle_post_save/<int:post_id>/", views.toggle_post_save, name="toggle_post_save"),
     path("save-post", views.save_post, name="save_post"),
+    path("delete-post/<int:post_id>", views.delete_post, name="delete_post"),
     path("save-comment/", views.save_comment, name="save_comment"),
     path('delete-post-comment/<int:comment_id>/', views.delete_post_comment, name='delete_post_comment'),
     

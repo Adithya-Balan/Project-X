@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import re
-from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position
+from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position, projects
 from django.forms.widgets import ClearableFileInput
 # from django_select2.forms import Select2MultipleWidget
 class CustomClearableFileInput(ClearableFileInput):
@@ -60,28 +60,7 @@ class OrganizationForm(forms.ModelForm):
             "instagram": forms.URLInput(attrs={"placeholder": "https://www.instagram.com/organization-name"}),
             "discord": forms.URLInput(attrs={"placeholder": "https://discord.com/invite/organization-link"}),
         }
-    # def clean_phone(self):
-    #     phone = self.cleaned_data.get('phone')
-        
-    #     if not phone:
-    #         return phone 
-        
-    #     # Ensure length is between 10 and 14
-    #     if not (10 <= len(phone) <= 14):
-    #         raise forms.ValidationError("Phone number must be between 10 and 14 digits.")
 
-    #     # Check if phone number contains only digits, allowing an optional leading '+'
-    #     if not re.match(r'^\+?[0-9]+$', phone):
-    #         raise forms.ValidationError("Phone number can only contain digits and an optional leading '+'.")
-
-    #     # Ensure it starts correctly (either '+' for international or a valid starting digit)
-    #     if phone.startswith('+'):
-    #         if len(phone) < 11:  # Example: "+91XXXXXXXXXX"
-    #             raise forms.ValidationError("Invalid international phone number.")
-    #     elif not phone[0].isdigit() or phone[0] in "012345":
-    #         raise forms.ValidationError("Phone number must start with a valid digit (6-9 for India).")
-
-    #     return phone
 class ProjectCommentForm(forms.ModelForm):
     class Meta:
         model = project_comment
@@ -383,13 +362,75 @@ class EventForm(forms.ModelForm):
             'title': 'Event Name',
             'start_time':'Event Time'
         }
-# skills = forms.ModelMultipleChoiceField(
-    #     queryset=skill.objects.all(),
-    #     widget=forms.SelectMultiple(attrs={'class': 'form-control', 'id': 'skills-select'}),
-    #     required=False
-    # )
-    # domains = forms.ModelMultipleChoiceField(
-    #     queryset=Domain.objects.all(),
-    #     widget=forms.SelectMultiple(attrs={'class': 'form-control', 'id': 'domains-select'}),
-    #     required=False
-    # )
+    
+class ProjectForm(forms.ModelForm):
+    skill_needed = forms.ModelMultipleChoiceField(
+        queryset=skill.objects.all(),
+        widget=forms.SelectMultiple(attrs={
+            'class': 'select2 w-full h-16 px-4 py-2 outline-none border border-gray-300 rounded-md focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-gray-800',
+            'id': 'mySelect',
+        }),
+        required=True,
+    )
+    class Meta:
+        model = projects
+        exclude = ['creator', 'members', 'created_at']
+        labels = {
+            'title': 'Project Name',
+            'description': 'Description',
+            'image': 'Thumbnail/Banner',
+            'url': 'Demo URL',
+            'github_link': 'Github-URL',
+            'skill_needed': "Required Skills",
+            'video': "Demo Video (If Any)",
+            'file': "Documentation (PDF, DOCX, PPT)",
+        }
+        help_texts = {
+            'image': 'Upload an image that represents your project',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'Project Title',
+                'id': 'projectTitle'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-40',
+                'placeholder': 'Briefly describe your project, requirements and timeline.',
+                'id': 'projectDescription'
+            }),
+            'level': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'id': 'projectLevel'
+            }),
+           
+            'github_link': forms.URLInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'https://github.com/project',
+                'id': 'regLink'
+            }),
+            'url': forms.URLInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'placeholder': 'https://project-demo.com',
+                'id': 'projectUrl'
+            }),
+            'type': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
+                'id': 'projectType'
+            }),
+            'domain': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white',
+                'placeholder': 'Select Domain relevant to Your Project',
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 file:bg-black file:text-white file:border-none file:px-4 file:py-2 file:rounded-md file:cursor-pointer hover:file:bg-[#d2d2d2] hover:file:text-black transition'
+            }),
+            'file': forms.FileInput(attrs={
+                'class': 'hidden',  # Hide the default file input
+            }),
+            'video': forms.FileInput(attrs={
+                'class': 'hidden',  # Hide the default file input
+                'accept': 'video/*',  # Accept only video files
+            }),
+            
+        }

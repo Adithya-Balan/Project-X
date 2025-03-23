@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count, Sum
 import uuid
 from django.contrib.auth.models import User
 from . import userinfo
@@ -109,4 +110,8 @@ class organization(models.Model):
     
     def get_followers(self):
         return self.followers.all()
+    
+    def get_total_likes(self):
+        tot_likes = self.all_post.annotate(num_likes=Count('likes')).aggregate(total_likes=Sum('num_likes'))['total_likes'] or 0
+        return tot_likes
     

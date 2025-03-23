@@ -1,3 +1,28 @@
 Should start in event Form date.
 
 stack operations and applications
+
+{% extends "myapp/base.html" %} 
+{% load static %}
+
+{% block title %}Create Project{% endblock %} 
+
+{% block style %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+{% endblock  %}
+    
+
+{% block content %}
+
+ {% include "includes/create-post.html" %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $('#mySelect').select2({
+            placeholder: "Select Required Skills",
+            allowClear: true
+        });
+    </script>
+</body>
+
+{% endblock %}

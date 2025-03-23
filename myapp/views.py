@@ -1,19 +1,22 @@
 import base64
 import uuid
 from django.utils import timezone
+from django.utils.timezone import now, localtime
+from datetime import timedelta
+
 import pytz
-from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm, ProjectForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, Sum, Count
 from itertools import groupby
 # from django.contrib.postgres.search import TrigramSimilarity
 
@@ -64,12 +67,51 @@ def index(request):
     print(user_tz_str, user_tz, now_utc, user_local_now)
     return render(request, 'myapp/index.html', context) 
 
+@login_required
+def notification_page(request):
+    notifications = Notification.objects.filter(user=request.user.info, is_read=False).order_by('-created_at')
+
+    # notifications.update(is_read=True)
+
+    # Group notifications by time
+    today = localtime(now()).date()
+    yesterday = today - timedelta(days=1)
+    week_ago = today - timedelta(days=7)
+
+    grouped_notifications = {
+        "Today": [],
+        "Yesterday": [],
+        "This Week": [],
+        "Older": []
+    }
+
+    for notification in notifications:
+        notification_date = localtime(notification.created_at).date()
+
+        if notification_date == today:
+            grouped_notifications["Today"].append(notification)
+        elif notification_date == yesterday:
+            grouped_notifications["Yesterday"].append(notification)
+        elif notification_date >= week_ago:
+            grouped_notifications["This Week"].append(notification)
+        else:
+            grouped_notifications["Older"].append(notification)
+
+    context = {"grouped_notifications": grouped_notifications}
+    print(grouped_notifications)
+    return render(request, 'myapp/notification.html', context)
+
+@login_required
+def get_notification_count(request):
+    unread_count = Notification.objects.filter(user=request.user.info, is_read=False).count()
+    return JsonResponse({"unread_count": unread_count})
+
 #profile-page
 @login_required
 def user_profile(request, user_name):
     # userinfo_obj = userinfo.objects.get(user__username = user_name)
     userinfo_obj = get_object_or_404(userinfo, user__username = user_name)
-    user_project = user_created_project = user_post= link_available = open_exp_flag = open_edu_flag = open_editprofile_flag = open_project_flag = open_cp_flag =editprofile_form = edu_form = exp_form = project_form = skill_form = cp_form = False
+    user_project = user_created_project = post_qs= link_available = open_exp_flag = open_edu_flag = open_editprofile_flag = open_project_flag = open_cp_flag =editprofile_form = edu_form = exp_form = project_form = skill_form = cp_form = False
     social_links = { 
     'github': userinfo_obj.github if userinfo_obj.github else None,
     'linkedin': userinfo_obj.linkedin if userinfo_obj.linkedin else None,
@@ -93,7 +135,7 @@ def user_profile(request, user_name):
                 return redirect(f'{redirect_url}?section=projects&project=created')
         
     if section == 'posts':
-        user_post = post.objects.filter(user = userinfo_obj).order_by('-created_at')
+        post_qs = post.objects.filter(user = userinfo_obj).order_by('-created_at')
     
     is_following = request.user.info.is_following(userinfo_obj)
     # Suggested Project
@@ -193,7 +235,7 @@ def user_profile(request, user_name):
         'is_following': is_following,
         'user_project': user_project,
         'user_created_project': user_created_project,
-        'user_post': user_post,
+        'post_qs': post_qs,
         'suggested_project': suggested_project,
         'ep_form': editprofile_form,
         'edu_form': edu_form,
@@ -203,6 +245,7 @@ def user_profile(request, user_name):
         'project_form': project_form,
         'cp_form': cp_form,
         'skill_list': skill_list,
+        'profile_type': 'user',
         'flag': {'open_edu_flag': open_edu_flag, 'open_exp_flag': open_exp_flag, 'open_editprofile_flag': open_editprofile_flag, 'open_project_flag': open_project_flag, 'open_cp_flag': open_cp_flag}
     }
     return render(request, 'myapp/user-profile_1.html', context)
@@ -214,6 +257,9 @@ def unfollow_user(request, otheruserinfo_id):
     user = request.user.info
     if user != otheruser:
         user.unfollow(otheruser)
+        Notify_obj = Notification.objects.filter(user=otheruser, sender=user, notification_type="follow").first()
+        if Notify_obj:  
+            Notify_obj.delete()
         return JsonResponse({"status": "unfollowed", "message": "User unfollowed Successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
     return JsonResponse({"status":"error", "message": "Invalid request."}, status = 400)
 
@@ -223,9 +269,9 @@ def follow_user(request, otheruserinfo_id):
     user = request.user.info
     if user != otheruser:
         user.follow(otheruser)
+        Notification.objects.create(user=otheruser, sender=user, notification_type="follow")
         return JsonResponse({"status": "followed", "message": "User followed successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
-    # return redirect(request.META.get('HTTP_REFERER', '/'))
     
 @login_required
 def follow_list(request, username):
@@ -308,6 +354,20 @@ def explore_organization(request):
         'query': query,
     }
     return render(request, 'myapp/explore-organization.html', context)
+
+@login_required
+def manage_organization(request):
+    org_list = request.user.organization.all()
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'delete_org':
+            org_obj = get_object_or_404(organization, id = request.POST.get('org_id'))
+            if org_obj.user == request.user:
+                org_obj.delete()    
+    context = {
+        'org_list': org_list
+    }
+    return render(request, 'myapp/manage_organization.html', context)
         
 @login_required
 def organization_detail(request, id):
@@ -334,6 +394,7 @@ def organization_detail(request, id):
     if section == 'events':
         org_events = event.objects.filter(organization = organization_obj).order_by('-created_at')
     print(org_events)
+    
     context = {
         'organization': organization_obj,
         'section': section,
@@ -344,6 +405,7 @@ def organization_detail(request, id):
         'color_active' : "bg-black text-white font-bold",
         'suggested_org': suggested_org,
         'post_form': post_form,
+        'profile_type': 'organization',
     }
     return render(request, 'myapp/organization-profile.html', context)
 
@@ -513,6 +575,35 @@ def explore_project(request):
     }
     # print(request.GET)
     return render(request,"myapp/explore-projects.html", context)
+
+@login_required
+def project_form(request, id=None):
+    post_form = PostForm()
+    form = ProjectForm() if not id else ProjectForm(instance=get_object_or_404(projects, id = id))
+        
+    if request.method == 'POST':
+        if id:
+            form = ProjectForm(request.POST, request.FILES, instance=get_object_or_404(projects, id = id))
+            if form.is_valid():
+                project = form.save()
+                return redirect(f"{reverse('project_detail', args=[project.id])}")
+        else:
+            form = ProjectForm(request.POST, request.FILES)
+            if form.is_valid():
+                print(True)
+                project = form.save(commit=False)
+                project.creator = request.user.info
+                project.save()
+                form.save_m2m()
+                print("POST data:", request.POST)
+                print("FILES:", request.FILES)
+                return redirect(f"{reverse('project_detail', args=[project.id])}")
+            
+    context = {
+        'post_form': post_form,
+        'form': form,
+    }
+    return render(request, 'myapp/project-form.html', context)
 
 @login_required
 def project_detail(request, id):
@@ -790,31 +881,60 @@ def toggle_like(request, post_id):
     if userinfo_obj in post_obj.likes.all():
         post_obj.likes.remove(userinfo_obj)
         liked = False
+        if userinfo_obj != post_obj.user:
+            Notify_obj = Notification.objects.filter(user=post_obj.user, sender=userinfo_obj, notification_type="like", post=post_obj).first()
+            print(Notify_obj)
+            if Notify_obj:
+                Notify_obj.delete()
     else:
         post_obj.likes.add(userinfo_obj)
         liked = True
-
+        if userinfo_obj != post_obj.user:
+            Notification.objects.create(user=post_obj.user, sender=userinfo_obj, notification_type="like", post=post_obj)
     return JsonResponse({'liked': liked, 'total_likes': post_obj.total_likes()}) 
 
 #for saving post
 def save_post(request):
     form = PostForm(request.POST, request.FILES)
-    if form.is_valid():
-        new_post = form.save(commit=False)
-        new_post.user = request.user.info  # Set current user's profile
-        new_post.aspect = request.POST.get("aspect_ratio", "16:9")
-        new_post.save()
-        redirect_url = reverse('user_profile', args=[request.user.username])
-        return redirect(f'{redirect_url}?section=posts')
+    action = request.POST.get('action')
+    if action == 'user-post':
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.user = request.user.info  # Set current user's profile
+            new_post.aspect = request.POST.get("aspect_ratio", "16:9")
+            new_post.save()
+            redirect_url = reverse('user_profile', args=[request.user.username])
+            return redirect(f'{redirect_url}?section=posts')
+        else:
+            return HttpResponseRedirect('/home')
     else:
-        return HttpResponseRedirect('/home')
+        if form.is_valid():
+            org = organization.objects.get(id = action)
+            new_post = form.save(commit=False)
+            new_post.Organization = org  # Set current user's profile
+            new_post.aspect = request.POST.get("aspect_ratio", "16:9")
+            new_post.save()
+            redirect_url = reverse('organization_detail', args=[org.id])
+            return redirect(f'{redirect_url}?section=posts')
+        else:
+            return HttpResponseRedirect('/home')
         
+def delete_post(request, post_id):
+    post_obj = get_object_or_404(post, id = post_id)
+    User = request.user
+    if post_obj.user == User.info:
+        post_obj.delete()
+        return redirect(f"{reverse('user_profile', args=[User.username])}?section=posts") 
+
+    elif post_obj.Organization and post_obj.Organization.user == User:
+        post_obj.delete()
+        return redirect(f"{reverse("organization_detail", args=[post_obj.Organization.id])}?section=posts") 
+    return HttpResponse("Sorry! You Can't have permission To Delete!...")
+    
 #for saving post comments
 def save_comment(request):
-    print(True)
     comment_text = request.POST.get('comment')   
     post_id = request.POST.get('post_id')
-    print(post_id)
     Post_obj = get_object_or_404(post, id=post_id)
     
     comment = post_comments.objects.create(
@@ -823,6 +943,8 @@ def save_comment(request):
         content=comment_text
     )
     profile_image_url = comment.user.profile_image.url
+    if request.user.info != Post_obj.user:
+        Notification.objects.create(user=Post_obj.user, sender=request.user.info, notification_type="comment", post_comment=comment)
     data = {
         'username': comment.user.user.username,
         'comment': comment.content,
@@ -841,7 +963,6 @@ def delete_post_comment(request, comment_id):
             post_id = comment.Post.id
             if comment.user == request.user.info:
                 comment.delete()
-                # Optionally, update comment count
                 comments_count = post_comments.objects.filter(Post__id=post_id).count()
                 return JsonResponse({
                     'message': 'Comment deleted',
@@ -880,7 +1001,8 @@ def delete_data(request):
             try:
                 comment = project_comment.objects.get(id=comment_id, user=request.user.info)
                 comment.delete()
-                return JsonResponse({"success": True})
+                comment_count = comment.project.tot_comments()
+                return JsonResponse({"success": True, "comment_count": comment_count})
             except project_comment.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Comment not found"})
         elif form_type == 'project_reply':
@@ -889,7 +1011,8 @@ def delete_data(request):
                 try:
                     comment = project_reply.objects.get(id=reply_id, user=request.user.info)
                     comment.delete()
-                    return JsonResponse({"success": True})
+                    comment_count = comment.comment.project.tot_comments()
+                    return JsonResponse({"success": True, "comment_count": comment_count})
                 except project_reply.DoesNotExist:
                     return JsonResponse({"success": False, "error": "Comment not found"})
         elif form_type == 'event_comment':
@@ -914,5 +1037,13 @@ def delete_data(request):
             experience.objects.get(id = Id).delete()
             redirect_url = reverse("user_profile", args=[request.user.username])
             return redirect(f"{redirect_url}")
-        
+        elif form_type == 'user_work':
+            Id = request.POST.get('id')
+            work_obj = get_object_or_404(user_project, id = Id)
+            if work_obj.user == request.user.info:
+                work_obj.delete()
+                return redirect(f"{reverse('user_profile', args=[request.user.username])}?section=projects")   
+            else:
+                return HttpResponse("You have No Authority to Delete.")     
     return JsonResponse({"success": False, "error": "Invalid request"})
+

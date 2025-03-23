@@ -1,0 +1,126 @@
+{% extends "myapp/base.html" %} 
+{% load static %}
+
+{% block title %}Explore Projects{% endblock %} 
+
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+
+
+
+{% block content %}
+<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+   
+    <!--navbar -->
+    {% include "includes/navbar.html" %}
+
+    <!-- Main Section -->
+    <div class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
+        <!-- Sidebar -->
+        <div
+            class="text-black w-1/5 flex-col justify-between h-[calc(100vh-57px)] sticky top-14 mt-14 py-7 bg-white shadow-lg max-[1400px]:hidden flex">
+            <div class="flex px-10">
+                <div class="flex flex-col justify-center py-3 gap-y-3 w-full">
+                    <div class="text-lg"><i class="fa-solid fa-house"></i> Home</div>
+                    <div class="text-lg"><i class="fa-solid fa-house"></i> Explore</div>
+                    <div class="text-lg"><i class="fa-solid fa-house"></i> Home</div>
+                    <div
+                        class="px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]">
+                        <i class="fa-solid fa-house"></i> Profile
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-around w-full">
+                <div><i class="text-2xl fa-solid fa-calendar-days"></i></div>
+                <div><i class="text-2xl fa-regular fa-bookmark"></i></div>
+                <div><i class="text-2xl fa-solid fa-gear"></i></div>
+            </div>
+        </div>
+
+        <!-- Notification Center -->
+        <div class="max-w-6xl mx-auto mt-28 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+                <!-- Profile Sidebar -->
+                <div
+                    class="w-full md:w-1/4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow hidden md:block">
+                    <div class="flex flex-col items-center">
+                        <img src="../assets/profile.webp" class="w-24 h-24 bg-gray-200 rounded-full object-cover"
+                            alt="Profile Picture">
+                        <h2 class="mt-4 text-xl font-semibold text-black">Aarya B</h2>
+                        <p class="text-sm text-gray-600">Student @ CIT Chennai</p>
+                        <p class="text-xs text-gray-500 mt-1">Torque AI</p>
+                    </div>
+                    <div class="mt-6 border-t pt-4 text-center">
+                        <a href="#"
+                            class="inline-block px-4 py-2 text-sm font-medium text-white bg-[#6feb85] rounded-lg hover:bg-black hover:text-[#6feb85] transition-all duration-200">View
+                            Profile</a>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="w-full md:w-3/4 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-semibold text-black">Notifications</h1>
+                        <button class="text-sm text-[#6feb85] hover:text-black font-medium transition-colors">Mark All
+                            as Read</button>
+                    </div>
+                    <div class="space-y-4">
+                        <!-- Notification 1 -->
+                        <div
+                            class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                            <img src="../assets/profile.webp" class="w-12 h-12 rounded-full object-cover" alt="User">
+                            <div class="flex-1">
+                                <p class="font-medium text-black">Amélie commented in <span
+                                        class="font-semibold text-[#6feb85]">Dashboard 2.0</span></p>
+                                <p class="text-sm text-gray-500">Friday, 3:12 PM</p>
+                                <p class="mt-2 text-gray-700 text-sm leading-relaxed">Lorem ipsum dolor sit amet
+                                    consectetur, adipisicing elit. Vero eveniet quia perferendis quasi ut...</p>
+                            </div>
+                        </div>
+
+                        <!-- Notification 2 -->
+                        <div
+                            class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                            <img src="../assets/profile.webp" class="w-12 h-12 rounded-full object-cover" alt="User">
+                            <div class="flex-1">
+                                <p class="font-medium text-black">Amélie started following you</p>
+                                <p class="text-sm text-gray-500">1 week ago</p>
+                                <p class="mt-2 bg-[#6feb85] w-fit text-black px-3 py-1 rounded">View Profile</p>
+                                <!-- <p class="mt-2 text-gray-700 text-sm">Amélie is now following you!</p> -->
+                            </div>
+                        </div>
+
+                        <!-- Notification 3 -->
+                        <div
+                            class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                            <img src="../assets/team.jpeg" class="w-12 h-12 rounded-full object-cover" alt="Team">
+                            <div class="flex-1">
+                                <p class="font-medium text-black">Asymmetric</p>
+                                <p class="text-sm text-gray-500">Friday, 3:12 PM</p>
+                                <p class="mt-2 text-gray-700 text-sm">Posted a new update</p>
+                            </div>
+                        </div>
+
+                        <!-- Notification 4 -->
+                        <div
+                            class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                            <img src="../assets/team.jpeg" class="w-12 h-12 rounded-full object-cover" alt="Team">
+                            <div class="flex-1">
+                                <p class="font-medium text-black">Asymmetric</p>
+                                <p class="text-sm text-gray-500">Friday, 3:12 PM</p>
+                                <p class="mt-2 text-gray-700 text-sm"></p>
+                            </div>
+                        </div>
+
+                        <!-- Notification 5 -->
+                        <div
+                            class="bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                            <p class="text-sm text-gray-700 leading-relaxed">GitHub was live for <span
+                                    class="font-medium text-[#6feb85]">Rubber Duck Thursdays!</span> Come cowork...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

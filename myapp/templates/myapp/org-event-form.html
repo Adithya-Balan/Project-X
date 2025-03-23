@@ -4,6 +4,7 @@
 
 {% block title %}Create Event{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+
 {% endblock %} 
     
 
@@ -13,13 +14,7 @@
     {% include "includes/navbar.html" %}
 
     <!-- phone navbar popup -->
-    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20 lg:hidden" id="popup">
-        <div class="flex flex-col gap-y-2">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
-        </div>
-    </div>
+   
 
 
     <!-- phone navbar -->
@@ -34,11 +29,8 @@
 
 
     <!-- main section -->
-    <div class="mt-24 w-full pb-20 lg:pb-10" id='entireSection'>
-        <div class="flex justify-center flex-col items-center gap-y-10 w-[90%] md:w-1/2 lg:w-[40%] bg-white lg:p-14 p-3  mx-auto">
-            <div>
-                <h1 class="text-3xl">Post the Event</h1>
-            </div>
+    <div class="mt-20 w-full pb-20 lg:pb-10" id='entireSection'>
+        <div class="flex justify-center flex-col items-center gap-y-10 w-[90%] md:w-1/2 lg:w-[40%] bg-white lg:p-14 p-3 pt-10  mx-auto">
             <div class="w-full">
                 <form method='post' enctype="multipart/form-data" class="flex flex-col gap-y-3 w-full">
                     {% csrf_token %}
@@ -185,6 +177,7 @@
         </div>
     </div>
 
+    {% include "includes/create-post.html" %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
     

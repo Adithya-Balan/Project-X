@@ -475,4 +475,23 @@ $(document).ready(function() {
         });
     });
 });
+
+function fetchNotificationCount() {
+    $.get("/notifications/count/", function(data) {
+        let count = data.unread_count;
+        if (count > 0) {
+            $("#notification-badge").text(count).show();
+        } else {
+            $("#notification-badge").hide();
+        }
+    });
+}
+
+$(document).ready(function() {
+    fetchNotificationCount();
+    setInterval(fetchNotificationCount, 10000);  // Check every 10 seconds
+});
+
+
+
 //Filters, popup for mobile, comments reply for project, dp view for profile, add posts

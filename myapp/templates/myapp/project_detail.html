@@ -1,5 +1,7 @@
 {% extends "myapp/base.html" %} 
 {% load static %}
+{% load custom_filter %}
+
 
 {% block html_class %}class="scroll-smooth scroll-pt-[50vh]"{% endblock %}
 {% block title %}{{project.title}}{% endblock %} 
@@ -11,13 +13,7 @@
     {% include "includes/navbar.html" %}
 
     <!-- z-20 -->
-    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
-        <div class="flex flex-col gap-y-2">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
-        </div>
-    </div>
+    
 
     <div id = 'entireSection' class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
 
@@ -27,7 +23,7 @@
             <div class="bg-white p-5 rounded-lg w-full md:w-3/5 flex flex-col gap-y-5">
                 <div class="flex items-center gap-x-5">
                     <div>
-                        <img src="{{project.creator.profile_image.url}}" alt="" class="w-14 h-14 rounded-full">
+                        <img src="{{project.creator.profile_image.url}}" alt="" class="w-14 h-14 rounded-lg">
                     </div>
                     <div class="flex flex-col gap-y-2">
                         <div><span>Issued by</span> <span>@{{project.creator.user.username}}</span></div>
@@ -39,7 +35,15 @@
                 </div>
                 <div class="flex flex-col gap-y-5">
                     <div class="flex flex-col gap-y-2">
-                        <div class="font-bold text-3xl">{{project.title}}</div>
+                        <div class='flex gap-x-4 items-center'>
+                            <div class="font-bold text-3xl">{{project.title}}</div>
+                            {% if project.creator == request.user.info %}
+                            <a href='{% url "project_form" project.id %}'>
+                                <img src='{% static "assets/pencil.svg" %}' class='h-5 w-5'>
+                            </a>
+                            {% endif %}
+                        </div>
+                        
                         <div class="flex gap-x-3"> 
                             {% if project.url %}
                             <a href='{{project.url}}' target='_blank'><i class="text-2xl cursor-pointer fa-solid fa-globe"></i></a>
@@ -49,11 +53,11 @@
                             {% endif %}
                         </div>
 
-                        <div class='mt-2'>
+                        <div class='mt-4'>
                             <img src="{{project.image.url}}" alt="" class='rounded-sm'>
                         </div>
                     </div>
-                    <div class="text-justify break-words pb-6">
+                    <div class="text-justify break-words" style="white-space: pre-wrap;">
                         {{project.description}}
                     </div>
                     
@@ -101,8 +105,10 @@
                                 </div>
                             {% endif %}
                         </div>
+                        {% if project.creator.user.email %}
                         <a href="mailto:{{ project.creator.user.email }}"><i class="fa-regular fa-envelope"></i> &nbsp;<span class='hover:underline '>{{project.creator.user.email}}</span></a>
-
+                        {% endif %}
+                        
                         {% if project.creator.phone %}
                         <a href='tell:+{{project.creator.phone}}'><i class="fa-solid fa-phone"></i> &nbsp;<span class='hover:underline'>{{project.creator.phone}}</span></a>
                         {% endif %}
@@ -136,7 +142,7 @@
                     <div>
                         <fieldset id = 'test' class="border border-[#0000002d] rounded-md p-3 flex flex-col gap-y-3 bg-white">
                             <legend class="px-2 text-[#686868] text-md">Skills and Expertise</legend>
-                            <div class="text-2xl font-extrabold self-start">Domain: {{project.domain}}</div>
+                            <div class="text-2xl font-extrabold self-start">Domain: {{project.domain.name}}</div>
 
                             {% if project.level %}
                             <div class="self-start">
@@ -178,8 +184,8 @@
             </div><br>
 
             <!-- all comments section -->
-            <div class="flex flex-col gap-y-10 bg-white rounded-md pb-8">
-                <div class="text-xl bg-black text-white p-2 rounded-lg text-center"> <span class="text-white">{{project.tot_comments}}</span> Comments</div>
+            <div class="flex flex-col gap-y-10 bg-white rounded-md pb-8" id='commentBox'>
+                <div class="text-xl bg-black text-white p-2 rounded-lg text-center"> <span class="text-white"  id='total_comments'>{{project.tot_comments}}</span> Comments</div>
                 
                 {% if comments %}
                     <!-- single comment -->
@@ -289,6 +295,15 @@
                     success: function (response) {
                         if (response.success) {
                             commentBox.fadeOut(300, function () { $(this).remove(); });
+                            $('#total_comments').text(response.comment_count);
+                            if (response.comment_count === 0) {
+                                $('#commentBox').html(`
+                                <div class="text-xl bg-black text-white p-2 rounded-lg text-center"> <span class="text-white"  id='total_comments'>${response.comment_count}</span> Comments</div>
+                                <div class="flex flex-col gap-y-8 px-3">
+                                    <img src="{% static 'assets/comment.svg' %}" class="h-1/2 w-1/2 mx-auto">
+                                    <p class="text-center text-lg mt-2 text-gray-600 pb-5">No comments Yet...</p>
+                                </div>`);
+                            }
                         } else {
                             alert("Error deleting comment.");
                         }
@@ -317,6 +332,7 @@
                     success: function (response) {
                         if (response.success) {
                             commentBox.fadeOut(300, function () { $(this).remove(); });
+                            $('#total_comments').text(response.comment_count);
                         } else {
                             alert("Error deleting comment.");
                         }

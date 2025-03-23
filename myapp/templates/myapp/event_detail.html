@@ -13,13 +13,7 @@
     {% include "includes/navbar.html" %}
     
     <!-- z-20 -->
-    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
-        <div class="flex flex-col gap-y-2">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
-        </div>
-    </div>
+    
 
     <div id = 'entireSection' class="mt-20 w-full pb-20 flex flex-col gap-y-5">
         <div class="flex flex-col gap-y-10">
@@ -27,27 +21,35 @@
 
             <div class="flex flex-col md:mx-10 mx-4 lg:flex-row gap-y-5 gap-x-5 min-[1300px]:mx-32 items-start">
                 <div class="lg:w-[70%]">
-                    <div class="flex gap-x-5  bg-white p-5">
+                    <div class="flex gap-x-5 bg-white p-6 rounded-xl shadow-md border border-gray-100">
                         <div class="w-2 bg-black -ml-2"></div>
                         <div class="flex flex-col gap-y-3">
+                            {% if event_obj.banner %}
                             <div>
                                 <img src="{{event_obj.banner.url}}" alt="">
                             </div>
+                                                                           
+                            {% endif %}
                             <div class="flex flex-col gap-y-5">
-                                <div class='flex flex-row justify-between'>
+                                <div class="w-full flex items-center justify-between gap-x-4">
                                     <div class="flex gap-x-3 items-center">
                                         <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-8 h-8">
-                                        <h1 class='text-lg font-semibold underline underline-offset-2'>{{event_obj.title}}</h1>
+                                        <h1 class="text-xl font-semibold underline underline-offset-4 text-gray-900">
+                                            {{event_obj.title}}
+                                        </h1>
                                     </div>
-                                    {% if event_obj.organization in user.organization.all %}
-                                    <a href='{% url "event_form_edit" event_obj.organization.id event_obj.id %}' class="flex items-center gap-x-2 bg-gray-900 text-white px-2 py-1 rounded-lg hover:bg-gray-800 transition md:px-3 md:py-1 text-sm">
-                                        <img src="{% static 'assets/pencil-white.svg' %}" alt="Edit" class="w-4 h-4 md:w-3 md:h-3">
-                                        <p class="text-white font-medium text-sm hidden md:block">
-                                            Edit
-                                        </p>
-                                    </a>
-                                    {% endif %}
-                                                            
+                                    <div class="flex items-center gap-x-4 ml-auto">
+                                        {% if event_obj.organization in user.organization.all %}
+                                            <a href="{% url 'event_form_edit' event_obj.organization.id event_obj.id %}" 
+                                               class="flex items-center gap-x-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-800 transition">
+                                                <img src="{% static 'assets/pencil-white.svg' %}" alt="Edit" class="w-4 h-4">
+                                                <span class="font-medium text-sm">Edit</span>
+                                            </a>
+                                        {% endif %}
+                                        <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event_obj.id }}">
+                                            <i class="text-xl fa-solid fa-bookmark {% if event_obj in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="flex gap-x-3 ">
                                     <img src="{% static 'assets/description.svg' %}" alt="" class="w-7 h-7">
@@ -78,21 +80,16 @@
                                     <p>{{ event_obj.start_date|date:"F j, Y" }}</p>
                                 </div>
                                 
-                                <div class="flex justify-between items-center">
-                                    <div class="flex gap-x-3 items-center">
-                                        <img src="{% static 'assets/link2.svg' %}" alt="" class="w-7 h-7">
-                                        <a href='{{event_obj.registration_link}}' class='bg-[#d2d2d2] text-black px-2 hover:bg-black hover:text-white py-1 rounded' target='_blank'>Register</a>
-                                    </div>
-
-                                    <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event_obj.id }}">
-                                        <i class="text-xl fa-solid fa-bookmark {% if event_obj in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
-                                    </div>
+                                <div class="flex gap-x-3 items-center">
+                                    <img src="{% static 'assets/link2.svg' %}" alt="" class="w-7 h-7">
+                                    <a href='{{event_obj.registration_link}}' class='bg-[#d2d2d2] text-black px-2 hover:bg-black hover:text-white py-1 rounded' target='_blank'>Register</a>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
 
-                    <div class="w-full mt-10">
+                    <div class="w-full mt-10 bg-white shadow-md border rounded-2xl border-gray-100">
                         <div class="flex flex-col gap-y-3 bg-white p-5">
                             <div class="font-bold text-2xl">Information</div><hr class="border-gray-300">
                             <div style="white-space: pre-wrap;">{{event_obj.description}}</div>
@@ -115,11 +112,11 @@
                                             <p class="text-[#575656]">{{event_obj.organization.get_industry_display}}</p>
                                             <p class='text-[#4f4e4e]' id = 'followers-count-{{event_obj.organization.id}}' >{{event_obj.organization.get_followers.count}} Followers</p>
                                             {% if user.info|is_following_org:event_obj.organization %}
-                                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-fit" data-org-id="{{ event_obj.organization.id }}">
+                                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-fit mt-1" data-org-id="{{ event_obj.organization.id }}">
                                                 Unfollow
                                             </a>
                                             {% else %}
-                                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#6feb85] w-fit"  data-org-id="{{ event_obj.organization.id }}">
+                                            <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#6feb85] w-fit mt-1"  data-org-id="{{ event_obj.organization.id }}">
                                                 Follow
                                             </a>
                                             {% endif %}

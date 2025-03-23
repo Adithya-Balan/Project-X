@@ -157,33 +157,3 @@ const closeEditSkill = () => {
 function toggleProjectDropdown() {
     document.getElementById("dropdown-project-menu").classList.toggle("hidden");
 }
-
-// #skill for select2
-// $(document).ready(function() {
-//     $('#editSkill').select2();
-// });
-
-// till now function when the check box is clicked for education
-// document.getElementById("presentDateEducation").addEventListener("click", function () {
-//     if (this.checked) {
-//         tillNowEducation();
-//     } else {
-//         notTillNowEducation();
-//     }
-// });
-
-// if check box is clicked
-// const tillNowEducation = () => {
-//     document.getElementById('endDateEducation').classList.add('hidden')
-//     document.getElementById('dateSecEducation').classList.add('items-center')
-// }
-
-// if check box is not clicked
-// const notTillNowEducation = () => {
-//     document.getElementById('endDateEducation').classList.remove('hidden')
-//     document.getElementById('dateSecEducation').classList.remove('items-center')
-// }
-
-//only for user-profile.js
-
-

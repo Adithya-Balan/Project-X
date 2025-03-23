@@ -40,10 +40,11 @@
                         onclick="resizePost(1); setAspectRatio('16:9')">16:9</div>
                 </div>
             </div>
-
-            <button type="submit" class="self-center"><button type="submit"
-                    class="bg-[#6feb85] text-black px-3 py-1">Post</button>
-            </button>
+            {% if profile_type == 'user' %}
+            <button type="submit" name="action" value="user-post" class="self-center bg-[#6feb85] text-black px-3 py-1 mt-2">Post</button>
+            {% elif profile_type == 'organization' %}
+            <button type="submit" name="action" value="{{organization.id}}"  class="self-center bg-[#6feb85] text-black px-3 py-1 mt-2">Post</button>
+            {% endif %}
         </div>
     </form>
 </div>
