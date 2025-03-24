@@ -435,8 +435,9 @@ def follow_organization(request, organization_id):
     try:
         org = organization.objects.get(id=organization_id)
         user_info = request.user.info 
-        if user_info not in org.followers.all():
+        if user_info not in org.followers.all() and user_info != org.user.info:
             org.followers.add(user_info)
+            Notification.objects.create(user=org.user.info, sender=user_info, notification_type='follow', organization=org)
             return JsonResponse({'status': 'followed', 'action': 'follow', 'message': 'You are now following this organization.', 'followers_count': org.get_followers().count()})
         else:
             return JsonResponse({'status': 'error', 'message': 'You are already following this organization.'}, status=400)
@@ -448,8 +449,9 @@ def unfollow_organization(request, organization_id):
     try:
         org = organization.objects.get(id=organization_id)
         user_info = request.user.info
-        if user_info in org.followers.all():
+        if user_info in org.followers.all() and user_info != org.user.info:
             org.followers.remove(user_info)
+            Notification.objects.filter(user=org.user.info, sender=user_info, notification_type='follow', organization=org).first().delete()
             return JsonResponse({'status': 'unfollowed', 'action': 'unfollow', 'message': 'You have unfollowed this organization.', 'followers_count': org.get_followers().count()})
         else:
             return JsonResponse({'status': 'error', 'message': 'You are not following this organization.'}, status=400)
@@ -682,13 +684,15 @@ def project_forum(request, id):
 def join_project(request, id):
     project = get_object_or_404(projects, id=id)
     userinfo_obj = get_object_or_404(userinfo, user=request.user)
-    
     if userinfo_obj in project.members.all():
         project.members.remove(userinfo_obj)
         joined = False
+        Notification.objects.filter(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project').delete()
     else:
         project.members.add(userinfo_obj)
         joined = True
+        if userinfo_obj != project.creator:
+            Notification.objects.create(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project')
     return JsonResponse({"joined": joined, "total_member": project.tot_member()})
 
 @login_required
@@ -878,19 +882,21 @@ def toggle_event_save(request, eventId):
 def toggle_like(request, post_id):
     post_obj = get_object_or_404(post, id = post_id)
     userinfo_obj = request.user.info
+    post_owner = post_obj.user if post_obj.user else post_obj.Organization.user.info if post_obj.Organization else None
+    print(post_owner)
     if userinfo_obj in post_obj.likes.all():
         post_obj.likes.remove(userinfo_obj)
         liked = False
-        if userinfo_obj != post_obj.user:
-            Notify_obj = Notification.objects.filter(user=post_obj.user, sender=userinfo_obj, notification_type="like", post=post_obj).first()
+        if userinfo_obj != post_owner and post_owner:
+            Notify_obj = Notification.objects.filter(user=post_owner, sender=userinfo_obj, notification_type="like", post=post_obj).first()
             print(Notify_obj)
             if Notify_obj:
                 Notify_obj.delete()
     else:
         post_obj.likes.add(userinfo_obj)
         liked = True
-        if userinfo_obj != post_obj.user:
-            Notification.objects.create(user=post_obj.user, sender=userinfo_obj, notification_type="like", post=post_obj)
+        if userinfo_obj != post_owner and post_owner:
+            Notification.objects.create(user=post_owner, sender=userinfo_obj, notification_type="like", post=post_obj)
     return JsonResponse({'liked': liked, 'total_likes': post_obj.total_likes()}) 
 
 #for saving post
@@ -936,15 +942,15 @@ def save_comment(request):
     comment_text = request.POST.get('comment')   
     post_id = request.POST.get('post_id')
     Post_obj = get_object_or_404(post, id=post_id)
-    
+    post_owner = Post_obj.user if Post_obj.user else Post_obj.Organization.user.info if Post_obj.Organization else None
     comment = post_comments.objects.create(
         Post=Post_obj,
         user=request.user.info,
         content=comment_text
     )
     profile_image_url = comment.user.profile_image.url
-    if request.user.info != Post_obj.user:
-        Notification.objects.create(user=Post_obj.user, sender=request.user.info, notification_type="comment", post_comment=comment)
+    if request.user.info != post_owner:
+        Notification.objects.create(user=post_owner, sender=request.user.info, notification_type="comment", post_comment=comment)
     data = {
         'username': comment.user.user.username,
         'comment': comment.content,

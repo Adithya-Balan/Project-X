@@ -196,15 +196,22 @@ class Notification(models.Model):
         ('like', 'Liked your post'),
         ('comment', 'Commented on your post'),
         ('follow', 'Started following you'),
+        ('Join_Project', 'Joined On Your Project'),
+        ('project_comment', 'Commented on Your project'),
     )
-
     user = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="notifications")
     sender = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="sent_notifications")
-    notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=10)
+    notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=50)
     post = models.ForeignKey(post, on_delete=models.CASCADE, null=True, blank=True)
     post_comment = models.ForeignKey(post_comments, on_delete=models.CASCADE, null=True, blank=True) 
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=now)
+    
+    project = models.ForeignKey(projects, on_delete=models.CASCADE, null=True, blank=True)
+    project_comment = models.ForeignKey(project_comment, null=True, blank=True, on_delete=models.CASCADE)
+    project_reply = models.ForeignKey(project_reply, on_delete=models.CASCADE, blank=True, null=True)
+    
+    organization = models.ForeignKey(organization, on_delete=models.CASCADE, null=True, blank=True)  # Organization Follow/Like/Comment
 
     def __str__(self):
         return f"{self.sender} {self.get_notification_type_display()} {self.user}"
