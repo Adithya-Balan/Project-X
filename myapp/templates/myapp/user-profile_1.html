@@ -6,9 +6,9 @@
 {% block title %}{{userinfo_obj.user.username}}{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 <link rel="stylesheet" href="{% static 'styles/banner.css' %}"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 {% endblock %} 
 {% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %} 
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css"
         integrity="sha512-087vysR/jM0N5cp13Vlp+ZF9wx6tKbvJLwPO8Iit6J7R+n7uIMMjg37dEgexOshDmDITHYY5useeSmfD1MYiQA=="
@@ -423,17 +423,37 @@
             </div>
         </div>
 
-        <!-- skill-project section -->
-        <div class="px-4 flex flex-col mt-3 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:items-start md:w-full md:gap-x-5 md:mr-3">
-            <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full">
-                <div class='flex flex-row items-center'>
-                    <h1 class="text-xl font-bold text-center mx-auto">Skills</h1>
-                    {% if request.user.info == userinfo_obj%}
-                    <img src="{% static 'assets/edit-tool-pencil.svg' %}" alt="" class="h-7 w-7" onclick="openEditSkill()">
-                    {% endif %}
+        <!-- skill section -->
+        <div class="flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:items-start md:w-full md:gap-x-5 md:mr-3">
+            <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full relative border border-gray-300">
+                {% if request.user.info == userinfo_obj%}
+                <div class="cursor-pointer absolute top-4 right-4"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""
+                        class="w-5 h-5" onclick="openAddSkill()" id="addSkillBtn">
                 </div>
-                <hr class="border-t border-gray-300">
-                <div class="flex flex-col pl-3 gap-y-2 mt-1">
+                {% endif %}
+                <div class='flex flex-row gap-x-1 mx-auto items-center'>
+                    <h1 class="text-xl font-semibold text-center">Skills</h1><hr class="border-t border-gray-300">
+                    <img src='{% static "assets/coding-svg.svg" %}' class='h-6 w-6'>
+                </div><hr class="border-t border-gray-200">
+                <form method='POST' class="flex-col gap-y-3 p-3 hidden" id="addSkillContainer">
+                    {% csrf_token %}
+                    <p class='text-sm'>Add Skills</p>
+                    <input type="hidden" name="form_type" value="skill">
+                    <div class="flex flex-col gap-y-1 w-full">
+                        {{ skill_form.skills }}
+                        {% if skill_form.skills.errors %}
+                            <div class="text-red-500 text-sm">
+                                {{ skill_form.skills.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="self-center">
+                        <button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button>
+                    </div>
+                </form>
+
+                {% comment %} Skill List {% endcomment %}
+                <div class="flex flex-col pl-3 gap-y-2 mt-1" id='skill_list_section'>
                     <div class="flex flex-wrap gap-2"> 
                         {% if skill_list %}
                             {% for skill in skill_list %}
@@ -447,6 +467,7 @@
                     </div>
                 </div>
             </div>
+
             {% comment %}Trending project section {% endcomment %}    
             <div class="flex flex-col pb-20 bg-white md:pb-4 gap-y-3 md:w-1/2 lg:w-full">
                 <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
@@ -485,14 +506,21 @@
         </div>
     </div>
 
-    {% if user == userinfo_obj.user %}
-    {% include "includes/edit-profile.html" %}
-    {% comment %} <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> {% endcomment %}
-    {% endif %}
-
     {% include "includes/create-post.html" %}
 
     {% if user == userinfo_obj.user %}
+    {% include "includes/edit-profile.html" %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#mySelect').select2({
+                placeholder: "Select skills you know",
+                allowClear: true,
+                width: '100%',
+            });
+        });
+    </script>
     <script src="{% static 'scripts/profile.js' %}"></script>
     {% endif %}
 
@@ -540,53 +568,12 @@
     </script>
     {% endif %}
 
+    <script>
+        // Project type dropdown
+        function toggleProjectDropdown() {
+        document.getElementById("dropdown-project-menu").classList.toggle("hidden");
+    }
+    </script>
 
-    {% comment %} <script>
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-            }
-        });
-        $(document).ready(function () {
-            $(".follow-btn").click(function (){
-                let btn = $(this);
-                let userId = btn.data("user-id");
-                let actionUrl;
-                let isFollowing = btn.find(".btn-text").text().trim().includes("Unfollow");
-
-                if (isFollowing) {
-                    actionUrl = `/unfollow/${userId}/`;
-                }else {
-                    actionUrl = `/follow/${userId}/`;   // URL for follow
-                }
-
-                $.ajax({
-                    url: actionUrl,
-                    type: "POST",
-                    data: {
-                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
-                    },
-                    success: function (response) {
-                        if (response.status === "followed") {
-                            btn.find(".btn-text").text("<Unfollow/>");
-                            btn.removeClass("bg-[#6feb85]");
-                            btn.addClass("bg-[#464646] text-white")
-                        } 
-                        else if (response.status === "unfollowed") {
-                            btn.find(".btn-text").text("<Follow/>");
-                            btn.removeClass('bg-[#464646] text-white')
-                            btn.addClass("bg-[#6feb85]")
-                        }
-
-                        $(`.followers-count`).text(`${response.followers_count} Followers`);
-                        $(`.following-count`).text(`${response.following_count} Following`);
-                    },
-                    error: function (xhr) {
-                        console.error("Error:", xhr.responseText);
-                    }
-                });
-            });
-        });    
-    </script> {% endcomment %}
 </body>
 {% endblock %}

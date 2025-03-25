@@ -134,26 +134,11 @@ const closeEditEducation = () => {
     console.log(editEducation)
 }
 
-
-const openEditSkill = () => {
-    const entireSection = document.getElementById('entireSection')
-    const editSkill = document.getElementById('editSkill')
-    entireSection.classList.add('blur-md')
-    editSkill.classList.remove('hidden')
-    editSkill.classList.add('flex')
-    console.log(editSkill)
-}
-
-const closeEditSkill = () => {
-    const entireSection = document.getElementById('entireSection')
-    const editSkill = document.getElementById('editskill')
-    entireSection.classList.remove('blur-md')
-    editSkill.classList.add('hidden')
-    editSkill.classList.remove('flex')
-    console.log(editSkill)
-}
-
- // Project type dropdown
-function toggleProjectDropdown() {
-    document.getElementById("dropdown-project-menu").classList.toggle("hidden");
+function openAddSkill() {
+    const addSkillBtn = document.getElementById('addSkillBtn')
+    const addSkillContainer = document.getElementById('addSkillContainer')
+    addSkillBtn.classList.toggle('rotate-45')
+    addSkillContainer.classList.toggle('hidden')
+    addSkillContainer.classList.toggle('flex')
+    document.getElementById('skill_list_section').classList.toggle('hidden')
 }

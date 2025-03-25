@@ -39,7 +39,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-y-5 w-full mb-16 md:mt-8">
+            <div class="flex flex-col gap-y-5 w-full md:mt-8">
 
                 <!-- top section, search bar and filter option -->
                 <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
@@ -58,7 +58,7 @@
                 </div>
 
                 <!-- People area fill all the people inside this div -->
-                <div class="relative flex  md:w-full px-2 pb-16">
+                <div class="relative flex  md:w-full px-2 pb-10">
                     <div class="flex flex-col items- gap-y-10 w-full">
                         <div class="flex flex-col gap-y-3">
 
@@ -82,22 +82,6 @@
                                         <span class="btn-text">&lt;Follow/&gt;</span>
                                     </a>
                                 {% endif %}
-
-                                {% comment %} {% if user.info|is_following:userinfo_obj %}
-                                <a href="javascript:void(0);" class="follow-btn px-4 py-2 rounded-md bg-[#464646] text-white" data-user-id="{{ userinfo_obj.id }}">
-                                    <span class="btn-text px-4 py-2 rounded-md">&lt;Unfollow/&gt;</span>
-                                </a> 
-                                {% else %}
-                                <a href="javascript:void(0);" class="follow-btn px-4 py-2 rounded-md bg-[#6feb85]" data-user-id="{{ userinfo_obj.id }}">
-                                    <span class="btn-text px-4 py-2 rounded-md">&lt;Follow/&gt;</span>
-                                </a>
-                                {% endif %} {% endcomment %}
-                                
-                                {% comment %} {% if user.info|is_following:dev %}
-                                <a href='{% url "unfollow_user" dev.id %}' class="bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition">Unfollow</a>
-                                {% else %}
-                                <a href='{% url "follow_user" dev.id %}' class="bg-[#6feb85] self-center px-3 py-1 rounded-md max-[450px]:m-auto hover:scale-110 transition">Follow</a>
-                                {% endif %}    {% endcomment %}
                             </div>
                             {% endfor %}
                             <!-- end of single user -->
@@ -110,20 +94,20 @@
             {% comment %} Pagination Links {% endcomment %}
             <div>
                 {% if total_result %}
-                <div class="flex justify-center mt-6 pb-20">
-                    <div class="flex items-center space-x-4">
+                <div class="flex justify-center mb-20 lg:mb-12">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
                         {% if filter_user.has_previous %}
-                            <a href="?page=1" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
-                            <a href="?page={{filter_user.previous_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                            <a href="?page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                            <a href="?page={{filter_user.previous_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Previous</a>
                         {% endif %}
                 
                         <span class="text-black">
-                            <span class="font-semibold">Page {{ filter_user.number }}</span> of {{ filter_user.paginator.num_pages }}
+                            Page<span class="font-semibold"> {{ filter_user.number }}</span> of {{ filter_user.paginator.num_pages }}
                         </span>
                 
                         {% if filter_user.has_next %}
-                            <a href="?page={{filter_user.next_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>
-                            <a href="?page={{filter_user.paginator.num_pages}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
+                            <a href="?page={{filter_user.next_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Next</a>
+                            <a href="?page={{filter_user.paginator.num_pages}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
                         {% endif %}
                     </div>
                 </div>
@@ -141,7 +125,7 @@
 
 
         <!-- filter section -->
-        <div class="absolute lg:sticky top-0 flex-col hidden mr-0 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-40px)] lg:top-5 gap-y-8 lg:flex overflow-y-scroll"
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-0 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] lg:top-5 gap-y-8 lg:flex overflow-y-scroll"
             id="openFilterParent">
             <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10   overflow-y-scroll lg:bg-white rounded-lg  bottom-2 lg:h-[calc(100%-70px)] gap-y-8 lg:flex"
                 id="filterElement">

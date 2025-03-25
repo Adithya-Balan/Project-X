@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-y-10 w-full mb-16">
+            <div class="flex flex-col gap-y-10 w-full">
                 <!-- top section, search bar and filter option -->
                 <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
                     <div class="text-[#686868] text-[18px] ">({{result_count}} Results)</div>
@@ -109,11 +109,11 @@
             <div>
                 {% comment %} Paginator nav links {% endcomment %}
                 {% if result_count %}
-                <div class="flex justify-center mt-6 pb-20">
-                    <div class="flex items-center space-x-4">
+                <div class="flex justify-center mt-10 mb-19 lg:mb-12">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
                         {% if filtered_event.has_previous %}
-                            <a href="?page=1" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
-                            <a href="?page={{filtered_event.previous_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                            <a href="?page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                            <a href="?page={{filtered_event.previous_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Previous</a>
                         {% endif %}
                 
                         <span class="text-black">
@@ -121,8 +121,8 @@
                         </span>
                 
                         {% if filtered_event.has_next %}
-                            <a href="?page={{filtered_event.next_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>
-                            <a href="?page={{filtered_event.paginator.num_pages}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
+                            <a href="?page={{filtered_event.next_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Next</a>
+                            <a href="?page={{filtered_event.paginator.num_pages}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
                         {% endif %}
                     </div>
                 </div>

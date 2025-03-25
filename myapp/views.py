@@ -69,6 +69,7 @@ def index(request):
 
 @login_required
 def notification_page(request):
+    post_form = PostForm()
     notifications = Notification.objects.filter(user=request.user.info, is_read=False).order_by('-created_at')
 
     # notifications.update(is_read=True)
@@ -97,7 +98,10 @@ def notification_page(request):
         else:
             grouped_notifications["Older"].append(notification)
 
-    context = {"grouped_notifications": grouped_notifications}
+    context = {
+        "grouped_notifications": grouped_notifications,
+        "post_form": post_form,
+    }
     print(grouped_notifications)
     return render(request, 'myapp/notification.html', context)
 
@@ -152,7 +156,7 @@ def user_profile(request, user_name):
         skill_form = EditSkillForm(instance=request.user.info)
         cp_form = EditCurrentPositionForm(instance=request.user.info.current_position)
         
-    if request.method == 'POST':
+    if request.method == 'POST' and userinfo_obj == request.user.info:
         form_type = request.POST.get('form_type')
         if form_type == 'experience':
             exp_form = EditExperienceForm(request.POST)
@@ -218,14 +222,11 @@ def user_profile(request, user_name):
                 skill_form.save()
                 redirect_url = reverse('user_profile', args=[request.user.username])
                 return redirect(f'{redirect_url}')  
-        # elif form_type == 'skill':
-        #     skill_form   = EditSkillForm(request.POST)
                 
     context = {
         'userinfo_obj': userinfo_obj,
         'social_links': social_links,
         'link_available': link_available,
-        'skill_list': skill_list,
         'exp_obj': exp_obj,
         'section': section,
         'color': {
@@ -337,7 +338,7 @@ def explore_organization(request):
             Q(location__icontains=query) 
         ).distinct()
     
-    p = Paginator(filtered_org, 5)
+    p = Paginator(filtered_org, 4)
     page_number = request.GET.get("page")
     try:
         page_obj = p.get_page(page_number)  # returns the desired page object
@@ -514,10 +515,11 @@ def edit_profile(request):
 @login_required
 def explore_project(request):
     #filter
-    domain_filter = request.GET.get('domain') #id
-    type_filter = request.GET.get('type') #name
-    skill_filter = request.GET.get('skill') #id
-    level_filter = request.GET.get('level') #name
+    domain_filter = request.GET.get('domain', '').strip()  # ID
+    type_filter = request.GET.get('type', '').strip()      # Name
+    skill_filter = request.GET.get('skill', '').strip()    # ID
+    level_filter = request.GET.get('level', '').strip()    # Name
+    
     filter_conditions = {}
     if domain_filter:
         filter_conditions["domain__id"] = domain_filter
@@ -531,7 +533,7 @@ def explore_project(request):
     if skill_filter:
         filter_project = filter_project.filter(skill_needed__id = skill_filter)
 
-    applied_filter = (domain_filter or type_filter or skill_filter or level_filter)
+    applied_filter = bool(domain_filter or type_filter or skill_filter or level_filter)
     
     if not applied_filter:
         filter_project = projects.objects.all()[:20]

@@ -107,8 +107,8 @@
                 <div class="flex justify-center mt-6">
                     <div class="flex items-center space-x-4">
                         {% if user_list.has_previous %}
-                        <a href="?list={{request.GET.list}}&page=1" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
-                        <a href="?list={{request.GET.list}}&page={{user_list.previous_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                        <a href="?list={{request.GET.list}}&page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                        <a href="?list={{request.GET.list}}&page={{user_list.previous_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Previous</a>
                         {% endif %}
 
                         <span class="text-black">
@@ -116,8 +116,8 @@
                         </span>
 
                         {% if user_list.has_next %}
-                        <a href="?list={{request.GET.list}}&page={{user_list.next_page_number}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>                            
-                        <a href="?list={{request.GET.list}}&page={{user_list.paginator.num_pages}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; Last</a>
+                        <a href="?list={{request.GET.list}}&page={{user_list.next_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Next</a>                            
+                        <a href="?list={{request.GET.list}}&page={{user_list.paginator.num_pages}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; Last</a>
                         {% endif %}
                     </div>
                 </div>

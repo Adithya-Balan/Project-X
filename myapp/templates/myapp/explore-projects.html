@@ -3,7 +3,22 @@
 {% load custom_filter %}
 {% block title %}Explore Projects{% endblock %} 
 
-{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+<style>
+    .cross-icon {
+        font-size: 0.75rem; /* Smaller size for the cross */
+        position: absolute;
+        top: -0.35rem;
+        right: -0.35rem;
+        background-color: #e83f4f;
+        color: white;
+        border-radius: 50%;
+        padding: 0.2rem;
+        padding-left: 0.3rem;
+        padding-right:0.3rem;
+    }
+</style>
+{% endblock %} 
 
 {% block script %}
 {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
@@ -39,7 +54,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-y-5 w-full mb-16">
+            <div class="flex flex-col gap-y-5 w-full mb-10">
                 <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
                     <div class="text-[#686868] text-base ">({{total_result}} Results)</div>
                     <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
@@ -104,20 +119,20 @@
             <div>
                 {% comment %} Paginator nav links {% endcomment %}
                 {% if total_result %}
-                <div class="flex justify-center mt-6 pb-20">
-                    <div class="flex items-center space-x-4">
+                <div class="flex justify-center mb-20 lg:mb-12">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
                         {% if filtered_project.has_previous %}
-                            <a href="?page=1&?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
-                            <a href="?page={{filtered_project.previous_page_number}}&?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Previous</a>
+                            <a href="?page=1&?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
+                            <a href="?page={{filtered_project.previous_page_number}}&?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Previous</a>
                         {% endif %}
                 
-                        <span class="text-black">
-                            <span class="font-semibold">Page {{ filtered_project.number }}</span> of {{ filtered_project.paginator.num_pages }}
+                        <span class="text-black font-medium">
+                            Page <span class="font-semibold">{{ filtered_project.number }}</span> of {{ filtered_project.paginator.num_pages }}
                         </span>
                 
                         {% if filtered_project.has_next %}
-                            <a href="?page={{filtered_project.next_page_number}}&domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Next</a>
-                            <a href="?page={{filtered_project.paginator.num_pages}}&domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-4 py-2 border border-black text-black hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
+                            <a href="?page={{filtered_project.next_page_number}}&domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Next</a>
+                            <a href="?page={{filtered_project.paginator.num_pages}}&domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Last &raquo;</a>
                         {% endif %}
                     </div>
                 </div>
@@ -133,15 +148,18 @@
         </div>
 
         <!-- filter section -->
-        <div class="absolute lg:sticky top-0 flex-col hidden mr-0 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-40px)] lg:top-5 gap-y-8 lg:flex overflow-y-scroll"
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10"
             id="openFilterParent">
-            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 lg:mt-  overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
+            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
                 id="filterElement">
                 <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
                         class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
-                <h1 class="text-xl font-bold text-center">
-                    < Filters />
-                </h1>
+                        <div class="flex flex-row items-center justify-between gap-x-3  lg:bg-gray-50 w-full py-3 px-4 rounded-lg">
+                            <div class="flex items-center gap-x-2 mx-auto">
+                                <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
+                                <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="h-5 w-5 text-gray-600">
+                            </div>
+                        </div>
 
                 {% if applied_filter %}
                 <a href='{% url "explore-project" %}' class="group flex items-center justify-center gap-2 p-2 border border-black rounded-2xl  text-black hover:bg-black hover:text-white transition-all duration-200 w-fit">
@@ -150,12 +168,17 @@
                 </a>
                 {% endif %}
 
-
-                <div class="flex flex-col gap-y-3"> <!--Project Type-->
+                <div class="flex flex-col gap-y-3">
                     <h1 class="text-xl font-bold">Type</h1>
                     <div class="flex flex-wrap gap-2 text-white">
                         {% for type in types %}
-                    <a href='?domain={{ request.GET.domain }}&type={{ type|slice:":1" }}&skill={{ request.GET.skill }}&level={{request.GET.level}}' class='{% if request.GET.type == type|slice:":1" %}text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] border border-[#323234] bg-[#323234] px-2 py-1 rounded-md font-bold'>{{type}}</a>
+                        <a href="?domain={{ request.GET.domain|default:'' }}&type={% if request.GET.type == type %}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% else %}{{ type }}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% endif %}" 
+                           class="relative {% if request.GET.type == type %}text-black bg-white border hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                            {{ type }}
+                            {% if request.GET.type == type %}
+                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            {% endif %}
+                        </a>
                         {% endfor %}
                     </div>
                 </div>
@@ -164,29 +187,43 @@
                     <h1 class="text-xl font-bold">Level</h1>
                     <div class="flex flex-wrap gap-2 text-white">
                         {% for level in levels %}
-                        <a href= '?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{level|slice:":1"}}' class='{% if request.GET.level == level|slice:":1" %} text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] border border-[#323234] bg-[#323234] px-2 py-1 rounded-md font-bold'>{{level}}</a>
-                        {% endfor %}
-                    </div>
-                </div>
-                
-
-                <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Domains</h1>
-                    <div class="flex flex-wrap gap-2 text-white">
-                        {% for domain in top_domains %}
-                        <a href = '?domain={{ domain.id }}&type={{ request.GET.type }}&skill={{ request.GET.skill }}&level={{request.GET.level}}' 
-                            class="{% if request.GET.domain == domain.id|stringformat:'s' %}text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] bg-[#323234] px-2 py-1 rounded-md font-bold border border-[#323234]">
-                            {{domain.name}}
+                        <a href="?domain={{ request.GET.domain|default:'' }}&type={{ request.GET.type|default:'' }}&skill={{ request.GET.skill|default:'' }}&level={% if request.GET.level == level %}&{% else %}{{ level }}{% endif %}" 
+                           class="relative {% if request.GET.level == level %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                            {{ level }}
+                            {% if request.GET.level == level %}
+                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            {% endif %}
                         </a>
                         {% endfor %}
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-y-3">
+                    <h1 class="text-xl font-bold">Domains</h1>
+                    <div class="flex flex-wrap gap-2 text-white">
+                        {% for domain in top_domains %}
+                        <a href="?domain={% if request.GET.domain == domain.id|stringformat:'s' %}&type={{ request.GET.type|default:'' }}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% else %}{{ domain.id }}&type={{ request.GET.type|default:'' }}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% endif %}" 
+                           class="relative {% if request.GET.domain == domain.id|stringformat:'s' %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] bg-[#323234] border border-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                            {{ domain.name }}
+                            {% if request.GET.domain == domain.id|stringformat:'s' %}
+                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-y-3 pb-10">
                     <h1 class="text-xl font-bold">Skills</h1>
                     <div class="flex flex-wrap gap-2 items-center text-white">
                         {% for skill in top_skill %}
-                        <a href='?domain={{ request.GET.domain }}&type={{ request.GET.type }}&skill={{ skill.id }}&level={{request.GET.level}}' class="{% if request.GET.skill == skill.id|stringformat:'s' %}text-black bg-white hover:text-black {% endif %}hover:text-[#6feb85] border border-[#323234] bg-[#323234] px-2 py-1 rounded-md font-bold">{{skill.name}}</a>
+                        <a href="?domain={{ request.GET.domain|default:'' }}&type={{ request.GET.type|default:'' }}&skill={% if request.GET.skill == skill.id|stringformat:'s' %}&level={{ request.GET.level|default:'' }}{% else %}{{ skill.id }}&level={{ request.GET.level|default:'' }}{% endif %}" 
+                           class="relative {% if request.GET.skill == skill.id|stringformat:'s' %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                            {{ skill.name }}
+                            {% if request.GET.skill == skill.id|stringformat:'s' %}
+                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            {% endif %}
+                        </a>
                         {% endfor %}
                     </div>
                 </div>

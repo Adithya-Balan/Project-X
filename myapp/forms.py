@@ -255,14 +255,17 @@ class EditExperienceForm(forms.ModelForm):
         }
 
 class EditSkillForm(forms.ModelForm):
+    skills = forms.ModelMultipleChoiceField(
+        queryset=skill.objects.all(),
+        widget=forms.SelectMultiple(attrs={
+            'class': 'select2 w-full ',
+            'id': 'mySelect',
+        }),
+        required=False,
+    )
     class Meta:
         model = userinfo
         fields = ('skills',)
-        widgets = {
-            'skills': forms.SelectMultiple(attrs={
-                'class': 'w-full p-2 border border-black bg-white text-black rounded'
-            })
-        }
         
 class PostForm(forms.ModelForm):
     class Meta:

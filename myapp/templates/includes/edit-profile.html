@@ -400,27 +400,3 @@
         <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
 </form>
 </div>
-
-{% comment %} Edit or skill form {% endcomment %}
-<form method = 'POST' class=" hidden fixed items-center justify-center top-20 left-0 right-0 w-full" id="editSkill">
-    {% csrf_token %}
-    <div class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full lg:w-2/5 px-5 border">
-        <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditProject()"><i
-                class="text-3xl fa-solid fa-circle-xmark"></i></div>
-        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Add Project</h1>
-        <input type ='hidden' name = 'form_type' value='skill'>
-        <div class="flex flex-col gap-y-1 w-full">
-            <p>{{ skill_form.skills.label }}</p>
-            {{ skill_form.skills }}
-            {% if skill_form.skills.errors %}
-                <div class="text-red-500 text-sm">
-                    {% for error in skill_form.skills.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-        {% comment %} {{ skill_form.as_p }} {% endcomment %}
-        <div class="self-center"><button type="submit" class="bg-[#6feb85] text-black px-3 py-1">Save</button></div>
-    </div>
-</form>

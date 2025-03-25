@@ -22,7 +22,7 @@
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
         <!-- list section -->
-        <div class="relative flex mt-24 lg:mt-24 md:w-full px-2 flex-[5] pb-16 w-full justify-center items-start max-[1300px]:flex-col-reverse max-[1300px]:item-center gap-5 max-[1300px]:items-center">
+        <div class="relative flex mt-24 lg:mt-24 md:w-full px-2 flex-[5] w-full justify-center items-start max-[1300px]:flex-col-reverse max-[1300px]:item-center gap-5 max-[1300px]:items-center">
         
             <div class="flex flex-col w-full md:w-[500px]">
                 <div class="flex flex-col gap-y-3 mt-4 p-2 bg-white rounded-md">
@@ -59,7 +59,7 @@
                     {% endfor %}
                 </div>
                 {% comment %} pagination {% endcomment %}
-                <div class="flex justify-center mt-16 pb-8">
+                <div class="flex justify-center mb-20 lg:mb-12 mt-10">
                     <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
                         {% if joined_members.has_previous %}
                             <a href="?page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
