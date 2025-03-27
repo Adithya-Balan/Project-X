@@ -1,18 +1,17 @@
 import base64
-import uuid
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.utils.timezone import now, localtime
 from datetime import timedelta
-
 import pytz
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm, ProjectForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm, ProjectForm, EditOrgForm
 from django.contrib.auth.models import User
-from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification
+from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification, Industry
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.core.exceptions import ValidationError
@@ -71,9 +70,7 @@ def index(request):
 def notification_page(request):
     post_form = PostForm()
     notifications = Notification.objects.filter(user=request.user.info, is_read=False).order_by('-created_at')
-
-    # notifications.update(is_read=True)
-
+    count = notifications.count()
     # Group notifications by time
     today = localtime(now()).date()
     yesterday = today - timedelta(days=1)
@@ -97,10 +94,13 @@ def notification_page(request):
             grouped_notifications["This Week"].append(notification)
         else:
             grouped_notifications["Older"].append(notification)
+            
+    notifications.update(is_read=True)
 
     context = {
         "grouped_notifications": grouped_notifications,
         "post_form": post_form,
+        'notification_count': count
     }
     print(grouped_notifications)
     return render(request, 'myapp/notification.html', context)
@@ -185,9 +185,19 @@ def user_profile(request, user_name):
         elif form_type == 'editprofile':
             editprofile_form = EditProfileForm(request.POST, request.FILES, instance = request.user.info)
             if editprofile_form.is_valid():
-                # print(request.FILES['profileImg'])
-                # editprofile_form.profile_image = request.FILES['profileImg']
-                editprofile_form.save()
+                userinfo_obj = editprofile_form.save(commit=False)
+                cropped_image_data = request.POST.get('croppedImage', '')
+                if cropped_image_data:
+                    try:
+                        format, imgstr = cropped_image_data.split(';base64,')
+                        ext = format.split('/')[-1]
+                        image_data = base64.b64decode(imgstr)
+                        file_name = f"{request.user.username}_profile.{ext}"
+                        userinfo_obj.profile_image = ContentFile(image_data, name=file_name)
+                    except (ValueError, base64.binascii.Error):
+                        editprofile_form.add_error(None, "Invalid image data. Please upload a valid image.")
+                        open_editprofile_flag = True
+                userinfo_obj.save()
                 redirect_url = reverse("user_profile", args=[request.user.username])
                 return redirect(redirect_url)
             else:
@@ -327,16 +337,32 @@ def create_organization(request):
         
 @login_required
 def explore_organization(request):
-    filtered_org = organization.objects.all()
+    
+    type_filter = request.GET.get('type', '').strip()  #string
+    industry_filter = request.GET.get('industry', '').strip()   #industry 
     query = request.GET.get('q', '').strip()
+    
+    filter_conditions = {}
+    if industry_filter:
+        filter_conditions["industry__id"] = industry_filter
+    if type_filter:
+        filter_conditions["organization_type"] = type_filter
+        
+    filtered_org = organization.objects.filter(**filter_conditions)
+    
     if query:
         filtered_org = filtered_org.filter(
             Q(name__icontains=query) |  
             Q(organization_type__icontains=query) |  
-            Q(industry__icontains=query) |  
+            Q(industry__name__icontains=query) |  
             Q(description__icontains=query) | 
             Q(location__icontains=query) 
         ).distinct()
+        
+    applied_filter = bool(type_filter or industry_filter)
+    
+    if not (applied_filter or query):
+        filtered_org = filtered_org[:20]
     
     p = Paginator(filtered_org, 4)
     page_number = request.GET.get("page")
@@ -347,13 +373,19 @@ def explore_organization(request):
     
     result_count = filtered_org.count()
     post_form = PostForm()
+    industries = Industry.objects.all().exclude(name__iexact="Other")
+    types = organization.get_organization_type_filters
+    
     context = {
         'filtered_org': page_obj,
         'post_form': post_form,
         'active_explore': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
         'result_count': result_count,
         'query': query,
-    }
+        'applied_filter': applied_filter,
+        'types': types,
+        'industries': industries
+    } 
     return render(request, 'myapp/explore-organization.html', context)
 
 @login_required
@@ -373,10 +405,10 @@ def manage_organization(request):
 @login_required
 def organization_detail(request, id):
     organization_obj = get_object_or_404(organization, id = id)
-    org_post = org_events= link_available = False
+    org_post = org_events= link_available = orgForm = editOrg_flag = False
     post_form = PostForm()
     section = request.GET.get('section', 'overview') 
-    print(section)
+    
     social_links = { 
         'github': organization_obj.github if organization_obj.github else None,
         'linkedin': organization_obj.linkedin if organization_obj.linkedin else None,
@@ -384,6 +416,7 @@ def organization_detail(request, id):
         'discord': organization_obj.discord if organization_obj.discord else None,
         'instagram': organization_obj.instagram if organization_obj.instagram else None
     }
+    print(social_links)
     suggested_org = organization.objects.filter(industry=organization_obj.industry, organization_type=organization_obj.organization_type).exclude(Q(id=organization_obj.id) | Q(user=request.user) | Q(followers=request.user.info)).order_by('?')[:5]
     # suggested_org = organization.objects.all()
     if social_links.get('github') or social_links.get('linkedin') or social_links.get('x-twitter') or social_links.get('discord') or social_links.get('instagram'):
@@ -394,8 +427,18 @@ def organization_detail(request, id):
         
     if section == 'events':
         org_events = event.objects.filter(organization = organization_obj).order_by('-created_at')
-    print(org_events)
-    
+        
+    if organization_obj.user == request.user:
+        orgForm = EditOrgForm(instance=organization_obj)
+        
+    if request.method == "POST" and organization_obj.user == request.user:
+        orgForm = EditOrgForm(request.POST, request.FILES, instance=organization_obj)
+        if orgForm.is_valid():
+            orgForm.save()
+            reverse_url = reverse('organization_detail', args=[organization_obj.id])
+            return redirect(reverse_url)
+        else:
+            editOrg_flag = True
     context = {
         'organization': organization_obj,
         'section': section,
@@ -407,6 +450,8 @@ def organization_detail(request, id):
         'suggested_org': suggested_org,
         'post_form': post_form,
         'profile_type': 'organization',
+        'EditOrgForm': orgForm,
+        'open_editOrg_flag': editOrg_flag
     }
     return render(request, 'myapp/organization-profile.html', context)
 
@@ -519,6 +564,7 @@ def explore_project(request):
     type_filter = request.GET.get('type', '').strip()      # Name
     skill_filter = request.GET.get('skill', '').strip()    # ID
     level_filter = request.GET.get('level', '').strip()    # Name
+    query = request.GET.get('q', '').strip()
     
     filter_conditions = {}
     if domain_filter:
@@ -527,18 +573,11 @@ def explore_project(request):
         filter_conditions["type"] = type_filter
     if level_filter:
         filter_conditions["level"] = level_filter
+    if skill_filter:
+        filter_conditions["skill_needed__id"] = skill_filter
         
     filter_project = projects.objects.filter(**filter_conditions)
     
-    if skill_filter:
-        filter_project = filter_project.filter(skill_needed__id = skill_filter)
-
-    applied_filter = bool(domain_filter or type_filter or skill_filter or level_filter)
-    
-    if not applied_filter:
-        filter_project = projects.objects.all()[:20]
-
-    query = request.GET.get('q', '').strip()
     if query:
         projects_qs = projects.objects.all()
         filter_project = projects_qs.filter(
@@ -550,6 +589,11 @@ def explore_project(request):
             Q(level__icontains=query)  # Exact match on level (adjust if partial needed)
         ).distinct()
     
+    applied_filter = bool(domain_filter or type_filter or skill_filter or level_filter)
+    
+    if not (applied_filter or query):
+        filter_project = filter_project[:20]
+    
     #Pagination
     p = Paginator(filter_project, 7)
     page_number = request.GET.get("page")
@@ -560,7 +604,6 @@ def explore_project(request):
     except PageNotAnInteger:
         page_obj = p.page(1)
     
-    print(page_number, page_obj)
     r = filter_project.count()
     top_domain = Domain.objects.all()[:10]
     top_skill= skill.objects.all()[:10]
@@ -699,8 +742,22 @@ def join_project(request, id):
 
 @login_required
 def explore_dev(request):
-    filter_dev = userinfo.objects.all().exclude(user=request.user)
+    #filter
+    domain_filter = request.GET.get('domain', '').strip()  #ID
+    status_filter = request.GET.get('status', '').strip()  #ID
+    skill_filter = request.GET.get('skill', '').strip()    #ID
     query = request.GET.get('q', '').strip()
+    
+    filter_conditions = {}
+    if domain_filter:
+        filter_conditions["domains__id"] = domain_filter
+    if status_filter:
+        filter_conditions["status__id"] = status_filter 
+    if skill_filter:
+        filter_conditions["skills__id"] = skill_filter
+    
+    filter_dev = userinfo.objects.filter(**filter_conditions).exclude(user=request.user)
+
     if query:
         filter_dev = filter_dev.filter(
             Q(user__first_name__icontains=query) |
@@ -712,9 +769,15 @@ def explore_dev(request):
             Q(status__name__iexact=query) |
             Q(about_user__icontains=query)
         ).distinct()
+    
+    applied_filter = bool(domain_filter or status_filter or skill_filter)
+    if not (applied_filter or query):
+        filter_dev = filter_dev[:20]
+    
     top_domain = Domain.objects.all()[:10]
     top_skill= skill.objects.all()[:10]
     status = user_status.objects.all()
+    
     #Pagination
     p = Paginator(filter_dev, 10)
     page_number = request.GET.get('page')
@@ -728,18 +791,30 @@ def explore_dev(request):
         'filter_user': page_obj,
         'top_domains': top_domain,
         'top_skill': top_skill,
-        'status': status,    
+        'status_list': status,    
         'total_result': r,  
         'post_form': post_form,  
         'query': query,
+        'applied_filter': applied_filter,
         'active_explore_dev': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]"
     }
     return render(request, 'myapp/explore_dev.html', context)
 
 #Explore event and single page event
 def explore_events(request):
-    filtered_events = event.objects.all()   
+    #filter
+    type_filter = request.GET.get('type', '').strip()  #string
+    mode_filter = request.GET.get('mode', '').strip()  #string
     query = request.GET.get('q', '').strip()
+    
+    filter_conditions = {}
+    if type_filter:
+        filter_conditions["event_type"] = type_filter
+    if mode_filter:
+        filter_conditions["mode"] = mode_filter
+        
+    filtered_events = event.objects.filter(**filter_conditions)  
+    
     if query:
         filtered_events = filtered_events.filter(
             Q(title__icontains=query) |
@@ -750,6 +825,12 @@ def explore_events(request):
             Q(location__icontains=query) |
             Q(mode__iexact=query)
         ).distinct()
+    
+    applied_filter = bool(type_filter or mode_filter)
+    
+    if not (applied_filter or query):
+        filtered_events = filtered_events[:20]
+        
     p = Paginator(filtered_events, 2)
     page_number = request.GET.get('page')
     try:
@@ -758,14 +839,19 @@ def explore_events(request):
         page_obj = p.page(1)
     result_count = filtered_events.count()
     post_form = PostForm()
-    
+    modes = event.get_mode_filters()
+    types = event.get_event_type_filters()
     context = {
         'post_form': post_form,
+        'applied_filter': applied_filter,
         'filtered_event': page_obj,
         'result_count': result_count,
         'query': query,
         'active_explore': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
+        'modes': modes,
+        'types': types,
     }
+    print(types)
     return render(request, 'myapp/explore-events.html', context)
 
 def event_detail(request, id):
@@ -916,8 +1002,8 @@ def save_post(request):
         else:
             return HttpResponseRedirect('/home')
     else:
-        if form.is_valid():
-            org = organization.objects.get(id = action)
+        org = get_object_or_404(organization, id = action)
+        if form.is_valid() and org.user == request.user:
             new_post = form.save(commit=False)
             new_post.Organization = org  # Set current user's profile
             new_post.aspect = request.POST.get("aspect_ratio", "16:9")

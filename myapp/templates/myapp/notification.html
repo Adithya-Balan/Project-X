@@ -1,7 +1,7 @@
 {% extends "myapp/base.html" %}
 {% load static %}
 
-{% block title %}Notification{% endblock %}
+{% block title %}{% if notification_count != 0 %}({{notification_count}}){% endif %} Notification{% endblock %}
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %}
 
@@ -32,8 +32,8 @@
                 <!-- Main Content (Fixed Width) -->
                 <div class="w-full max-w-2xl bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-2xl font-semibold text-black">Notifications</h1>
-                        <button class="text-sm text-[#6feb85] hover:text-black font-medium transition-colors">Mark All as Read</button>
+                        <h1 class="text-2xl font-semibold text-black">{% if notification_count != 0 %}({{notification_count}}){% endif %} Notifications</h1>
+                        <a href='' class="text-sm text-[#6feb85] hover:text-black font-medium transition-colors hover:underline cursor-pointer">Mark All as Read</a>
                     </div>
 
                     {% for group, notifications in grouped_notifications.items %}

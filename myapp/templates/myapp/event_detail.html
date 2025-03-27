@@ -109,7 +109,7 @@
                                         <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank'><img src="{{event_obj.organization.logo.url}}" class="w-14 h-14 rounded-md"></a>
                                         <div class="flex flex-col gap-y-1">
                                             <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank' class="font-bold text-xl">{{event_obj.organization.name}}</a>
-                                            <p class="text-[#575656]">{{event_obj.organization.get_industry_display}}</p>
+                                            <p class="text-[#575656]">{{event_obj.organization.industry.name}}</p>
                                             <p class='text-[#4f4e4e]' id = 'followers-count-{{event_obj.organization.id}}' >{{event_obj.organization.get_followers.count}} Followers</p>
                                             {% if user.info|is_following_org:event_obj.organization %}
                                             <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-fit mt-1" data-org-id="{{ event_obj.organization.id }}">

@@ -168,13 +168,16 @@ uploadPost.addEventListener('change', (event) => {
 })
 
 // opening create post div function
-const openPost = () => {
+const openPost = (type = 'user', value = 'user-post') => {
     const entireSection = document.getElementById('entireSection')
     const createPost = document.getElementById('createPost')
+    const actionInput = document.getElementById('postSubmitButton')
+    if (actionInput) {
+        actionInput.value = value;
+    }
     entireSection.classList.add('blur-md')
     createPost.classList.remove('hidden')
     createPost.classList.add('flex')
-    console.log("openPost called!");
 }
 
 // closing create post div function

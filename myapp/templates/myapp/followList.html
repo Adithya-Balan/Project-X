@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="flex flex-col gap-y-1 ">
                                     <a href="{% url 'organization_detail' org.id %}" class="font-semibold text-base cursor-pointer hover:underline transition">{{org.name}}</a>
-                                    <p>{{org.get_industry_display}}</p>
+                                    <p>{{org.industry.name}}</p>
                                     {% comment %} <p class="break-words">#mood...</p> {% endcomment %}
                                 </div>
                             </div>

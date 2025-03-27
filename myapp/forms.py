@@ -71,6 +71,29 @@ class ProjectReplyForm(forms.ModelForm):
         model = project_reply
         fields = ['content']
         
+class EditOrgForm(forms.ModelForm):
+    
+    class Meta:
+        model = organization
+        exclude = ['user', 'followers']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Organization Name'}),
+            'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Description...', 'rows': 8}),
+            'logo': forms.ClearableFileInput(attrs={'class': 'hidden', 'id': 'logoImgInput'}),
+            'website': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'www.samplesite.com'}),
+            'industry': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white'}),
+            'location': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Location'}),
+            'organization_type': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white'}),
+            'founded_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Email'}),
+            'phone': forms.TextInput(attrs={'type': 'tel', 'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Phone'}),
+            'github': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Github URL'}),
+            'linkedin': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'LinkedIn URL'}),
+            'instagram': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Instagram URL'}),
+            'twitter': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Twitter URL'}),
+            'discord': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Discord URL'}),
+        }
+
 
 class EditProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=50, required=True, widget=forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'First'}))

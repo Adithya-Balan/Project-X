@@ -37,3 +37,9 @@ class user_status(models.Model):
         
     def __str__(self):
         return self.name
+    
+class Industry(models.Model): #Filter of industry in Organization
+    name = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.name

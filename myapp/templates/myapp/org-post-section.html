@@ -3,11 +3,18 @@
 <!-- posts -->
 {% if section == 'posts' %}
 <div class="mx-auto" id="savedPostSection">
-    <div class="flex flex-col gap-y-6 gap-x-6 flex-wrap">
-        {% if org_post %}    
+    <div class="flex flex-col gap-y-6 gap-x-6 flex-wrap mt-1">
+        {% if org_post %} 
+            {% if organization.user == request.user %}
+            <div class="self-end border border-black px-3 py-1 flex gap-x-2 items-center cursor-pointer bg-white"
+                onclick="openPost('organization', '{{ organization.id }}')">
+                <img src="{% static 'assets/plus-edit.svg' %}" alt="" class="w-4 h-4">
+                <p>New Post</p>
+            </div>
+            {% endif %}   
         {% for post in org_post %}        
         <!-- Single Post -->
-        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4">
+        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4 -mt-2">
             <!-- User Info -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">

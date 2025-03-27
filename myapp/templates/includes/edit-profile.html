@@ -11,24 +11,24 @@
                 Edit Details
             </h1>
             <div class="self-center mb-4">
-                <div class="flex gap-x-3 items-center max-[500px]:flex-col gap-y-3">
+                <div class="flex gap-x-5 items-center max-[500px]:flex-col gap-y-5">
                     <div class="relative">
                         <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-40 h-40" id="image">
                         <label id="imageContainer" for="imgInput"
                             class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
                                 src="{% static 'assets/edit.svg' %}" alt="" class="w-7 h-7"></label>
                     </div>
+
                     <div class="hidden gap-y-2 items-center flex-col" id="cropImgContainer">
-                        <p class="bold underline">crop image</p>
                         <img src="" alt="" class="w-40 h-40" id="croppingImg">
                     </div>
+
                     <input type="file" name="profileImg" class="hidden" id="imgInput" accept="image/*">
-                    {% comment %} {{ep_form.profile_image}} {% endcomment %}
-                    <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn"
-                        onclick="crop()">Done</div>
+                    <input type="hidden" name="croppedImage" id="croppedImage"> <!-- Hidden field for cropped image -->
+                    <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn" onclick="crop()">Done</div>
                 </div>
             </div>
-            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 ">
                 <div class="flex flex-col gap-y-1 w-full">
                     <input type ='hidden' name = 'form_type' value='editprofile'>
                     <p>{{ep_form.first_name.label}}</p>
@@ -46,47 +46,50 @@
                     {{ep_form.last_name}}
                 </div>
             </div>
-            <div>
-                <div class="flex flex-col gap-y-1">
-                    <p>{{ep_form.username.label}}</p>
-                    {{ep_form.username}}
-                    {% if ep_form.username.errors %}
-                        <div class="text-red-500 text-sm">
-                            {% for error in ep_form.username.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+            <div class="flex flex-col gap-y-1">
+                <p>{{ep_form.username.label}}</p>
+                {{ep_form.username}}
+                {% if ep_form.username.errors %}
+                    <div class="text-red-500 text-sm">
+                        {% for error in ep_form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            <div>
-                <div class="flex flex-col gap-y-1">
-                    <p>{{ep_form.bio.label}}</p>
-                    {{ep_form.bio}}
-                </div>
+
+            <div class="flex flex-col gap-y-1">
+                <p>{{ep_form.bio.label}}</p>
+                {{ep_form.bio}}
             </div>
-            <div class="flex gap-x-3 gap-y-3">
+            <div class="gap-y-3 flex gap-x-3 ">
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.dob.label}}</p>
                     {{ep_form.dob}}
                 </div>
-                <div class="flex flex-col gap-y-1 w-full">
+                <div class="flex flex-col gap-y-1 w-1/2 lg:w-full">
                     <p>{{ep_form.availability.label}}</p>
                     {{ep_form.availability}}
                 </div>
             </div>
 
             <div>
-
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.location.label}}</p>
                     {{ep_form.location}}
                 </div>
             </div>
-            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 ">
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.contact_email.label}}</p>
                     {{ep_form.contact_email}}
+                    {% if ep_form.contact_email.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.contact_email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.phone.label}}</p>
@@ -100,7 +103,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
+            <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 ">
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.gender.label}}</p>
                     {{ep_form.gender}}
@@ -110,25 +113,52 @@
                     {{ep_form.status}}
                 </div>
             </div>
-            <div class="flex gap-x-3 gap-y-3">
+            <div class="max-[430px]:flex-col gap-y-3 flex gap-x-3">
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.website.label}}</p>
                     {{ep_form.website}}
+                    {% if ep_form.website.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.website.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.linkedin.label}}</p>
                     {{ep_form.linkedin}}
+                    {% if ep_form.linkedin.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.linkedin.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            <div class="flex gap-x-3 gap-y-3">
+            <div class="max-[430px]:flex-col gap-y-3 flex gap-x-3">
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.github.label}}</p>
                     {{ep_form.github}}
+                    {% if ep_form.giuthub.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.github.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="flex flex-col gap-y-1 w-full">
                     <p>{{ep_form.stackoverflow.label}}</p>
-                    <input type="text" name="stackoverflow" placeholder="Stackoverflow"
-                        class="outline-none border border-black px-2 py-1">
+                    {{ep_form.stackoverflow}}
+                    {% if ep_form.stackoverflow.errors %}
+                        <div class="text-red-500 text-sm">
+                            {% for error in ep_form.stackoverflow.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -142,7 +172,7 @@
                 </ul>
                 </div>
             {% endif %}
-            <div class="self-center">
+            <div class="self-center mt-5">
                 <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
             </div>
         </div>

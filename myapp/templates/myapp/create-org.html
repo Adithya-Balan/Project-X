@@ -9,9 +9,9 @@
 
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-black">
+<div class="min-h-screen flex items-center justify-center bg-black px-8 ">
 
-    <form method="POST" class="bg-white p-6 rounded-lg shadow-md w-full max-w-md" enctype="multipart/form-data">
+    <form method="POST" class="bg-white p-6 rounded-lg shadow-md w-full max-w-md mt-20 mb-20" enctype="multipart/form-data">
         {% csrf_token %}
         <h2 class="text-2xl font-normal text-center text-black-800 mb-6 underline">Create Organization</h2>
         {% for field in form %}

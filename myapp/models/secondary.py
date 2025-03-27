@@ -115,7 +115,7 @@ class event(models.Model):
         ('meetup', 'Meetup'),
         ('hackathon', 'Hackathon'),
         ('bootcamp', 'Bootcamp'),
-        ('startup Pitch', 'Startup Pitch'),
+        ('startup-pitch', 'Startup Pitch'),
         ('networking', 'Networking'),
         ('other', 'Other'),
     ]
@@ -152,6 +152,34 @@ class event(models.Model):
         comments = self.forum.all()
         total_replies = sum(comment.replies.count() for comment in comments)
         return comments.count() + total_replies
+    
+    def get_mode_filters():
+        EVENT_MODE = [
+        ('online', 'online'),
+        ('offline', 'offline'),
+        ('hybrid', 'Hybrid (Online & Offline)'),
+    ]
+        """
+        Returns Event Modes in a list of dictionaries for frontend filtering.
+        """
+        return [{'value': value, 'label': label} for value, label in EVENT_MODE]
+    
+    def get_event_type_filters():
+        EVENT_TYPE_CHOICES = [
+        ('webinar', 'Webinar'),
+        ('workshop', 'Workshop'),
+        ('conference', 'Conference'),
+        ('meetup', 'Meetup'),
+        ('hackathon', 'Hackathon'),
+        ('bootcamp', 'Bootcamp'),
+        ('startup-pitch', 'Startup Pitch'),
+        ('networking', 'Networking'),
+        ('other', 'Other'),
+    ]
+        """
+        Returns Event types in a list of dictionaries for frontend filtering.
+        """
+        return [{'value': value, 'label': label} for value, label in EVENT_TYPE_CHOICES]
     
 class event_comment(models.Model):
     user = models.ForeignKey(userinfo, related_name='event_comments', on_delete=models.CASCADE)

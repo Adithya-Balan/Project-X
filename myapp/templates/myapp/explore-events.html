@@ -139,75 +139,53 @@
 
 
         <!-- filter section -->
-        <div class="absolute lg:sticky top-0 flex-col hidden mr-0 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-40px)] lg:top-5 gap-y-8 lg:flex overflow-y-scroll"
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10"
             id="openFilterParent">
-            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10   overflow-y-scroll lg:bg-white rounded-lg  bottom-2 lg:h-[calc(100%-70px)] gap-y-8 lg:flex"
+            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
                 id="filterElement">
                 <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
                         class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
                 <h1 class="text-xl font-bold text-center">
                     < Filters />
                 </h1>
+
+                {% if applied_filter %}
+                <a href='{% url "explore_events" %}' class="group flex items-center justify-center gap-2 p-2 border border-black rounded-2xl  text-black hover:bg-black hover:text-white transition-all duration-200 w-fit">
+                        <p class="text-sm font-medium">Clear</p>
+                        <img src='{% static "assets/clear-filter.svg" %}' alt="Clear Filter"  class="w-5 h-5 transition-all duration-200 group-hover:invert">
+                </a>
+                {% endif %}
+                
                 <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Status</h1>
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Student</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Working Professions</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Entrepreneurs</button>
+                    <h1 class="text-xl font-bold">Type</h1>
+                    <div class="flex flex-wrap gap-2 items-center text-white">
+                        {% for type in types %}
+                        <a href="?mode={{ request.GET.mode|default:'' }}&type={% if request.GET.type == type.value %}{% else %}{{ type.value }}{% endif %}"
+                        class="relative {% if request.GET.type == type.value %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                            {{type.label}}
+                            {% if request.GET.type == type.value %}
+                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Level</h1>
-                    <div class="flex flex-wrap gap-2">
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Beginner</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Intermediate</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Expert</button>
+                    <h1 class="text-xl font-bold">Mode</h1>
+                    <div class="flex flex-wrap gap-2 items-center text-white">
+                        {% for mode in modes %}
+                        <a href="?type={{ request.GET.type|default:'' }}&mode={% if request.GET.mode == mode.value %}{% else %}{{ mode.value }}{% endif %}"
+                        class="relative {% if request.GET.mode == mode.value %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                            {{mode.label}}
+                            {% if request.GET.mode == mode.value %}
+                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
 
-
-                <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Domains</h1>
-                    <div class="flex flex-wrap gap-2">
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Web Development</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Mobile Development</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Data Science and AI</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Cloud and DevOps</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Game Development</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Embedded Systems</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Cybersecurity</button>
-                        <button
-                            class="lg:focus:text-black focus:bg-black focus:text-white lg:focus:border-black hover:bg-white hover:text-black lg:hover:border lg:focus:bg-white lg:border lg:border-[#444444] blur-0 lg:bg-[#444444] px-2 py-1 rounded-md lg:text-[white] bg-[white] text-black font-bold">
-                            Blockchain</button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
