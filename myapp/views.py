@@ -95,7 +95,7 @@ def notification_page(request):
         else:
             grouped_notifications["Older"].append(notification)
             
-    notifications.update(is_read=True)
+    # notifications.update(is_read=True)
 
     context = {
         "grouped_notifications": grouped_notifications,
@@ -391,6 +391,7 @@ def explore_organization(request):
 @login_required
 def manage_organization(request):
     org_list = request.user.organization.all()
+    post_form = PostForm()
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'delete_org':
@@ -398,7 +399,8 @@ def manage_organization(request):
             if org_obj.user == request.user:
                 org_obj.delete()    
     context = {
-        'org_list': org_list
+        'org_list': org_list,
+        'post_form' : post_form,
     }
     return render(request, 'myapp/manage_organization.html', context)
         
@@ -713,14 +715,17 @@ def project_forum(request, id):
             return redirect(redirect_url)
         
         parent_comment_id = request.POST.get("parent_comment_id")
-        print(parent_comment_id)
         
         if parent_comment_id:
             parent_comment = get_object_or_404(project_comment, id = parent_comment_id)
             r = project_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
+            if project.creator != userinfo_obj:
+                Notification.objects.create(user=r.comment.user, sender=userinfo_obj, project_reply=r, notification_type='project_reply')
             redirect_url = f"{reverse('project_detail', args=[project.id])}#reply-{r.id}"
         else:
             c = project_comment.objects.create(user=userinfo_obj, project= project,content = content)
+            if project.creator != userinfo_obj:
+                Notification.objects.create(user= project.creator, sender=userinfo_obj, project_comment=c, notification_type = 'project_comment')
             redirect_url = f"{reverse('project_detail', args=[project.id])}#comment-{c.id}"
 
     return redirect(redirect_url)
@@ -1094,6 +1099,9 @@ def delete_data(request):
             comment_id = request.POST.get("comment_id")
             try:
                 comment = project_comment.objects.get(id=comment_id, user=request.user.info)
+                Notify_obj = Notification.objects.filter(user=comment.project.creator, sender=request.user.info, project_comment = comment, notification_type="project_comment").first()
+                if Notify_obj:  
+                    Notify_obj.delete()
                 comment.delete()
                 comment_count = comment.project.tot_comments()
                 return JsonResponse({"success": True, "comment_count": comment_count})
@@ -1101,9 +1109,12 @@ def delete_data(request):
                 return JsonResponse({"success": False, "error": "Comment not found"})
         elif form_type == 'project_reply':
                 reply_id = request.POST.get("comment_id")
-                print(reply_id)
                 try:
                     comment = project_reply.objects.get(id=reply_id, user=request.user.info)
+                    Notify_obj = Notification.objects.filter(user=comment.user, sender=request.user.info, project_reply = comment, notification_type="project_reply").first()
+                # Notification.objects.create(user=r.comment.user, sender=userinfo_obj, project_reply=r, notification_type='project_reply')
+                    if Notify_obj:  
+                        Notify_obj.delete()
                     comment.delete()
                     comment_count = comment.comment.project.tot_comments()
                     return JsonResponse({"success": True, "comment_count": comment_count})

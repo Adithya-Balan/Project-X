@@ -52,10 +52,10 @@
   {% comment %} phone navbar {% endcomment %}
   <div class="z-10 fixed bottom-0 w-full py-2 bg-[#00000057] backdrop-blur lg:hidden">
     <div class="flex justify-around">
-        <div><i class="text-xl fa-solid fa-house"></i></div>
-        <div><i class="text-xl fa-regular fa-compass"></i></div>
-        <div><i class="text-xl fa-solid fa-house"></i></div>
-        <div><i class="text-xl fa-regular fa-circle-user"></i></div>
+        <a href='{% url "index" %}'><i class="text-xl fa-solid fa-house"></i></a>
+        <a href='{% url "explore-project" %}'><i class="text-xl fa-regular fa-compass"></i></a>
+        <a href='{% url "calendar_page" %}'><i class="text-xl fa-solid fa-calendar-days"></i></a>
+        <a href='{% url "user_profile" user.username %}'><i class="text-xl fa-solid fa-circle-user"></i></a>
     </div>
   </div>
   

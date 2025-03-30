@@ -155,8 +155,6 @@ uploadPost.addEventListener('change', (event) => {
     if (file) {
         const reader = new FileReader()
         reader.onload = () => {
-
-
             postImg.classList.remove('hidden')
             postImg.classList.add('block')
             postImg.src = reader.result

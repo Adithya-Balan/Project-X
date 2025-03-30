@@ -63,7 +63,7 @@ class project_reply(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Reply by {self.user.user.username} to {self.comment.user.user.username}'s comment"
+        return f"{self.id} Reply by {self.user.user.username} to {self.comment.user.user.username}'s comment"
     
     class Meta:
         verbose_name_plural = "project_reply"
@@ -226,6 +226,7 @@ class Notification(models.Model):
         ('follow', 'Started following you'),
         ('Join_Project', 'Joined On Your Project'),
         ('project_comment', 'Commented on Your project'),
+        ('project_reply', 'Replied to your Comment')
     )
     user = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="notifications")
     sender = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="sent_notifications")
@@ -242,7 +243,7 @@ class Notification(models.Model):
     organization = models.ForeignKey(organization, on_delete=models.CASCADE, null=True, blank=True)  # Organization Follow/Like/Comment
 
     def __str__(self):
-        return f"{self.sender} {self.get_notification_type_display()} {self.user}"
+        return f"{self.id} {self.sender} {self.get_notification_type_display()} {self.user}"
 
     
     
