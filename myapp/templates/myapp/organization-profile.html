@@ -6,6 +6,8 @@
 
 {% block style %}
 <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css" integrity="sha512-087vysR/jM0N5cp13Vlp+ZF9wx6tKbvJLwPO8Iit6J7R+n7uIMMjg37dEgexOshDmDITHYY5useeSmfD1MYiQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock  %}
 
 {% block content %}
@@ -49,8 +51,7 @@
                     </div>
 
 
-                    <div
-                        class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md mr-auto md:ml-auto w-full md:mr-0 gap-y-2">
+                    <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md mr-auto md:ml-auto w-full md:mr-0 gap-y-2">
                         <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
                             <div class="text-xl font-bold">{{organization.name}}</div>
                             <!-- <div class="text-[#686868]">@night_owl</div> -->
@@ -265,21 +266,20 @@
                     Edit Details
                 </h1>
                 <div class="self-center mb-4">
-                    <div class="flex gap-x-3 items-center max-[500px]:flex-col gap-y-3">
+                    <div class="flex gap-x-5 items-center max-[500px]:flex-col gap-y-5">
                         <div class="relative">
                             <img src="{{organization.logo.url}}" alt="" class="rounded-lg w-40 h-40" id="image">
                             <label id="imageContainer" for="imgInput"
                                 class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
                                     src="{% static 'assets/edit.svg' %}" alt="" class="w-7 h-7"></label>
                         </div>
+    
                         <div class="hidden gap-y-2 items-center flex-col" id="cropImgContainer">
-                            <p class="bold underline">crop image</p>
-                            <img src="../assets/" alt="" class="w-40 h-40" id="croppingImg">
+                            <img src="" alt="" class="w-40 h-40" id="croppingImg">
                         </div>
                         <input type="file" name="profileImg" class="hidden" id="imgInput" accept="image/*">
-                        <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn"
-                            onclick="crop()">
-                            Done</div>
+                        <input type="hidden" name="croppedImage" id="croppedImage"> <!-- Hidden field for cropped image -->
+                        <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn" onclick="crop()">Done</div>
                     </div>
                 </div>
                 <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 ">
@@ -467,6 +467,7 @@
 
     {% include "includes/create-post.html" %}
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'scripts/organization_profile.js' %}"></script>
     {% if open_editOrg_flag %}
     <script>
         // When the page loads, open the experience form
@@ -475,23 +476,5 @@
         });
     </script>
     {% endif %}
-    <script>
-        const openEdit = () => {
-            const editContainer = document.getElementById('editContainer')
-            const entireSection = document.getElementById('entireSection')
-            editContainer.classList.remove('hidden')
-            editContainer.classList.add('flex')
-            entireSection.classList.add('blur-md')
-        }
-        
-        // close edit div function
-        const closeEdit = () => {
-            const editContainer = document.getElementById('editContainer')
-            const entireSection = document.getElementById('entireSection')
-            editContainer.classList.add('hidden')
-            editContainer.classList.remove('flex')
-            entireSection.classList.remove('blur-md')
-        }        
-    </script>
 </body>
 {% endblock %}

@@ -79,7 +79,6 @@ class EditOrgForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Organization Name'}),
             'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Description...', 'rows': 8}),
-            'logo': forms.ClearableFileInput(attrs={'class': 'hidden', 'id': 'logoImgInput'}),
             'website': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'www.samplesite.com'}),
             'industry': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white'}),
             'location': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Location'}),
@@ -92,6 +91,7 @@ class EditOrgForm(forms.ModelForm):
             'instagram': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Instagram URL'}),
             'twitter': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Twitter URL'}),
             'discord': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Discord URL'}),
+            'logo': forms.ClearableFileInput(attrs={'id': 'imgInput','class': 'hidden'}),
         }
 
 
@@ -117,7 +117,8 @@ class EditProfileForm(forms.ModelForm):
             'linkedin': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Linkedin URL'}),
             'github': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Github URL'}),
             'stackoverflow': forms.URLInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Stackoverflow URL'}),
-            'profile_image': forms.ClearableFileInput(attrs={'id': 'imgInput','class': 'hidden'})
+            'profile_image': forms.ClearableFileInput(attrs={'id': 'imgInput','class': 'hidden'}),
+            'cringe_badge': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white'})
         }
         labels = {
             'bio': ' Tagline (Short Bio)',

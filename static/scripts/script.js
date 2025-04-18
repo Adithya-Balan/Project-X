@@ -13,18 +13,29 @@ function getCSRFToken() {
     return cookieValue;
 }
 
+const popup = document.getElementById('popup');
+const postOption = document.getElementById('postOption')
+
+function bodyClick() {
+    popup.classList.add('hidden')
+    popup.classList.remove('fixed')
+    postOption.classList.add('hidden')
+    postOption.classList.remove('absolute')
+}
 
 const showPopup = () => {
     // Code to show the popup
-    const popup = document.getElementById('popup');
     popup.classList.toggle('fixed')
     popup.classList.toggle('hidden')
+    postOption.classList.add('hidden')
+    postOption.classList.remove('absolute')
 }
 
 const showPostOption = () => { //code to post options in Navbar
-    const postOption = document.getElementById('postOption')
     postOption.classList.toggle('absolute')
     postOption.classList.toggle('hidden')
+    popup.classList.add('hidden')
+    popup.classList.remove('fixed')
 }
 
 function getExplore() { //code to select multiple explore pages such as events, projects
@@ -300,7 +311,6 @@ $(document).ready(function() {
         });
     });
 });
-
 
 //For toggling the comments
 const commentBtn = document.querySelectorAll('.commentBtn')

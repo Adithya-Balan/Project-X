@@ -62,7 +62,7 @@
 
                     <!-- start of 1st event -->
                     {% for event in filtered_event %}                        
-                    <div class="flex flex-col w-full md:w-[34rem] bg-white p-3 pb-4">
+                    <div class="flex flex-col w-full md:w-[34rem] bg-white p-3 pb-4 shadow-lg rounded-xl">
                         <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative dot">
                             <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover">
                         </div>
@@ -96,7 +96,7 @@
                             </a>
 
                             <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
-                                <i class="text-2xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
+                                <i class="text-xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
                             </div>
                         </div>
                         
@@ -139,7 +139,7 @@
 
 
         <!-- filter section -->
-        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10"
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10 shadow-xl"
             id="openFilterParent">
             <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
                 id="filterElement">

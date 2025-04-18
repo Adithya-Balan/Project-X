@@ -14,12 +14,160 @@ from django.contrib.auth.models import User
 from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification, Industry
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
-from django.core.exceptions import ValidationError
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Count
+import random
 from itertools import groupby
 # from django.contrib.postgres.search import TrigramSimilarity
 
 # Create your views here.
+def get_personalized_feed(user, limit_per_type=5, recent_days=7, trending_days=14):
+    """
+    Generate a personalized feed for a user with posts, projects, and events.
+    
+    Args:
+        user: User instance
+        limit_per_type: Max items per content type (default: 5)
+        recent_days: Days for recent posts/projects (default: 7)
+        trending_days: Days for trending posts (default: 14)
+    
+    Returns:
+        List of dicts with 'type', 'item', and 'score' keys.
+    """
+    today = timezone.now().date()
+    recent_threshold = today - timedelta(days=recent_days)
+    trending_threshold = today - timedelta(days=trending_days)
+    
+    # Fetch user data
+    user_info = user.info  # Access userinfo via OneToOneField
+    followed_users = user_info.following.all().values_list('following', flat=True)
+    followed_orgs = user_info.followed_organization.all().values_list('id', flat=True)  # Assumed field
+    user_skills = user_info.skills.all().values_list('id', flat=True)
+    
+    # Track items to avoid duplicates
+    seen_ids = set()
+    feed_items = []
+    
+    # Scoring functions
+    def post_score(post):
+        time_diff = timezone.now() - post.created_at
+        hours_since = time_diff.total_seconds() / 3600
+        if hours_since <= 24:
+            recency = 20 - (hours_since / 24) * 10  # 20 to 10 over 24 hours
+        else:
+            recency = 10 - (hours_since / 24)  # Decreases from 10
+        engagement = post.like_count * 1.5
+        connections = post.connection_likes * 3
+        return recency + engagement + connections
+    
+    def project_score(project):
+        days_since = (today - project.created_at.date()).days
+        recency = -days_since
+        creator_bonus = 5 if project.creator_id in followed_users else 0
+        member_bonus = project.connection_members * 2
+        skill_bonus = project.skill_needed.filter(id__in=user_skills).count() * 2
+        return recency + creator_bonus + member_bonus + skill_bonus
+    
+    def event_score(event):
+        days_until = (event.start_date - today).days
+        timeliness = -days_until  # Closer events = higher score
+        org_bonus = 5 if event.organization_id in followed_orgs else 0
+        return timeliness + org_bonus
+    
+    # Fetch Posts
+    posts = post.objects.filter(
+        Q(user_id__in=followed_users) | Q(Organization_id__in=followed_orgs),
+        created_at__gte=recent_threshold
+    ).annotate(
+        like_count=Count('likes'),
+        connection_likes=Count('likes', filter=Q(likes__in=followed_users))
+    ).order_by('-created_at')[:50]
+    
+    for p in posts:
+        if p.id not in seen_ids:
+            feed_items.append({'type': 'post', 'item': p, 'score': post_score(p)})
+            seen_ids.add(p.id)
+    
+    trending_posts = post.objects.exclude(
+        Q(user_id__in=followed_users) | Q(Organization_id__in=followed_orgs)
+    ).filter(
+        created_at__gte=trending_threshold
+    ).annotate(
+        like_count=Count('likes')
+    ).order_by('-like_count')[:10]
+    
+    for p in trending_posts:
+        if p.id not in seen_ids:
+            score = p.like_count * 1.2  # Trending boost
+            feed_items.append({'type': 'post', 'item': p, 'score': score})
+            seen_ids.add(p.id)
+    
+    # Fetch Projects
+    projects_qs = projects.objects.filter(
+        Q(creator_id__in=followed_users) | Q(skill_needed__in=user_skills),
+        created_at__gte=recent_threshold
+    ).distinct().annotate(
+        connection_members=Count('members', filter=Q(members__in=followed_users))
+    ).order_by('-created_at')[:50]
+    
+    for proj in projects_qs:
+        if proj.id not in seen_ids:
+            feed_items.append({'type': 'project', 'item': proj, 'score': project_score(proj)})
+            seen_ids.add(proj.id)
+    
+    random_projects = projects.objects.exclude(
+        creator_id__in=followed_users
+    ).filter(
+        skill_needed__in=user_skills,
+        created_at__gte=recent_threshold
+    ).order_by('?')[:5]
+    
+    for proj in random_projects:
+        if proj.id not in seen_ids:
+            skill_bonus = proj.skill_needed.filter(id__in=user_skills).count() * 1
+            score = random.uniform(2, 6) + skill_bonus
+            feed_items.append({'type': 'project', 'item': proj, 'score': score})
+            seen_ids.add(proj.id)
+    
+    # Fetch Events
+    events = event.objects.filter(
+        organization_id__in=followed_orgs,
+        start_date__gte=today
+    ).order_by('start_date')[:50]
+    
+    for e in events:
+        if e.id not in seen_ids:
+            feed_items.append({'type': 'event', 'item': e, 'score': event_score(e)})
+            seen_ids.add(e.id)
+    
+    random_events = event.objects.exclude(
+        organization_id__in=followed_orgs
+    ).filter(
+        start_date__gte=today
+    ).order_by('?')[:5]
+    
+    for e in random_events:
+        if e.id not in seen_ids:
+            score = random.uniform(2, 6)
+            feed_items.append({'type': 'event', 'item': e, 'score': score})
+            seen_ids.add(e.id)
+    
+    # Sort by score
+    feed_items.sort(key=lambda x: x['score'], reverse=True)
+    
+    # Enforce diversity
+    total_limit = limit_per_type * 3  # e.g., 15 if limit_per_type=5
+    max_per_type = total_limit // 3 + 1  # e.g., 6
+    type_counts = {'post': 0, 'project': 0, 'event': 0}
+    filtered_items = []
+    
+    for item in feed_items:
+        item_type = item['type']
+        if type_counts[item_type] < max_per_type:
+            filtered_items.append(item)
+            type_counts[item_type] += 1
+        if len(filtered_items) >= total_limit:
+            break
+    return filtered_items
 
 #Auth:
 class sign_up(View):
@@ -54,16 +202,22 @@ class sign_up(View):
         return render(request, 'registration/sign_up.html', context)
         
 def index(request):
+    suggested_posts = post.objects.all()
+    suggested_projects = projects.objects.all()[:3]
+    suggested_peoples = userinfo.objects.all().exclude(user = request.user)[:5]
+    suggested_events = event.objects.all()[:3]
+    feed = get_personalized_feed(request.user)
+    print(feed)
+    post_form = PostForm()
     context = {
-        'active_navlink': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]"
+        'active_home': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
+        'posts': suggested_posts,
+        'post_form': post_form,
+        'suggested_projects' : suggested_projects,
+        'suggested_peoples': suggested_peoples,
+        'suggested_events': suggested_events,
+        'feed': feed,
     }
-    user_tz_str = request.user.info.timezone  # e.g., "America/New_York"
-    user_tz = pytz.timezone(user_tz_str)
-
-    # Get current time in UTC (Django returns an aware datetime in UTC)
-    now_utc = timezone.now()
-    user_local_now = now_utc.astimezone(user_tz)
-    print(user_tz_str, user_tz, now_utc, user_local_now)
     return render(request, 'myapp/index.html', context) 
 
 @login_required
@@ -95,7 +249,7 @@ def notification_page(request):
         else:
             grouped_notifications["Older"].append(notification)
             
-    # notifications.update(is_read=True)
+    notifications.update(is_read=True)
 
     context = {
         "grouped_notifications": grouped_notifications,
@@ -401,6 +555,7 @@ def manage_organization(request):
     context = {
         'org_list': org_list,
         'post_form' : post_form,
+        'manage_org_page': True
     }
     return render(request, 'myapp/manage_organization.html', context)
         
@@ -434,11 +589,24 @@ def organization_detail(request, id):
         orgForm = EditOrgForm(instance=organization_obj)
         
     if request.method == "POST" and organization_obj.user == request.user:
-        orgForm = EditOrgForm(request.POST, request.FILES, instance=organization_obj)
+        orgForm = EditOrgForm(request.POST, request.FILES, instance=organization_obj)   
         if orgForm.is_valid():
-            orgForm.save()
+           if orgForm.is_valid():
+            org_obj = orgForm.save(commit=False)
+            cropped_image_data = request.POST.get('croppedImage', '')
+            if cropped_image_data:
+                try:
+                    format, imgstr = cropped_image_data.split(';base64,')
+                    ext = format.split('/')[-1]
+                    image_data = base64.b64decode(imgstr)
+                    file_name = f"{org_obj.name}_profile.{ext}"
+                    org_obj.logo = ContentFile(image_data, name=file_name)
+                except (ValueError, base64.binascii.Error):
+                    orgForm.add_error(None, "Invalid image data. Please upload a valid image.")
+                    editOrg_flag = True
+            org_obj.save()
             reverse_url = reverse('organization_detail', args=[organization_obj.id])
-            return redirect(reverse_url)
+            return redirect(reverse_url) 
         else:
             editOrg_flag = True
     context = {
@@ -499,7 +667,9 @@ def unfollow_organization(request, organization_id):
         user_info = request.user.info
         if user_info in org.followers.all() and user_info != org.user.info:
             org.followers.remove(user_info)
-            Notification.objects.filter(user=org.user.info, sender=user_info, notification_type='follow', organization=org).first().delete()
+            notify_obj = Notification.objects.filter(user=org.user.info, sender=user_info, notification_type='follow', organization=org).first()
+            if notify_obj:
+                notify_obj.delete()
             return JsonResponse({'status': 'unfollowed', 'action': 'unfollow', 'message': 'You have unfollowed this organization.', 'followers_count': org.get_followers().count()})
         else:
             return JsonResponse({'status': 'error', 'message': 'You are not following this organization.'}, status=400)
@@ -1023,11 +1193,11 @@ def delete_post(request, post_id):
     User = request.user
     if post_obj.user == User.info:
         post_obj.delete()
-        return redirect(f"{reverse('user_profile', args=[User.username])}?section=posts") 
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
 
     elif post_obj.Organization and post_obj.Organization.user == User:
         post_obj.delete()
-        return redirect(f"{reverse("organization_detail", args=[post_obj.Organization.id])}?section=posts") 
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
     return HttpResponse("Sorry! You Can't have permission To Delete!...")
     
 #for saving post comments

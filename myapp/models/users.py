@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .filter import skill, Domain, user_status
+from .filter import skill, Domain, user_status, CringeBadge
 from phonenumber_field.modelfields import PhoneNumberField
 
 class userinfo(models.Model):
@@ -39,7 +39,7 @@ class userinfo(models.Model):
         ('Open to freelance collaboration', 'Open to freelance collaboration'),
         ('Unavailable', 'Unavailable'),
     ], blank=True, null=True)
-    # mood = models.CharField(max_length=50, blank=True, null=True)
+    cringe_badge = models.ForeignKey(CringeBadge, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
     timezone = models.CharField(max_length=100, default='UTC')
     
     def __str__(self):
@@ -117,6 +117,7 @@ class experience(models.Model):
     
     def __str__(self):
         return self.name
+    
 class follow(models.Model):
     follower = models.ForeignKey(userinfo, related_name='following', on_delete=models.CASCADE)
     following = models.ForeignKey(userinfo, related_name='followers', on_delete=models.CASCADE)

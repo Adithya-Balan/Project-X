@@ -1,770 +1,284 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "myapp/base.html" %} 
+{% load static %}
+{% load custom_filter %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../styles/style.css">
-    <script src="https://kit.fontawesome.com/d8ca3bfef7.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css"
-        integrity="sha512-087vysR/jM0N5cp13Vlp+ZF9wx6tKbvJLwPO8Iit6J7R+n7uIMMjg37dEgexOshDmDITHYY5useeSmfD1MYiQA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"
-        integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-</head>
+{% block title %}Home{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
+{% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
-    <!-- navbar --><!-- z-20 -->
-    <div class="fixed z-20 top-0 flex w-full text-white bg-black">
-        <nav class="flex items-center w-full px-10 py-4 justify-evenly">
-            <div class="flex items-center w-full gap-x-5">
-                <div class="py-1 text-xl font-bold">
-                    DevMate
-                </div>
-                <div class="hidden md:flex">
-                    <input type="text"
-                        class="outline-none border border-black rounded-xl text-[16px] px-2 py-1 text-black"
-                        placeholder="Search..">
-                </div>
-            </div>
-
-            <div class="flex gap-x-10">
-                <div>
-                    <i class="text-xl fa-solid fa-bell"></i>
-                </div>
-                <div>
-                    <i class="text-xl fa-solid fa-square-plus" onclick="showPostOption()"></i>
-                </div>
-                <div class="relative">
-                    <i class="hidden text-xl md:block fa-solid fa-circle-user"></i>
-                    <i class="text-xl md:hidden fa-solid fa-gear" onclick="showPopup()"></i>
-                </div>
-            </div>
-
-        </nav>
-        <div class="hidden top-20 right-10 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md" id="postOption">
-            <div class="flex flex-col gap-y-1">
-                <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-black hover:text-white font-bold transition"
-                    onclick="openPost()">Upload Post</div>
-                <div
-                    class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-black hover:text-white font-bold transition">
-                    Upload Project</div>
-            </div>
-        </div>
-    </div>
-    <!-- z-20 -->
-    <div class="hidden right-5 top-20 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md z-20" id="popup">
-        <div class="flex flex-col gap-y-2">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Edit Profile</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Saved</div>
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#ffffff60]">Dark Theme</div>
-        </div>
-    </div>
-
-
-    <!-- phone navbar -->
-    <div class="z-10 fixed bottom-0 w-full py-2 bg-[#00000057] backdrop-blur lg:hidden">
-        <div class="flex justify-around">
-            <div><i class="text-xl fa-solid fa-house"></i></div>
-            <div><i class="text-xl fa-regular fa-compass"></i></div>
-            <div><i class="text-xl fa-solid fa-house"></i></div>
-            <div><i class="text-xl fa-regular fa-circle-user"></i></div>
-        </div>
-    </div>
+    <!-- navbar -->
+    {% include "includes/navbar.html" %}
 
     <!-- main section -->
-
-    <div id="entireSection"
-        class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start">
+    <div class="w-full lg:flex-row lg:gap-x-5 flex" onclick="bodyClick()" id='entireSection'>
         <!-- sidenav -->
-        <div
-            class="text-black hidden w-1/5 flex-col justify-between h-[calc(100vh-57px)] sticky top-14 mt-14 py-7 bg-white  shadow-lg md:hidden lg:flex">
-            <div class="flex px-10">
-                <div class="flex flex-col justify-center py-3 gap-y-3 w-full">
-                    <div class="text-lg"><i class="fa-solid fa-house"></i> Home</div>
-                    <div class="text-lg"><i class="fa-solid fa-house"></i> Explore</div>
-                    <div class="text-lg"><i class="fa-solid fa-house"></i> Home</div>
+        {% include "includes/sidenav.html" %}
+
+        <!-- post events section -->
+        <div class="w-full md:w-3/5 flex justify-center mx-auto">
+        {% if feed %}
+            <div class="mt-24 md:mt-24 flex flex-col gap-y-6 w-full max-w-[36rem] mb-20 px-4 md:px-0">
+                <!-- Filter tabs - now scrollable on mobile -->
+                <div class="flex gap-x-3 overflow-x-auto scrollbar-hide px-2">
                     <div
-                        class="px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]">
-                        <i class="fa-solid fa-house"></i> Profile
+                        class="text-white bg-black px-3 py-1 rounded hover:bg-[#6feb85] hover:text-black hover:scale-105 transition-all cursor-pointer shrink-0">
+                        Trending
                     </div>
-                </div>
-            </div>
-            <div class="flex flex-col justify-between items-center gap-y-5 px-10">
-                <div
-                    class="px-3 text-center py-1 -ml-5 text-lg text-black font-semibold rounded border border-black w-[calc(100%+1.25rem)]">
-                    <i class="fa-solid fa-house"></i> My Organizations
-                </div>
-                <div class="flex justify-around w-full">
-                    <div><i class="text-2xl fa-solid fa-calendar-days"></i></div>
-                    <div><i class="text-2xl fa-regular fa-bookmark"></i></div>
-                    <div><i class="text-2xl fa-solid fa-gear"></i></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- profile section -->
-        <div class="flex mt-16 lg:mt-28 md:w-full lg:pl-5 flex-[5] w-full lg:px-3 lg:pb-10">
-            <div class="flex flex-col items-center md:gap-y-2 w-full">
-
-                <div class="w-full flex flex-col items-center md:gap-y-10 bg-white">
-                    <div class="relative w-full h-32 bg-[#444444] md:h-64">
-                        <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-md">
-                            <img src="../assets/profile.webp" alt="" class="rounded-md  w-32 h-32 md:w-40 md:h-40"
-                                onclick="viewProfile()" id="originalProfile">
-                        </div>
-                        <div class="absolute right-10 -bottom-10 flex flex-col">
-                            <button class="" onclick="showMenu()"><i class="text-2xl fa-solid fa-ellipsis"></i></button>
-                        </div>
-                        <div id="threeDotMenu"
-                            class="hidden absolute right-10 -bottom-40 flex-col gap-y-2 bg-[#00000057] px-3 py-2 rounded-md backdrop-blur">
-                            <div
-                                class="flex items-center gap-x-3 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
-                                <i class="fa-solid fa-archway"></i><span>Report</span>
-                            </div>
-                            <div
-                                class="flex items-center gap-x-3 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
-                                <i class="fa-solid fa-archway"></i><span>Block</span>
-                            </div>
-                            <div
-                                class="flex items-center gap-x-3 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
-                                <i class="fa-solid fa-archway"></i><span>Restrict</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <div
-                        class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md mr-auto md:ml-auto w-full md:mr-0 gap-y-2">
-                        <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
-                            <div class="text-xl font-bold">Asymmetric Technical lorem</div>
-                            <!-- <div class="text-[#686868]">@night_owl</div> -->
-                            <div class="text-[#686868] flex gap-x-3 items-center"><i
-                                    class="text-lg fa-solid fa-building"></i><span>Software Development</span></div>
-                            <div class="text-[#686868] flex gap-x-3 items-center"><i
-                                    class="text-lg fa-solid fa-location-dot"></i><span>Chennai, India</span></div>
-                            <div class="flex gap-x-2">
-                                <button
-                                    class="border rounded border-black px-1 py-1 transition hover:bg-black hover:text-white">50
-                                    Followers</button>
-                            </div>
-                        </div>
-                        <div class="pb-4">
-                            <button class="px-4 py-2 bg-[#6feb85] rounded-md" onclick="openEdit()">
-                                &lt;Follow/&gt; or edit
-                            </button>
-                        </div>
+                        class="text-white bg-black px-3 py-1 rounded hover:bg-[#6feb85] hover:text-black hover:scale-105 transition-all cursor-pointer shrink-0">
+                        Popular
+                    </div>
+                    <div
+                        class="text-white bg-black px-3 py-1 rounded hover:bg-[#6feb85] hover:text-black hover:scale-105 transition-all cursor-pointer shrink-0">
+                        Following
                     </div>
                 </div>
-
-
-
-                <div class="flex flex-col w-full p-3 lg:p-0 gap-y-3">
-                    <div
-                        class="flex px-2 py-2 overflow-x-scroll bg-[#00000034] rounded-md justify-evenly md:px-10 gap-x-20 max-[400px]:gap-x-10 md:gap-x-20">
-                        <div
-                            class="bg-black px-2 md:px-4 py-2 rounded-md text-white font-bold cursor-pointer hover:bg-white hover:text-black transition">
-                            Overview</div>
-                        <div
-                            class="px-2 py-2 rounded-md cursor-pointer md:px-4 hover:bg-white hover:text-black transition">
-                            Posts</div>
-                        <div
-                            class="px-2 py-2 rounded-md cursor-pointer md:px-4 hover:bg-white hover:text-black transition">
-                            Events</div>
-                    </div>
-
-                    <!-- overview section -->
-                    <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-10">
-                        <div class="flex flex-col text-justify gap-y-3">
-                            <h1 class="text-xl font-bold">{ Summary }</h1>
-                            <p class="text-justify">
-                                uasi sit..
+                {% for entry in feed %}
+                    <!-- post and events section -->
+                    <div class="flex flex-col gap-y-6">
+                        {% if entry.type == 'post' %}            
+                        <!-- Single Post -->
+                        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4">
+                            <!-- User Info -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    {% if entry.item.user %}
+                                    <a href='{% url "user_profile" entry.item.user.user.username %}'>
+                                        <img src="{{ entry.item.user.profile_image.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
+                                    </a>
+                                    <div>
+                                        <a href='{% url "user_profile" entry.item.user.user.username %}' class="font-semibold">
+                                            {{ entry.item.user.user.first_name }} {{ entry.item.user.user.last_name }}
+                                        </a>
+                                        <p class="text-xs text-gray-500">{{ entry.item.created_at }}</p>
+                                    </div>
+                                    {% elif entry.item.Organization %}
+                                    <a href='{% url "organization_detail" entry.item.Organization.id %}'>
+                                        <img src="{{ entry.item.Organization.logo.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
+                                    </a>
+                                    <div>
+                                        <a href='{% url "organization_detail" entry.item.Organization.id %}' class="font-semibold">
+                                            {{ entry.item.Organization.name }}
+                                        </a>
+                                        <p class="text-xs text-gray-500">{{ entry.item.created_at }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- More Options Button -->
+                                {% if entry.item.user == request.user.info or entry.item.Organization.user == request.user%}
+                                <div class="relative group">
+                                    <button class="text-gray-500 hover:text-gray-700">
+                                        •••
+                                    </button>
+                                    <div class="absolute right-0 bg-white shadow-md border border-gray-200 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200">
+                                        <a href="{% url 'delete_post' entry.item.id %}" class="flex items-center gap-x-1 px-4 py-2 text-red-800 hover:bg-red-100 hover:text-red-800 transition duration-200 w-full text-left">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            <span>Delete</span>
+                                        </a>
+                                    </div>                
+                                </div>
+                                {% endif %}
+                            </div>
+                
+                            <!-- Post Content -->
+                            <p class="mt-3 text-[#686868]">
+                                {{entry.item.content}}
                             </p>
-                        </div>
-
-                        <div class="flex flex-col gap-y-2">
-                            <h1 class="text-xl font-bold">Links</h1>
-                            <div class="flex flex-wrap gap-x-5 gap-y-2">
-                                <div
-                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
-                                    <i class="text-2xl fa-solid fa-globe"></i>
-                                    <p class="text-[#6feb85] hidden md:block">Website</p>
-                                </div>
-                                <div
-                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
-                                    <i class="text-2xl fa-brands fa-linkedin"></i>
-                                    <p class="text-[#6feb85] hidden md:block">Linkedin Id</p>
-                                </div>
-                                <div
-                                    class="flex items-center gap-x-3 bg-[#6feb8631] px-2 md:px-4 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] cursor-pointer">
-                                    <i class="text-2xl fa-brands fa-linkedin"></i>
-                                    <p class="text-[#6feb85] hidden md:block">Linkedin Id</p>
-                                </div>
+                            {% comment %} ORIGINAL = video | 1:1: SQUARE object-cover | 16: 9 = VIDEO object-cover{% endcomment %}
+                            <div class="mt-3 w-full {% if entry.item.aspect == 'Original' or entry.item.aspect == '16:9' %}aspect-video {% else %} aspect-square{% endif %} overflow-hidden">
+                                <img src="{{entry.item.file.url}}" alt="Post" class="w-full h-full {% if entry.item.aspect == 'Original' %}object-contain{% else %} object-cover{% endif %}">  
                             </div>
-                        </div>
-
-
-
-                        <div class="flex flex-col gap-y-2">
-                            <div class="text-xl font-bold">Industry</div>
-                            <div>Technology, Information and Internet</div>
-                        </div>
-                    </div>
-
-                    <!-- personal Info -->
-                    <div class=" bg-white rounded-md px-3 py-5 flex justify-between">
-                        <div class="flex flex-col gap-y-5">
-                            <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="../assets/birthday_icon.svg" alt="">
-                                <div class="w-full">
-                                    <p class="font-bold">Founded</p>
-                                    <p class="break-words text-justify text-[#686868]">November 1, 2006</p>
-                                </div>
-                            </div>
-                            <!-- <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="../assets/about_icon.svg" alt="">
-                                <div class="w-full">
-                                    <p class="font-bold">Discription</p>
-                                    <p class="break-words text-justify text-[#686868]">Lorem ipsum dolor sit amet
-                                        consectetur adipisicing elit. Ad magni velit iusto dolorum, excepturi nihil
-                                        veritatis incidunt inventore natus nesciunt earum tenetur, ratione eius
-                                        laudantium eum officia nobis. Porro, quasi!</p>
-                                </div>
-                            </div> -->
-                            <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="../assets/email_icon.svg" alt="">
-                                <div class="w-full">
-                                    <p class="font-bold">Email</p>
-                                    <p class="break-words text-justify text-[#686868]">sampleemail@gmail.com</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="../assets/call_icon.svg" alt="">
-                                <div class="w-full">
-                                    <p class="font-bold">Phone</p>
-                                    <p class="break-words text-justify text-[#686868]">9999999999</p>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="../assets/building.svg" alt="">
-                                <div class="w-full">
-                                    <p class="font-bold">Orgainization Type</p>
-                                    <p class="break-words text-justify text-[#686868]">Private LTD</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cursor-pointer" onclick="openEdit()">
-                            <img src="../assets/plus-edit.svg" alt="" class="w-7 h-7">
-                        </div>
-                    </div>
-
-                    <div class="" id="savedPostSection">
-                        <div class="flex flex-col gap-y-6 gap-x-6 flex-wrap bg p-3">
-                            <div class="self-end border border-black px-3 py-1 flex gap-x-2 items-center cursor-pointer bg-white"
-                                onclick="openPost()">
-                                <img src="../assets/plus-edit.svg" alt="" class="w-6 h-6">
-                                <p>New Post</p>
-                            </div>
-
-                            <!-- Single Post -->
-                            <div class="bg-white border rounded-lg w-full max-w-[34rem] p-4 mx-auto">
-                                <!-- User Info -->
-                                <div class="flex items-center space-x-3">
-                                    <img src="../assets/profile.webp" alt="User"
-                                        class="w-10 h-10 rounded-full object-cover">
-                                    <div>
-                                        <a class="font-semibold">John Doe</a>
-                                        <p class="text-xs text-gray-500">2 hours ago</p>
+                
+                            <!-- Actions -->
+                            <div class="flex justify-between mt-3 text-gray-600 text-sm">
+                                <div class="flex gap-x-3">
+                
+                                    <div class="flex items-center space-x-2 cursor-pointer like-container" data-post-id="{{ entry.item.id }}">
+                                        <i class="text-xl fa-solid fa-heart {% if user.info in entry.item.likes.all %}text-[#6feb85]{% endif %}"></i> 
+                                        <span class="like-count">{{ entry.item.total_likes }}</span>
+                                    </div>
+                
+                                    <div class="commentBtn flex items-center space-x-2 cursor-pointer hover:text-[rgb(111,235,133)]">
+                                        <i class="text-xl fa-solid fa-comment"></i> <span id='postCommentCount{{entry.item.id}}'>{{entry.item.tot_comments}}</span>
                                     </div>
                                 </div>
-
-                                <!-- Post Content -->
-                                <p class="mt-3 text-[#686868]">
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Debitis repudiandae quis
-                                    voluptate
-                                    eum, eos perferendis sunt! Laudantium praesentium labore officiis facilis, culpa eos
-                                    non
-                                    libero placeat vero rerum illum ducimus.
-                                </p>
-
-                                <!-- Post Image -->
-                                <div class="mt-3 w-full aspect-square overflow-hidden">
-                                    <img src="../assets/thumbnail.png" alt="Post" class="w-full h-full object-cover">
+                                <div class="bookmarkBtn cursor-pointer bookmark-container" data-post-id = "{{ entry.item.id }}">
+                                    <i class="text-xl fa-solid fa-bookmark {% if post in user.info.saved_items.posts.all %}text-[#6feb85]{% endif %}"></i>
                                 </div>
-
-                                <!-- Actions -->
-                                <div class="flex justify-between mt-3 text-gray-600 text-sm">
-                                    <div class="flex gap-x-3">
-                                        <div class="flex items-center space-x-2 cursor-pointer hover:text-[#6feb85]">
-                                            <i class="text-xl fa-solid fa-heart"></i> <span>12 </span>
-                                        </div>
-                                        <div
-                                            class="commentBtn flex items-center space-x-2 cursor-pointer hover:text-[#6feb85]">
-                                            <i class="text-xl fa-solid fa-comment"></i> <span>4 </span>
-                                        </div>
-                                    </div>
-                                    <div class="bookmarkBtn cursor-pointer">
-                                        <i class="text-xl fa-solid fa-bookmark"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Comments Section -->
-                                <div class="mt-3 border-t pt-3 hidden commentsSection">
-                                    <!-- all Comments -->
-                                    <div class="flex flex-col gap-y-4">
-                                        <!-- single comment -->
-                                        <div class="flex items-start space-x-2">
-                                            <img src="../assets/profile.webp" alt="User"
-                                                class="w-10 h-10 rounded-full object-cover">
-                                            <div class="bg-gray-100 p-2 rounded-lg w-full">
-                                                <p class="text-sm font-semibold">user 1</p>
-                                                <p class="text-sm">ncew hi odnwq odnwo ikn dwqohdw</p>
+                            </div>
+                
+                            <!-- Comments Section -->
+                            <div class="mt-3 hidden commentsSection">
+                
+                                <!-- Add a Comment -->
+                                <form method='post' action="{% url 'save_comment' %}" class="postCommentForm flex items-center space-x-2 mt-3" data-post-id="{{ entry.item.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="post_id" value="{{ entry.item.id }}">
+                                    <input type="text" name="comment" placeholder="Write a comment..." class="flex-1 border p-2 rounded-lg outline-none" required>
+                                    <button type='submit' class="bg-black text-white px-3 py-2 rounded-md transition hover:scale-105">Post</button>
+                                </form>
+                
+                                <!-- all Comments -->
+                                <div class="flex flex-col gap-y-4 mt-6"  id ='postCommentContainer{{ entry.item.id }}'>
+                                    {% for comment in entry.item.comments.all %}
+                                    <!-- single comment -->
+                                    <div class="flex items-start space-x-2" id="postComment{{ comment.id }}" >
+                                        <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
+                                        <div class="bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between">
+                                            <div>
+                                                <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>
+                                                <p class="text-sm mt-2">{{comment.content}}</p>
                                             </div>
-                                        </div>
-                                        <!-- end of single comment -->
-
-
-                                        <div class="flex items-start space-x-2">
-                                            <img src="../assets/projects.jpeg" alt="User"
-                                                class="w-10 h-10 rounded-full object-cover">
-                                            <div class="bg-gray-100 p-2 rounded-lg w-full">
-                                                <p class="text-sm font-semibold">user 2</p>
-                                                <p class="text-sm">Lorem ipsum dolor sit amet, consectetur adipisicing
-                                                    elit.
-                                                    Molestiae tempora beatae fugit distinctio rem nulla possimus id
-                                                    aliquam
-                                                    veniam eos repudiandae accusamus illum inventore ducimus, ut earum
-                                                    quidem.
-                                                    Nisi, veritatis!</p>
-                                            </div>
+                                            {% if comment.user == user.info %}
+                                            <button class="deletePostComment" data-comment-id="{{ comment.id }}">
+                                                <img src='{% static "assets/trash-bin.svg" %}' class='h-6 w-6 cursor-pointer'>
+                                            </button>
+                                            {% endif %}
                                         </div>
                                     </div>
-
-                                    <!-- Add a Comment -->
-                                    <div class="flex items-center space-x-2 mt-3">
-                                        <!-- <img src="../assets/profile.webp" alt="User" class="w-10 h-10 rounded-full object-cover"> -->
-                                        <input type="text" placeholder="Write a comment..."
-                                            class="flex-1 border p-2 rounded-lg outline-none">
-                                        <button
-                                            class="bg-black text-white px-3 py-1 rounded-md transition hover:scale-105">Post</button>
-                                    </div>
+                                    <!-- end of single comment -->
+                                    {% endfor %}
                                 </div>
                             </div>
-
-
-                            <!-- Another Post -->
-                            <div class="bg-white border rounded-lg w-full max-w-[34rem] p-4 mx-auto">
-                                <div class="flex items-center space-x-3">
-                                    <img src="../assets/profile.webp" alt="User"
-                                        class="w-10 h-10 rounded-full object-cover">
-                                    <div>
-                                        <a class="font-semibold">Emily Smith</a>
-                                        <p class="text-xs text-gray-500">5 hours ago</p>
-                                    </div>
-                                </div>
-                                <p class="mt-3 text-[#686868]">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis atque facere
-                                    ratione
-                                    quam fugit minima totam placeat magni aspernatur, in quidem voluptatem. Debitis,
-                                    iure
-                                    tenetur. Adipisci, quaerat. Minima, quia est. Lorem ipsum dolor sit amet
-                                    consectetur,
-                                    adipisicing elit. Sint, quasi provident? Earum necessitatibus rerum nisi distinctio
-                                    sed
-                                    molestias facilis esse modi aspernatur adipisci at, consequuntur officiis expedita
-                                    aliquam
-                                    rem eius.
-                                </p>
-                                <div class="mt-3 w-full aspect-video overflow-hidden bg-[#f8fafd]">
-                                    <img src="../assets/singleProject.png" alt="Post"
-                                        class="w-full h-full object-contain">
-                                </div>
-                                <div class="flex justify-between mt-3 text-gray-600 text-sm">
-                                    <div class="flex gap-x-3">
-                                        <div class="flex items-center space-x-2 cursor-pointer hover:text-[#6feb85]">
-                                            <i class="text-xl fa-solid fa-heart"></i> <span>12 </span>
-                                        </div>
-                                        <div
-                                            class="commentBtn flex items-center space-x-2 cursor-pointer hover:text-[#6feb85]">
-                                            <i class="text-xl fa-solid fa-comment"></i> <span>4 </span>
-                                        </div>
-                                    </div>
-                                    <div class="bookmarkBtn cursor-pointer">
-                                        <i class="text-xl fa-solid fa-bookmark"></i>
-                                    </div>
-                                </div>
-                                <!-- Comments Section -->
-                                <div class="mt-3 border-t pt-3 hidden commentsSection">
-                                    <!-- all Comments -->
-                                    <div class="flex flex-col gap-y-4">
-                                        <!-- single comment -->
-                                        <div class="flex items-start space-x-2">
-                                            <img src="../assets/profile.webp" alt="User"
-                                                class="w-10 h-10 rounded-full object-cover">
-                                            <div class="bg-gray-100 p-2 rounded-lg w-full">
-                                                <p class="text-sm font-semibold">user 1</p>
-                                                <p class="text-sm">ncew hi odnwq odnwo ikn dwqohdw</p>
-                                            </div>
-                                        </div>
-                                        <!-- end of single comment -->
-                                    </div>
-
-                                    <!-- Add a Comment -->
-                                    <div class="flex items-center space-x-2 mt-3">
-                                        <!-- <img src="../assets/profile.webp" alt="User" class="w-10 h-10 rounded-full object-cover"> -->
-                                        <input type="text" placeholder="Write a comment..."
-                                            class="flex-1 border p-2 rounded-lg outline-none">
-                                        <button
-                                            class="bg-black text-white px-3 py-1 rounded-md transition hover:scale-105">Post</button>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
+                        {% endif %}
 
-                    </div>
+                        <!-- Project cards with responsive layout -->
+                        {% comment %} {% for project in suggested_projects %}
+                        <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-2 w-full shadow-lg">
+                            <div class="flex items-center justify-between gap-x-5">
+                                <div class="flex justify-start items-start w-full md:gap-x-5 gap-x-4">
+                                    <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
+                                    <div class="w-5/6 md:w-[90%]">
+                                        <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a>
+                                        <div>{{project.description|truncatewords:20}}</div>
+                                        <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
+                                            <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
+                                                <span class='hover:underline'><a href='{% url "project_joined_members" project.id %}'>{{project.tot_member}} Users</a></span>
+                                            </div>
+                                            <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute right-3 top-2 flex items-start gap-x-5">
+                                    <p class="text-xs text-gray-700">{{project.type|default:""}}</p>
+                                    <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
+                                        <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="border-t border-gray-200">
+                            <div class="flex items-center justify-between gap-x-5">
+                                <div class="flex items-center gap-x-5">
+                                    {% if project.github_link %}
+                                    <a href='{{project.github_link}}' target='_blank'><i class="text-2xl fa-brands fa-github cursor-pointer"></i></a>
+                                    {% endif %}  
+                                    <div class="underline">{{project.domain.name}}</div>
+                                </div>
+                                <div class="flex items-center gap-x-2 text-[#686868]">
+                                    <!-- <p class="px-2 py-1 text-black border border-black rounded-md">Free</p> -->
+                                    <a href='{% url "project_detail" project.id%}' class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.2]">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %} {% endcomment %}
 
+                        <!-- suggested profile section -->
+                        {% comment %} <div class="w-full mt-2">
+                            <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 px-2">Suggested Profiles</h2>
 
-                    <!-- event section yet to be done -->
-                    <div class="flex flex-col justify-center items-center  w-full gap-y-10">
-                        <a href="createEvent.html"
-                            class="self-end border border-black px-3 py-1 flex gap-x-2 items-center cursor-pointer bg-white">
-                            <img src="../assets/plus-edit.svg" alt="" class="w-6 h-6">
-                            <p>New Events</p>
-                        </a>
+                            <div class="flex space-x-3 md:space-x-4 overflow-x-auto scrollbar-hide p-2">
+                                <!-- Profile Cards with responsive sizing -->
+                                {% for people in suggested_peoples %}
+                                <div class="w-36 md:w-48 bg-white border border-gray-300 p-2 md:p-4 rounded-lg flex flex-col gap-y-1 items-center shrink-0 shadow-lg">
+                                    <a href='{% url "user_profile" people.user.username %}'>
+                                        <img src="{{people.profile_image.url}}" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2 mx-auto">
+                                        <p class="text-xs font-semibold md:text-sm text-center">@{{people.user.username}}</p>
+                                        <p class='text-center text-gray-600'>{{people.status|default:""}}</p>
+                                        <p class="text-gray-500 text-xs md:text-sm mt-1">{{people.cringe_badge|default:"&nbsp;"}}</p>
+                                        {% if user.info|is_following:people %}
+                                                <a href="javascript:void(0);" class="follow-btn bg-[#464646] mt-1 md:mt-2 text-white px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm" data-user-id="{{ people.id }}">
+                                                    <span class="btn-text">&lt;Unfollow/&gt;</span>
+                                                </a>
+                                        {% else %}
+                                            <a href="javascript:void(0);" class="follow-btn mt-1 md:mt-2 bg-[#6feb85] text-black px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm" data-user-id="{{ people.id }}">   
+                                                <span class="btn-text">&lt;Follow/&gt;</span>
+                                            </a>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div> {% endcomment %}
 
-                        <!-- start of 1st event -->
-                        <div class="flex flex-col w-full md:w-[34rem] bg-white">
+                        <!-- suggestion events section -->
+                        {% comment %} {% for event in suggested_events %}
+                        <div class="flex flex-col w-full  bg-white p-3 pb-4 shadow-lg rounded-xl">
                             <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative dot">
-                                <img src="../assets/singleProject.png" alt="Post" class="w-full h-full object-cover">
-                                <div
-                                    class="absolute top-3 right-3 bg-[#0000002c] rounded-full p-1.5 backdrop-blur cursor-pointer">
-                                    <img src="../assets/save.svg" alt="" class="w-7 h-7">
-                                </div>
+                                <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover">
                             </div>
-                            <div class=" flex justify-between p-3 items-end">
-                                <div class="flex flex-col gap-y-1">
+                            <div class=" flex justify-between pt-2 items-end">
+                                <div class="flex flex-col gap-y-2 mt-2">
                                     <div class="flex gap-x-2 items-start">
-                                        <img src="../assets/event.svg" alt="" class="w-5 h-5">
-                                        <div class="font-bold">Event Title</div>
+                                        <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-7 h-7">
+                                        <div class="font-bold">{{event.title}}</div>
                                     </div>
                                     <!-- <div>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aut quo eum suscipit aliquid enim porro quos, iste quaerat cumque, omnis delectus aperiam, dolores earum tempora cum! Quas veritatis inventore consectetur!</div> -->
                                     <div class="flex gap-x-2 items-start">
-                                        <img src="../assets/category.svg" alt="" class="w-5 h-5">
-                                        <div class="text-[#686868]">lore</div>
+                                        <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
+                                        <div class="text-[#686868]">{{event.event_type}}</div>
                                     </div>
+                                    
                                     <div class="flex gap-x-2 items-start">
-                                        <img src="../assets/location_icon.svg" alt="" class="w-5 h-5">
-                                        <div class="text-[#686868]">Banglore, India</div>
+                                        <img src="{% static 'assets/organization.svg' %}" alt="" class="w-7 h-7">
+                                        <div class="text-[#686868]">{{event.organization.name}}</div>
                                     </div>
-                                </div>
 
-                                <div class="flex flex-col gap-y-2 items-">
-                                    <div class="border px-3 py-1 border-black rounded text-center">18 Feb</div>
-                                    <div
-                                        class="bg-black text-white px-3 py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center">
-                                        Join
+                                    <div class="flex gap-x-2 items-center">
+                                        <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
+                                        <p class='text-[#686868]'>{{ event.start_date|date:"F j, Y" }}</p>
                                     </div>
+
+                                </div>
+                            </div>
+                            <div class='flex flex-row mt-1'>
+                                <a href='{% url "event_detail" event.id %}' class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center mx-auto">
+                                    View
+                                </a>
+
+                                <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
+                                    <i class="text-xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
                                 </div>
                             </div>
                         </div>
-                        <!-- end of 1st event -->
-
-                        <div class="flex flex-col w-full md:w-[34rem] bg-white">
-                            <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative">
-                                <img src="../assets/https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCthRyJ1Sh4X8HyhnyiqJLBxsULXwuz3TaRg&s"
-                                    alt="Post" class="w-full h-full object-contain">
-                                <div
-                                    class="absolute top-3 right-3 bg-[#0000002c] rounded-full p-1.5 backdrop-blur cursor-pointer">
-                                    <img src="../assets/save.svg" alt="" class="w-7 h-7">
-                                </div>
-                            </div>
-                            <div class=" flex justify-between p-3 items-end">
-                                <div class="flex flex-col gap-y-1">
-                                    <div class="flex gap-x-2 items-start">
-                                        <img src="../assets/event.svg" alt="" class="w-5 h-5">
-                                        <div class="font-bold">Event Title</div>
-                                    </div>
-                                    <!-- <div>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aut quo eum suscipit aliquid enim porro quos, iste quaerat cumque, omnis delectus aperiam, dolores earum tempora cum! Quas veritatis inventore consectetur!</div> -->
-                                    <div class="flex gap-x-2 items-start">
-                                        <img src="../assets/category.svg" alt="" class="w-5 h-5">
-                                        <div class="text-[#686868]">Category</div>
-                                    </div>
-                                    <div class="flex gap-x-2 items-start">
-                                        <img src="../assets/location_icon.svg" alt="" class="w-5 h-5">
-                                        <div class="text-[#686868]">Banglore, India</div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-y-2 items-">
-                                    <div class="border px-3 py-1 border-black rounded text-center">18 Feb</div>
-                                    <div
-                                        class="bg-black text-white px-3 py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center">
-                                        Join
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %} {% endcomment %}
                     </div>
-
-                </div>
+                {% endfor %}
             </div>
+        {% else %}
+            <p>No items in your feed yet!</p>
+        {% endif %}
         </div>
 
-        <!-- similar Orgainization -->
-        <div class="flex w-full lg:w-1/4 lg:mt-28 flex-col px-3 lg:px-2  gap-y-5 pb-14 lg:pb-0">
-            <div class="flex flex-col gap-y-6 bg-white">
-                <h1 class="text-center text-2xl font-bold bg-[#000000] px-3 py-2 text-white rounded-md">Similar
-                    Orgainization
-                </h1>
-                <!-- all Orgainization present inside this div -->
-                <div class="flex flex-col gap-y-5 px-3 py-5 pt-0">
-                    <!-- single Orgainization -->
-                    <div class="flex gap-x-3  justify-between items-center border w-full px-2 py-4 rounded-md">
-                        <div class="flex gap-x-3 items-start">
-                            <img src="../assets/profile.webp" class="w-14 h-14 rounded-md"
-                                onclick="goTo('profile/html')">
-                            <div class="flex flex-col gap-y-3">
-                                <a class="underline font-bold">Asymmetric Technical</a>
-                                <p>Software Development</p>
-                                <button
-                                    class="hover:bg-black hover:text-white transition max-[450px]:flex hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl lg:flex gap-x-2 items-center"><i
-                                        class="fa-solid fa-user-plus"></i><span>Follow</span></button>
-                            </div>
-                        </div>
-                        <button
-                            class="hover:bg-black hover:text-white transition max-[450px]:hidden lg:hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl flex gap-x-2 items-center"><i
-                                class="fa-solid fa-user-plus"></i><span>Follow</span></button>
-                    </div>
-                    <!-- end of single Orgainization -->
-
-                    <hr>
-
-                    <div class="flex gap-x-3 justify-between items-center border w-full px-2 py-4 rounded-md">
-                        <div class="flex gap-x-3 items-start ">
-                            <img src="../assets/team.jpeg" class="w-14 h-14 rounded-md"
-                                onclick="goTo('www.w3schools.com/jsref/met_win_open.asp')">
-                            <div class="flex flex-col gap-y-3">
-                                <a class="underline font-bold">Asymmetric Technical</a>
-                                <p>Software Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos itaque, ad
-                                    quod, et maiores optio ab voluptas natus veritatis fugit quaerat explicabo eius
-                                    inventore incidunt debitis enim magnam distinctio odio.</p>
-                                <button
-                                    class="hover:bg-black hover:text-white transition max-[450px]:flex hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl lg:flex gap-x-2 items-center"><i
-                                        class="fa-solid fa-user-plus"></i><span>Follow</span></button>
-                            </div>
-                        </div>
-                        <button
-                            class="hover:bg-black hover:text-white transition max-[450px]:hidden lg:hidden w-fit bg-[#6feb85] px-3 py-2 rounded-xl flex gap-x-2 items-center"><i
-                                class="fa-solid fa-user-plus"></i><span>Follow</span></button>
-
-                    </div>
-                </div>
+        <div class="mt-28 self-start max-[850px]:hidden block w-64 lg:w-80  min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
+            <div class="flex flex-col items-center">
+                <img src="{{user.info.profile_image.url}}" class="w-24 h-24 bg-gray-200 rounded-lg object-cover" alt="Profile Picture">
+                <h2 class="mt-4 text-xl font-semibold text-black">{{user.username}}</h2>
+                <p class="text-sm text-gray-600 mt-1">{{user.info.status}}</p>
+                <p class="text-xs text-gray-500 mt-1">{{user.info.location|default:""}}</p>
             </div>
-        </div>
-
-    </div>
-
-
-    <!-- for viewing the profile -->
-    <div id="zoomProfile" class="hidden items-center justify-center fixed top-0 bottom-0  w-full">
-        <div class="relative">
-            <img src="../assets/profile.webp" alt=""
-                class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-full border-8 border-[#00000070]">
-            <button
-                class="absolute -right-3 -top-3 md:top-0 md:right-0 border bg-white border-black rounded-full w-10 h-10"
-                onclick="closeProfile()"><img src="../assets/close.svg" alt=""></button>
+            <div class="mt-6 border-t border-gray-300 pt-4 text-center">
+                <a href="{% url 'user_profile' user.username %}" class="inline-block px-4 py-2 text-sm font-medium text-white bg-[#00a63e] rounded-lg hover:bg-green-700 transition-all duration-200">View Profile</a>
+            </div>
         </div>
     </div>
 
-    <!-- edit profile -->
-    <div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="editContainer">
-        <form
-            class="relative flex flex-col gap-y-3 h-full overflow-y-scroll py-10 bg-white w-full lg:w-1/2 px-5 border">
-            <div class="cursor-pointer absolute top-5 right-5" onclick="closeEdit()"><i
-                    class="text-3xl fa-solid fa-circle-xmark"></i></div>
-            <div class="max-[500px]:self-stretch self-center flex flex-col gap-y-3 w-full lg:w-[85%]">
-                <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
-                    Edit Details
-                </h1>
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 
-                <div class="self-center mb-4">
-                    <div class="flex gap-x-3 items-center max-[500px]:flex-col gap-y-3">
-                        <div class="relative">
-                            <img src="../assets/profile.webp" alt="" class="rounded-lg w-40 h-40" id="image">
-                            <label id="imageContainer" for="imgInput"
-                                class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
-                                    src="edit.svg" alt="" class="w-7 h-7"></label>
-                        </div>
-                        <div class="hidden gap-y-2 items-center flex-col" id="cropImgContainer">
-                            <p class="bold underline">crop image</p>
-                            <img src="../assets/" alt="" class="w-40 h-40" id="croppingImg">
-                        </div>
-                        <input type="file" name="profileImg" class="hidden" id="imgInput" accept="image/*">
-                        <div class="cursor-pointer hidden bg-[#6feb85] px-2 py-1 rounded-md" id="cropBtn"
-                            onclick="crop()">
-                            Done</div>
-                    </div>
-                </div>
-                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>organization Name</p>
-                        <input type="text" name="organizationName" placeholder="First"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-                <div>
-                    <div class="flex flex-col gap-y-1">
-                        <p>Discription</p>
-                        <textarea type="text" name="discription" placeholder="Discription...."
-                            class="outline-none border border-black px-2 py-1"></textarea>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex flex-col gap-y-1">
-                        <p>Founded</p>
-                        <input type="date" name="founded" id="founded"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-
-                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Industry</p>
-                        <input type="text" name="industry" placeholder="Industry"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Location</p>
-                        <input type="text" name="loaction" placeholder="Loaction"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-
-                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Email</p>
-                        <input type="number" name="email" placeholder="Email"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Phone</p>
-                        <input type="number" name="phone" placeholder="Phone"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-                <div class="max-[500px]:flex-col gap-y-3 flex gap-x-3 sm:items-center">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Orgainization</p>
-                        <select name="organizationType" id=""
-                            class="outline-none border border-black px-2 py-1 bg-white">
-                            <option value="private">Private</option>
-                            <option value="public">Public</option>
-                            <!-- <option value="notToSay">Not To Say</option> -->
-                        </select>
-                    </div>
-                </div>
-                <div class="flex gap-x-3 gap-y-3">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Website</p>
-                        <input type="text" name="website" placeholder="www.samplesite.in"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>LinkedIn</p>
-                        <input type="text" name="linkedin" placeholder="LinkedIn URL"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-                <div class="flex gap-x-3 gap-y-3">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Twitter</p>
-                        <input type="text" name="twitter" placeholder="Twitter"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Instagram</p>
-                        <input type="text" name="instagram" placeholder="Instagram"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-                <div class="flex gap-x-3 gap-y-3">
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Github</p>
-                        <input type="text" name="github" placeholder="Github"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                    <div class="flex flex-col gap-y-1 w-full">
-                        <p>Discord</p>
-                        <input type="text" name="discord" placeholder="Discord"
-                            class="outline-none border border-black px-2 py-1">
-                    </div>
-                </div>
-
-                <div class="self-center">
-                    <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-
-
-    <!-- create post -->
-    <div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="createPost">
-        <form
-            class="border rounded-md shadow-md relative flex flex-col gap-y-3 h-full overflow-y-scroll bg-white w-full md:w-3/4 lg:w-1/2">
-            <div class="relative flex flex-col gap-y-4 overflow-y-scroll items-center py-10 bg-white w-full">
-                <div class="cursor-pointer absolute top-5 right-5" onclick="closePost()"><i
-                        class="text-3xl fa-solid fa-circle-xmark"></i>
-                </div>
-                <h1 class="mt-5 w-fit self-center text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded">
-                    Create Post</h1>
-                <div class="flex flex-col items-start gap-4 border p-4 w-full max-w-[34rem] mx-auto">
-                    <!-- Post Image -->
-                    <div class="aspect-video overflow-hidden w-full bg-[#f8fafd]" id="postImgContainer">
-                        <img src="../assets/" alt="Post Banner" class="hidden w-full h-full object-contain aspect-video"
-                            id="postImg">
-                        <div id="uploadPostContainer" class="flex justify-center items-center h-full">
-                            <label for="uploadPost">
-                                <div class="flex items-center justify-center flex-col h-full">
-                                    <img src="../assets/uploadPost.svg" alt="" class="aspect-video w-52">
-                                    <p>Upload the files here...</p>
-                                </div>
-                            </label>
-                            <input type="file" name="post" id="uploadPost" class="hidden">
-                        </div>
-                    </div>
-                    <label id="uploadPostLabel" for="uploadPost"
-                        class="hidden bg-[#00000054] text-white font-bold rounded-md px-3 py-1 hover:bg-black transition cursor-pointer">Upload
-                        another</label>
-
-
-                    <!-- Post Content -->
-                    <textarea class="text-gray-700 w-full h-36 outline-none resize-none"
-                        placeholder="Description..."></textarea>
-                    <div class="flex gap-x-2 self-end">
-                        <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
-                            onclick="setImgOriginal()" id="originalAspect">Original</div>
-                        <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
-                            onclick="resizePost(0)" id="squareAspect">1:1</div>
-                        <div class="cursor-pointer hover:bg-black hover:text-white focus:bg-black focus:text-white transition bg-white text-black border border-black px-3 py-1"
-                            onclick="resizePost(1)" id="videoAspect">16:9</div>
-                    </div>
-                </div>
-
-                <button type="submit" class="self-center"><button type="submit"
-                        class="bg-[#6feb85] text-black px-3 py-1">Post</button>
-                </button>
-            </div>
-        </form>
-    </div>
-
-
-    <script src="../scripts/organizationProfile.js"></script>
-    <script src="../scripts/script.js"></script>
 </body>
-
-</html>
+{% endblock %}

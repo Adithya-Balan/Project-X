@@ -2,7 +2,6 @@
 {% load static %}
 {% load custom_filter %}
 
-
 {% block title %}{{userinfo_obj.user.username}}{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 <link rel="stylesheet" href="{% static 'styles/banner.css' %}"/>
@@ -40,7 +39,7 @@
                     <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md md:ml-auto w-full gap-y-2">
                         <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
                             <div class="text-xl font-bold">{ {{userinfo_obj.user.username}} }</div>
-                            <div class="text-[#686868]">@night_owl</div>
+                            <div class="text-[#686868] text-lg">{{userinfo_obj.cringe_badge.emoji}} {{userinfo_obj.cringe_badge.name}}</div>
                             {% if userinfo_obj.location %}<div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i>&nbsp; {{userinfo_obj.location}}</div>{% endif %}
 
                             <div class="flex gap-x-2">
@@ -424,7 +423,7 @@
         </div>
 
         <!-- skill section -->
-        <div class="flex flex-col px-4 mt-10 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-row md:items-start md:w-full md:gap-x-5 md:mr-3">
+        <div class="flex flex-col px-4 mt-2 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-col md:items-start md:w-full md:gap-x-5 md:mr-3">
             <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full relative border border-gray-300">
                 {% if request.user.info == userinfo_obj%}
                 <div class="cursor-pointer absolute top-4 right-4"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""

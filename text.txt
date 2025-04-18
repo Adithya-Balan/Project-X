@@ -68,3 +68,196 @@ stack operations and applications
                             <p class="text-sm text-gray-700 leading-relaxed">GitHub was live for <span
                                     class="font-medium text-[#6feb85]">Rubber Duck Thursdays!</span> Come cowork...</p>
                         </div>
+
+user_tz_str = request.user.info.timezone  # e.g., "America/New_York"
+    user_tz = pytz.timezone(user_tz_str)
+
+    # Get current time in UTC (Django returns an aware datetime in UTC)
+    now_utc = timezone.now()
+    user_local_now = now_utc.astimezone(user_tz)
+    print(user_tz_str, user_tz, now_utc, user_local_now)
+
+
+
+<!-- projects -->
+                    <div class="flex flex-col items-start w-full gap-y-5">
+                        <!-- Project cards with responsive layout -->
+                        <div class="relative flex flex-col px-4 py-3 bg-white rounded-lg gap-y-3 w-full">
+                            <div class="flex items-center justify-between gap-x-3">
+                                <div class="flex items-start w-full gap-x-2">
+                                    <div class="w-12 h-12 shrink-0">
+                                        <img src="../assets/profile.webp" alt="" class="w-full h-full rounded-md">
+                                    </div>
+                                    <div class="flex-1">
+                                        <a href="#" class="font-bold text-base md:text-[18px] cursor-pointer">Project
+                                            Title</a>
+                                        <div class="text-sm md:text-base">Short description of the project goes here.
+                                            This
+                                            should be brief but informative.</div>
+                                        <div class="text-[#686868] flex justify-between mt-3 gap-x-1 text-sm">
+                                            <div class="flex items-center gap-x-1">
+                                                <span>Author</span>
+                                                <span class="hidden md:inline">●</span>
+                                                <span class="hidden md:inline">13 Applicants</span>
+                                            </div>
+                                            <p>28 Jan 2025</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute right-3 top-2 flex items-start gap-x-3">
+                                    <i class="text-xl fa-solid fa-certificate"></i>
+                                    <i
+                                        class="text-xl fa-solid fa-bookmark hover:scale-[1.3] transition cursor-pointer"></i>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="flex items-center justify-between gap-x-3">
+                                <div class="flex items-center gap-x-3 text-sm">
+                                    <i class="text-xl fa-brands fa-github cursor-pointer"></i>
+                                    <span class="underline">Django</span>
+                                    <span class="underline">React</span>
+                                </div>
+                                <button
+                                    class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.1] md:hover:scale-[1.2] text-sm">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="relative flex flex-col px-4 py-3 bg-white rounded-lg gap-y-3 w-full">
+                            <div class="flex items-center justify-between gap-x-3">
+                                <div class="flex items-start w-full gap-x-2">
+                                    <div class="w-12 h-12 shrink-0">
+                                        <img src="../assets/profile.webp" alt="" class="w-full h-full rounded-md">
+                                    </div>
+                                    <div class="flex-1">
+                                        <a href="#" class="font-bold text-base md:text-[18px] cursor-pointer">Project
+                                            Title</a>
+                                        <div class="text-sm md:text-base">Short description of the project goes here.
+                                            This
+                                            should be brief but informative.</div>
+                                        <div class="text-[#686868] flex justify-between mt-3 gap-x-1 text-sm">
+                                            <div class="flex items-center gap-x-1">
+                                                <span>Author</span>
+                                                <span class="hidden md:inline">●</span>
+                                                <span class="hidden md:inline">13 Applicants</span>
+                                            </div>
+                                            <p>28 Jan 2025</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute right-3 top-2 flex items-start gap-x-3">
+                                    <i class="text-xl fa-solid fa-certificate"></i>
+                                    <i
+                                        class="text-xl fa-solid fa-bookmark hover:scale-[1.3] transition cursor-pointer"></i>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="flex items-center justify-between gap-x-3">
+                                <div class="flex items-center gap-x-3 text-sm">
+                                    <i class="text-xl fa-brands fa-github cursor-pointer"></i>
+                                    <span class="underline">Django</span>
+                                    <span class="underline">React</span>
+                                </div>
+                                <button
+                                    class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.1] md:hover:scale-[1.2] text-sm">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+<!-- suggested profile section -->
+                <div class="w-full mt-10 md:mt-14">
+                    <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 px-2">Suggested Profiles</h2>
+
+                    <div class="flex space-x-3 md:space-x-4 overflow-x-auto scrollbar-hide p-2">
+                        <!-- Profile Cards with responsive sizing -->
+                        <div
+                            class="w-36 md:w-48 bg-white border p-2 md:p-4 rounded-lg shadow-md flex flex-col items-center shrink-0">
+                            <img src="../assets/profile.webp" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2">
+                            <h3 class="font-semibold text-sm md:text-base">Name</h3>
+                            <p class="text-gray-500 text-xs md:text-sm">@username</p>
+                            <p class="text-gray-500 text-xs md:text-sm">#role</p>
+                            <button
+                                class="mt-1 md:mt-2 bg-[#6feb85] text-black px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm">
+                                Follow
+                            </button>
+                        </div>
+
+                        <div
+                            class="w-36 md:w-48 bg-white border p-2 md:p-4 rounded-lg shadow-md flex flex-col items-center shrink-0">
+                            <img src="../assets/profile.webp" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2">
+                            <h3 class="font-semibold text-sm md:text-base">Name</h3>
+                            <p class="text-gray-500 text-xs md:text-sm">@username</p>
+                            <p class="text-gray-500 text-xs md:text-sm">#role</p>
+                            <button
+                                class="mt-1 md:mt-2 bg-[#6feb85] text-black px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm">
+                                Follow
+                            </button>
+                        </div>
+
+                        <div
+                            class="w-36 md:w-48 bg-white border p-2 md:p-4 rounded-lg shadow-md flex flex-col items-center shrink-0">
+                            <img src="../assets/profile.webp" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2">
+                            <h3 class="font-semibold text-sm md:text-base">Name</h3>
+                            <p class="text-gray-500 text-xs md:text-sm">@username</p>
+                            <p class="text-gray-500 text-xs md:text-sm">#role</p>
+                            <button
+                                class="mt-1 md:mt-2 bg-[#6feb85] text-black px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm">
+                                Follow
+                            </button>
+                        </div>
+
+                        <div
+                            class="w-36 md:w-48 bg-white border p-2 md:p-4 rounded-lg shadow-md flex flex-col items-center shrink-0">
+                            <img src="../assets/profile.webp" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2">
+                            <h3 class="font-semibold text-sm md:text-base">Name</h3>
+                            <p class="text-gray-500 text-xs md:text-sm">@username</p>
+                            <p class="text-gray-500 text-xs md:text-sm">#role</p>
+                            <button
+                                class="mt-1 md:mt-2 bg-[#6feb85] text-black px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm">
+                                Follow
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- events section -->
+                <div class="flex flex-col w-full bg-white p-3 pb-4">
+                    <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4]">
+                        <img src="../assets/singleProject.png" alt="Event" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex justify-between pt-2 items-end">
+                        <div class="flex flex-col gap-y-2 mt-2">
+                            <div class="flex gap-x-2 items-start">
+                                <img src="../assets/org_event.svg" alt="" class="w-6 h-6 md:w-7 md:h-7">
+                                <div class="font-bold text-base md:text-lg">Event Title</div>
+                            </div>
+                            <div class="flex gap-x-2 items-start">
+                                <img src="../assets/category.svg" alt="" class="w-6 h-6 md:w-7 md:h-7">
+                                <div class="text-[#686868] text-sm md:text-base">Workshop</div>
+                            </div>
+                            <div class="flex gap-x-2 items-start">
+                                <img src="../assets/organization.svg" alt="" class="w-6 h-6 md:w-7 md:h-7">
+                                <div class="text-[#686868] text-sm md:text-base">Organization</div>
+                            </div>
+                            <div class="flex gap-x-2 items-center">
+                                <img src="../assets/calendar.svg" alt="" class="w-6 h-6 md:w-7 md:h-7">
+                                <p class='text-[#686868] text-sm md:text-base'>June 15, 2025</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='flex flex-row mt-2'>
+                        <a href='#'
+                            class="bg-black px-4 md:px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center mx-auto text-sm md:text-base">
+                            View
+                        </a>
+                        <div class="bookmarkBtn cursor-pointer text-[#4a5565]">
+                            <i class="text-xl md:text-2xl fa-solid fa-bookmark"></i>
+                        </div>
+                    </div>
+                </div>

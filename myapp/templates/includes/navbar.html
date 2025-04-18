@@ -23,19 +23,15 @@
                 <i class="text-xl fa-solid fa-square-plus" onclick="showPostOption()"></i>
             </div>
             <div class="relative">
-                <!-- Icon visible only on laptops (md and above) -->
-                {% comment %} <i class="hidden md:inline-block text-xl fa-solid fa-circle-user"></i> {% endcomment %}
-                <!-- Icon visible only on tablets and mobile (below md) -->
                 <i class="inline-block md:hidden text-xl fa-solid fa-gear" onclick="showPopup()"></i>
             </div>
         </div>
     </nav>
     <div class="hidden top-20 right-10 bg-[#00000057] backdrop-blur px-5 py-3 rounded-md" id="postOption">
         <div class="flex flex-col gap-y-1">
-            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition"
-                onclick="openPost('user', 'user-post')">Upload Post</div>
-            <a href = "{% url 'project_form_new' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition">
-                Upload Project</a>
+            <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition" onclick="openPost('user', 'user-post')">Upload Post</div>
+            <a href = "{% url 'project_form_new' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition">Upload Project</a>
+            {% if manage_org_page %}<a href = "{% url 'create_organization' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] font-bold transition">Create Organization</a>{% endif %}
         </div>
     </div>
 </div>
@@ -45,7 +41,13 @@
     <div class="flex flex-col gap-y-2">
         <a href = "{% url 'settings_page' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Account center</a>
         <a href='{% url "manage_organization" %}' class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Manage Organization</a>
-        <div class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Dark Theme</div>
+        <form method="POST" action="/logout/" class="w-full">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex w-full px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] appearance-none text-left items-center">
+                Logout
+            </button>
+        </form>
+        
     </div>
 </div>
 
