@@ -26,9 +26,9 @@
         <!-- explore section -->
         <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-6">
             <div class="flex gap-x-1 flex-wrap gap-y-2 items-center justify-center absolute top-20">
-                <div class="flex flex-col gap-y-2 items-center" onclick="getExplore()">
-                    <div class="flex items-center bg-black text-white px-2 py-1 rounded-lg">
-                        <div id="exploreTitle" class="cursor-pointer text-lg"><span class='text-lg'>Projects</div>
+                <div class="flex flex-col gap-y-2 items-center">
+                    <div id="exploreTrigger" class="flex items-center bg-black text-white px-2 py-1 rounded-lg cursor-pointer">
+                        <div id="exploreTitle" class="text-lg"><span class='text-lg'>Projects</div>
                         <img src="{% static 'assets/down.svg' %}" alt="" class="w-7 h-7">
                     </div>
                     <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded" id="allExplore">
@@ -140,7 +140,7 @@
                 id="filterElement">
                 <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
                         class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
-                        <div class="flex flex-row items-center justify-between gap-x-3  lg:bg-gray-50 w-full py-3 px-4 rounded-lg">
+                        <div class="flex flex-row items-center justify-between gap-x-3 w-full py-2 px-4 rounded-lg">
                             <div class="flex items-center gap-x-2 mx-auto">
                                 <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
                                 <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="h-5 w-5 text-gray-600">

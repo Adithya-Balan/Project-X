@@ -17,7 +17,7 @@
 
     <div id = 'entireSection' class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
 
-        <a href="{{ request.META.HTTP_REFERER }}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Back</span></a>
+        <a href="{% url 'explore-project' %}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Explore More...</span></a>
 
         <div class="flex gap-x-5 flex-col md:flex-row gap-y-10 -mt-5">
             <div class="bg-white p-5 rounded-lg w-full md:w-3/5 flex flex-col gap-y-5">
@@ -91,7 +91,7 @@
                     {% endif %}
                     <div class="text-2xl font-extrabold self-start mt-6 underline">Connect with Creator</div>
                     <div class="flex flex-col gap-y-4 text-base">
-                        <img src='{{project.creator.profile_image.url}}' class='w-20 h-20 rounded-lg'>
+                        <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank"><img src='{{project.creator.profile_image.url}}' class='w-20 h-20 rounded-lg'></a>
                         <div class="flex justify-between items-center gap-x-5">
                             <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank" class=""><i class="fa-regular fa-user"></i> &nbsp;<span class='hover:underline'>{{project.creator.user.first_name}} {{project.creator.user.last_name}}</span></a>
                             

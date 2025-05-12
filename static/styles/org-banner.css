@@ -1,0 +1,79 @@
+
+.title {
+fill: #00FF66;
+font-family: 'Arial', sans-serif;
+font-weight: bold;
+font-size: 44px;
+text-anchor: middle;
+}
+
+.label {
+font-size: 14px;
+fill: #66FFAA;
+font-family: 'Arial', sans-serif;
+}
+
+.wave {
+stroke: #00FF66;
+fill: none;
+stroke-width: 2;
+animation: waveMove 8s linear infinite;
+}
+
+@keyframes waveMove {
+0% { stroke-dashoffset: 0; }
+100% { stroke-dashoffset: 1000; }
+}
+
+.pulse {
+fill: none;
+stroke: #00FF66;
+stroke-width: 2;
+animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0% { r: 5; opacity: 1; }
+100% { r: 20; opacity: 0; }
+}
+
+.spin {
+animation: spin 6s linear infinite;
+transform-origin: center;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+.capsule {
+rx: 12;
+ry: 12;
+}
+
+.gradient {
+fill: url(#gradient1);
+}
+
+.line {
+stroke: #00FF66;
+stroke-width: 2;
+stroke-dasharray: 5, 5;
+animation: dash 10s linear infinite; /* Slowed down the animation */
+}
+
+@keyframes dash {
+0% { stroke-dashoffset: 0; }
+100% { stroke-dashoffset: 1000; }
+}
+
+.animated-text {
+animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+0% { opacity: 0; }
+100% { opacity: 1; }
+}
+

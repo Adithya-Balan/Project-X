@@ -3,8 +3,13 @@ from . import views
 
 urlpatterns = [
     # Auth
-    path("sign-up", views.sign_up.as_view(), name="sign_up"),
-    path("home", views.index, name="index"),
+    path("post-login-check/", views.post_login_check, name=""),
+    
+    path("sign-up/", views.sign_up.as_view(), name="sign_up"),
+    path("aboutuser/<uuid:uuid>", views.signup_about , name="signup_about"),
+    path("character/<uuid:uuid>", views.signup_character, name="signup_character"),
+    path("skills/<uuid:uuid>", views.signup_skills, name="signup_skills"),
+    path("", views.index, name="index"),
     path("edit-profile", views.edit_profile, name="edit_profile"),
     path("notification", views.notification_page, name="notification_page"),
     path('notifications/count/', views.get_notification_count, name='get_notification_count'),

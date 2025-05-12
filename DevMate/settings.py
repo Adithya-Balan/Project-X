@@ -29,8 +29,8 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '8e14-2409-40f4-4008-2d60-21fe-3945-8b80-53f2.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ["https://8e14-2409-40f4-4008-2d60-21fe-3945-8b80-53f2.ngrok-free.app"]
 SITE_ID = 2
 
 # Application definition
@@ -104,7 +104,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -154,7 +153,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # print("DB_NAME:", env('DB_NAME'))  # Add this temporarily to check if it's being read
 
-LOGIN_REDIRECT_URL = '/home'
+LOGIN_REDIRECT_URL = '/post-login-check/'
 LOGOUT_REDIRECT_URL = '/login'
 LOGIN_URL = '/login'
 
@@ -162,8 +161,11 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default backend
     'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
 ]
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True  # Ensure email is required during signup
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  #Use email for authentication
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
-ACCOUNT_EMAIL_VERIFICATION = "optional"
 
 SOCIALACCOUNT_PROVIDERS = {
     "google":{
@@ -171,7 +173,8 @@ SOCIALACCOUNT_PROVIDERS = {
             "profile",
             "email"
         ],
-    "AUTH_PARAMS": {"access_type":"online"}
+    "AUTH_PARAMS": {"access_type":"online"},
+    "OAUTH_PKCE_ENABLED": True
     },
     
     'github': {
@@ -180,10 +183,14 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
+
+# Force HTTPS in OAuth redirect URIs
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'adithyabalan05@gmail.com'  # Replace with your Gmail
+EMAIL_HOST_USER = 'adithyabalan05@gmail.com'  #Replace with your Gmail
 EMAIL_HOST_PASSWORD = 'xqtm ttpp otsx rpat'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

@@ -22,7 +22,7 @@
             <img class="w-12 h-12" src="{% static 'assets/gender_icon.svg' %}" alt="">
             <div class="w-full">
                 <p class="font-bold">Gender</p>
-                <p class="break-words text-justify text-[#686868]">{{userinfo_obj.gender}}</p>
+                <p class="break-words text-justify text-[#686868]">{{userinfo_obj.get_gender_display}}</p>
             </div>
         </div>
         {% endif %}

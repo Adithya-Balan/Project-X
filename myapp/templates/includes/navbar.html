@@ -2,14 +2,14 @@
 <div class="fixed z-20 top-0 flex w-full text-white bg-black">
     <nav class="flex items-center w-full px-10 py-4 justify-evenly">
         <div class="flex items-center w-full gap-x-5">
-            <div class="py-1 text-xl font-bold">
+            <a href='{% url "index" %}' class="py-1 text-xl font-bold">
                 DevMate
-            </div>
-            <div class="hidden md:flex">
+            </a>
+            {% comment %} <div class="hidden md:flex">
                 <input type="text"
                     class="outline-none border border-black rounded-xl text-[16px] px-2 py-1 text-black bg-white"
                     placeholder="Search..">
-            </div>
+            </div> {% endcomment %}
         </div>
 
         <div class="flex gap-x-10">
@@ -20,10 +20,10 @@
                 </span>
             </a>
             <div>
-                <i class="text-xl fa-solid fa-square-plus" onclick="showPostOption()"></i>
+                <i id="postOptionTrigger" class="text-xl fa-solid fa-square-plus cursor-pointer"></i>
             </div>
             <div class="relative">
-                <i class="inline-block md:hidden text-xl fa-solid fa-gear" onclick="showPopup()"></i>
+                <i id="popupTrigger" class="inline-block md:hidden text-xl fa-solid fa-gear cursor-pointer"></i>
             </div>
         </div>
     </nav>

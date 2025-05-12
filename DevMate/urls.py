@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('select2/', include('django_select2.urls')),
     path("", include('django.contrib.auth.urls'), name=""),
-    path('accounts/login/', RedirectView.as_view(url='/login/', permanent=True)),  # Specific redir
+    path('accounts/login/', RedirectView.as_view(url='/login/', permanent=True)),  # Specific redirect
+    path("accounts/signup/", RedirectView.as_view(url='/sign-up', permanent=True)),
     path('accounts/', include('allauth.urls')),
     path('', include('myapp.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

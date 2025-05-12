@@ -95,8 +95,13 @@
                                 {% for link, url in social_links.items %}
                                 {% if url %}
                                 <a href="{{ url }}" target="_blank" class="flex items-center gap-x-3 bg-green-100 px-3 py-2 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">
+                                    {% if link == "website" %}
+                                    <i class="fa fa-globe text-2xl" aria-hidden="true"></i>
+                                    <p class="hidden md:block">Website</p>
+                                    {% else %}
                                     <i class="text-2xl fa-brands fa-{{ link }}"></i>
                                     <p class="hidden md:block">{{ link|capfirst }}</p>
+                                    {% endif %}
                                 </a>
                                 {% endif %}
                                 {% endfor %}
@@ -361,7 +366,7 @@
                                 <div class="flex items-center justify-between gap-x-5 py-2">
                                     <div class="flex items-start w-full gap-x-1">
         
-                                        <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md"></a>
+                                        <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md object-cover"></a>
                                         <div class="w-5/6 md:w-[90%]">
                                             <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a><br>
                                             <div class='break-words mt-2'>{{project.description|truncatechars:200}}</div>
@@ -475,7 +480,7 @@
                 <div class="flex flex-col gap-y-2 border border-[#6868682f] mx-2 p-2 rounded-md">
                     <div class="flex items-start gap-x-4 w-full p-1">
                         <div class="h-20 shrink-0">
-                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='w-12 h-12 rounded-md shrink-0 object-cover'></a>
+                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='w-14 h-14 rounded-md shrink-0 object-cover'></a>
                         </div>
                         <div class="flex flex-col w-4/5  gap-y-2">
                             <div class="font-semibold">{{project.title}}</div>

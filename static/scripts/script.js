@@ -13,36 +13,90 @@ function getCSRFToken() {
     return cookieValue;
 }
 
-const popup = document.getElementById('popup');
-const postOption = document.getElementById('postOption')
+// static/js/navbar.js
+document.addEventListener('DOMContentLoaded', () => {
+    const popupTrigger = document.getElementById('popupTrigger');
+    const postOptionTrigger = document.getElementById('postOptionTrigger');
+    const popup = document.getElementById('popup');
+    const postOption = document.getElementById('postOption');
 
-function bodyClick() {
-    popup.classList.add('hidden')
-    popup.classList.remove('fixed')
-    postOption.classList.add('hidden')
-    postOption.classList.remove('absolute')
-}
+    // Helper to toggle visibility
+    const toggleElement = (element, showClass, hideClass) => {
+        element.classList.toggle(showClass);
+        element.classList.toggle(hideClass);
+    };
 
-const showPopup = () => {
-    // Code to show the popup
-    popup.classList.toggle('fixed')
-    popup.classList.toggle('hidden')
-    postOption.classList.add('hidden')
-    postOption.classList.remove('absolute')
-}
+    // Handle popup
+    if (popupTrigger && popup) {
+        popupTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleElement(popup, 'fixed', 'hidden');
+            postOption?.classList.add('hidden'); // Hide postOption if open
+            postOption?.classList.remove('absolute');
 
-const showPostOption = () => { //code to post options in Navbar
-    postOption.classList.toggle('absolute')
-    postOption.classList.toggle('hidden')
-    popup.classList.add('hidden')
-    popup.classList.remove('fixed')
-}
+            if (!popup.classList.contains('hidden')) {
+                const closeOnOutside = (event) => {
+                    if (!popup.contains(event.target) && !popupTrigger.contains(event.target)) {
+                        popup.classList.add('hidden');
+                        popup.classList.remove('fixed');
+                        document.removeEventListener('click', closeOnOutside);
+                    }
+                };
+                document.addEventListener('click', closeOnOutside);
+            }
+        });
+    }
 
-function getExplore() { //code to select multiple explore pages such as events, projects
-    const allExplore = document.getElementById('allExplore')
-    allExplore.classList.toggle('flex')
-    allExplore.classList.toggle('hidden')
-}
+    // Handle postOption
+    if (postOptionTrigger && postOption) {
+        postOptionTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleElement(postOption, 'absolute', 'hidden');
+            popup?.classList.add('hidden'); // Hide popup if open
+            popup?.classList.remove('fixed');
+
+            if (!postOption.classList.contains('hidden')) {
+                const closeOnOutside = (event) => {
+                    if (!postOption.contains(event.target) && !postOptionTrigger.contains(event.target)) {
+                        postOption.classList.add('hidden');
+                        postOption.classList.remove('absolute');
+                        document.removeEventListener('click', closeOnOutside);
+                    }
+                };
+                document.addEventListener('click', closeOnOutside);
+            }
+        });
+    }
+});
+
+// function getExplore() { //code to select multiple explore pages such as events, projects
+//     const allExplore = document.getElementById('allExplore')
+//     allExplore.classList.toggle('flex')
+//     allExplore.classList.toggle('hidden')
+// }
+document.addEventListener('DOMContentLoaded', () => {
+    const trigger = document.getElementById('exploreTrigger');
+    const dropdown = document.getElementById('allExplore');
+
+    if (trigger && dropdown) {
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+            dropdown.classList.toggle('flex');
+
+            if (!dropdown.classList.contains('hidden')) {
+                const closeOnOutside = (event) => {
+                    if (!trigger.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdown.classList.remove('flex');
+                        document.removeEventListener('click', closeOnOutside);
+                    }
+                };
+                document.addEventListener('click', closeOnOutside);
+            }
+        });
+    }
+});
 
 
 const openFilter = () => {

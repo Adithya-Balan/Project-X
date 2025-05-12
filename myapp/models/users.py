@@ -14,11 +14,11 @@ class userinfo(models.Model):
     ('N', 'Prefer not to say'),
 ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='info')
-    bio = models.CharField(max_length=100, blank=True, null=True)
+    bio = models.CharField(max_length=150, blank=True, null=True)
     dob = models.DateField(null=True, blank=True)
     contact_email = models.EmailField(max_length=255, blank=True, null=True)
     about_user = models.TextField(max_length=1000, blank=True, null=True) 
-    profile_image = models.ImageField(upload_to='user_profile_img', height_field=None, default='user_profile_img/profile.webp')
+    profile_image = models.ImageField(upload_to='user_profile_img', height_field=None, default='user_profile_img/profile.jpg')
     location = models.CharField(max_length=50, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     phone = PhoneNumberField(blank=True, null=True)
@@ -31,7 +31,7 @@ class userinfo(models.Model):
     stackoverflow = models.URLField(blank=True, null=True) 
     
     skills = models.ManyToManyField(skill, related_name='users', blank=True)
-    domains = models.ManyToManyField(Domain, verbose_name="developers", blank=True)
+    domains = models.ManyToManyField(Domain, verbose_name="domains", blank=True)
     years_of_experience = models.PositiveIntegerField(blank=True, null=True)
     availability = models.CharField(max_length=50, choices=[
         ('Available for collaboration', 'Available for collaboration'),
@@ -40,7 +40,11 @@ class userinfo(models.Model):
         ('Unavailable', 'Unavailable'),
     ], blank=True, null=True)
     cringe_badge = models.ForeignKey(CringeBadge, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
-    timezone = models.CharField(max_length=100, default='UTC')
+    profile_views = models.IntegerField(default=0)
+    created_at = models.DateField(auto_now=False, auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    needs_profile_completion = models.BooleanField(default=False)
     
     def __str__(self):
         return self.user.username 
@@ -48,7 +52,7 @@ class userinfo(models.Model):
     def get_absolute_url(self):
         return reverse("user_info_detail", kwargs={"pk": self.pk})
     
-    #following methods:
+    #following methods:from your
     def follow(self, other_user):
         if not self.is_following(other_user):
             follow.objects.create(follower = self, following=other_user)
@@ -65,7 +69,9 @@ class userinfo(models.Model):
     
     def get_following(self):
         return userinfo.objects.filter(followers__follower = self).order_by('-followers__created_at')
-
+    
+    def tot_joined_projects(self):
+        return self.joined_projects.count()
 
 class education(models.Model):
     user = models.OneToOneField(userinfo, on_delete=models.CASCADE, related_name='education')

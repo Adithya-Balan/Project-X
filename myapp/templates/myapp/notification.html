@@ -33,7 +33,7 @@
                 <div class="w-full max-w-2xl bg-white rounded-xl border border-gray-200 shadow-sm md:p-6 p-2">
                     <div class="flex justify-between items-center mb-6 p-2 md:p-0">
                         <h1 class="md:text-2xl text-lg font-semibold text-black">{% if notification_count != 0 %}({{notification_count}}){% endif %} Notifications</h1>
-                        <a href='' class="text-sm text-[#6feb85] hover:text-black font-medium transition-colors hover:underline cursor-pointer">Mark All as Read</a>
+                        <a href='{% url "notification_page" %}' class="text-sm text-[#00a63e] hover:text-black font-medium transition-colors hover:underline cursor-pointer">Clear all</a>
                     </div>
 
                     {% for group, notifications in grouped_notifications.items %}
@@ -48,14 +48,12 @@
                                 <a href="{% url 'user_profile' notification.sender.user.username %}">
                                     <img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User">
                                 </a>
-                            
-                                <div class="flex-1 flex items-start justify-between gap-4">
+                                <a {% if notification.post_comment.Post.Organization %} href = '{% url "organization_detail" notification.post_comment.Post.Organization.id %}?section=posts#{{notification.post_comment.Post.id}}'{% elif notification.post_comment.Post.user %} href = '{% url "user_profile" notification.post_comment.Post.user.user.username %}?section=posts#{{notification.post_comment.Post.id}}'{% endif %} class="flex-1 flex items-start justify-between gap-4">
                                     <div>
                                         <p class="font-medium text-black">
                                             {{ notification.sender.user.username }} commented 
                                             {% if notification.post_comment.Post.Organization %} 
-                                                on <a href="{% url 'organization_detail' notification.post_comment.Post.Organization.id %}" class="text-green-600 hover:underline">
-                                                {{ notification.post_comment.Post.Organization.name }}'s</a> Post 
+                                                on <span class="text-green-600">{{ notification.post_comment.Post.Organization.name }}'s</span> Post 
                                             {% endif %}
                                         </p>
                             
@@ -67,82 +65,92 @@
                                     {% if notification.post_comment.Post.file %}
                                         <img src="{{ notification.post_comment.Post.file.url }}" class="w-12 h-12 md:w-14 md:h-14 rounded-md object-cover" alt="Post Image">
                                     {% endif %}
-                                </div>
+                                </a>
                             </div>
                             
                             {% endif %}  
 
                             {% if notification.notification_type == 'follow' %}
-                            <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
-                                <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="User"></a>
+                            <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200">
+                                <img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="User">
                                 <div class="flex-1">
-                                    <p class="font-medium text-black">{{ notification.sender.user.username }} started following {% if notification.organization %}<a href='{% url "organization_detail" notification.organization.id %}'class='text-green-600 hover:underline'>{{notification.organization.name}}</a>{% else %}you{% endif %}</p>
-                                    <a href="{% url 'user_profile' notification.sender.user.username %}" class="inline-block">
-                                        <div class="bg-[#00a63e] hover:bg-green-700 mt-2 w-fit text-white px-2 text-xs py-1 rounded">View Profile</div>
-                                    </a>
+                                    <p class="font-medium text-black mb-1">{{ notification.sender.user.username }} started following {% if notification.organization %}<a href='{% url "organization_detail" notification.organization.id %}' class='text-green-600 hover:underline'>{{notification.organization.name}}</a>{% else %}you{% endif %}</p>
+                                    <a href='{% url "user_profile" notification.sender.user.username %}' class="bg-[#00a63e] hover:bg-green-700 w-fit text-white px-2 text-xs py-1 rounded">View Profile</a>
                                     <p class="text-xs mt-3 text-gray-500">{{ notification.created_at|date:"M j, Y" }}</p>
                                 </div>
                             </div>
                             {% endif %}
 
                             {% if notification.notification_type == 'Join_Project' %}
-                            <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                            <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100  hover:shadow-md transition-all duration-200">
                                 <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="User"></a>
                                 <div class="flex-1">
                                     <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}} <a href='{% url "project_detail" notification.project.id %}'class='text-green-600 hover:underline'>{{notification.project.title}}</a></p>
                                     <p class="text-xs mt-1 text-gray-500">{{ notification.created_at|date:"M j, Y" }}</p>
                                     <a href="{% url 'project_joined_members' notification.project.id %}" class="inline-block">
-                                        <div class="bg-[#6feb85] mt-2 w-fit text-black px-2 text-sm py-1 rounded">View Members</div>
+                                        <div class="bg-[#00a63e] mt-2 w-fit text-white px-2 text-xs py-1 rounded">View Members</div>
                                     </a>
                                 </div>
                             </div>
                             {% endif %}
 
                             {% if notification.notification_type == 'like' %}
-                            <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
-                                <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User"></a>
-                                <div class="flex-1 flex items-start justify-between gap-4">
-                                    <div>
-                                        <p class="font-medium text-black">{{ notification.sender.user.username }} {% if notification.post.user %}{{notification.get_notification_type_display}}{% elif notification.post.Organization %}Liked Post on <a href='{% url "organization_detail" notification.post.Organization.id %}'class='text-green-600 hover:underline'>{{notification.post.Organization.name}}</a>{% endif %}</p>
-                                        <p class="text-xs mt-3 text-gray-500">{{notification.created_at|date:"M j, Y"}}</p>
-                                        <p class="mt-2 text-gray-700 text-sm leading-relaxed"></p>
-                                    </div>
-                                    <img src="{{ notification.post.file.url }}" class="w-12 h-12 md:w-14 md:h-14 rounded-md object-cover" alt="Post Image">
+                                {% if notification.post.user %}
+                                <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                                    <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User"></a>
+                                    <a href='{% url "user_profile" notification.post.user.user.username %}?section=posts#{{notification.post.id}}' class="flex-1 flex items-start justify-between gap-4">
+                                        <div>
+                                            <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}}</p>
+                                            <p class="text-xs mt-3 text-gray-500">{{notification.created_at|date:"M j, Y"}}</p>
+                                            <p class="mt-2 text-gray-700 text-sm leading-relaxed"></p>
+                                        </div>
+                                        <img src="{{ notification.post.file.url }}" class="w-12 h-12 md:w-14 md:h-14 rounded-md object-cover" alt="Post Image">
+                                    </a>
                                 </div>
-                            </div>
+                                {% elif notification.post.Organization%}
+                                <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
+                                    <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User"></a>
+                                    <a href='{% url "organization_detail" notification.post.Organization.id %}?section=posts#{{notification.post.id}}' class="flex-1 flex items-start justify-between gap-4">
+                                        <div>
+                                            <p class="font-medium text-black">{{ notification.sender.user.username }} Liked Post on <span class='text-green-600'>{{notification.post.Organization.name}}</span></p>
+                                            <p class="text-xs mt-3 text-gray-500">{{notification.created_at|date:"M j, Y"}}</p>
+                                            <p class="mt-2 text-gray-700 text-sm leading-relaxed"></p>
+                                        </div>
+                                        <img src="{{ notification.post.file.url }}" class="w-12 h-12 md:w-14 md:h-14 rounded-md object-cover" alt="Post Image">
+                                    </a>
+                                </div>
+                                {% endif %}
                             {% endif %}
 
                             {% if notification.notification_type == 'project_comment' %}
                             <div class="flex items-start gap-4 bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer">
                                 <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="User"></a>
-                                <div class="flex-1">
-                                    <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}} <a href='{% url "project_detail" notification.project_comment.project.id %}'class='text-green-600 hover:underline'>{{notification.project_comment.project.title}}</a></p>
-                                    <p class="text-gray-700 ">{{ notification.project_comment.content|truncatechars:30 }}</p>
+                                <a href='{% url "project_detail" notification.project_comment.project.id %}#comment-{{notification.project_comment.id}}' class="flex-1">
+                                    <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}} <span class='text-green-600'>{{notification.project_comment.project.title}}</span></p>
+                                    <p class="text-gray-700 ">💬 "{{ notification.project_comment.content|truncatechars:30 }}"</p>
                                     <p class="text-xs mt-1 text-gray-500">{{ notification.created_at|date:"M j, Y" }}</p>
-                                </div>
+                                </a>
                             </div>
                             {% endif %}
 
                             {% if notification.notification_type == 'project_reply' %}
-                            <div class="flex items-start gap-3 bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition cursor-pointer">
+                            <div class="flex items-start gap-4 bg-white p-4 rounded-lg border hover:border-[#6feb85] border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer">
                                 <!-- Profile Image -->
                                 <a href="{% url 'user_profile' notification.sender.user.username %}">
                                     <img src="{{ notification.sender.profile_image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User">
                                 </a>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold text-gray-900">
-                                        <a href="{% url 'user_profile' notification.sender.user.username %}" class="hover:underline">{{ notification.sender.user.username }}</a> 
-                                        replied to your comment on 
-                                        <a href="#" class="text-green-600 font-medium hover:underline">{{ notification.project_reply.comment.project.title }}</a>
+                                <a href='{% url "project_detail" notification.project_reply.comment.project.id %}#reply-{{notification.project_reply.id}}' class="flex-1">
+                                    <p class="text-sm font-semibold text-gray-900">{{ notification.sender.user.username }} replied to your comment on 
+                                        <span class="text-green-600 font-medium hover:underline">{{ notification.project_reply.comment.project.title }}</span>
                                     </p>
                             
-                                    <p class="text-gray-700 mt-1">💬 "{{ notification.project_reply.content|truncatechars:50 }}"</p>
+                                    <p class="text-gray-700 mt-1">💬 "{{ notification.project_reply.content|truncatechars:30 }}"</p>
                             
                                     <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
                                         <p>{{ notification.created_at|date:"M j, Y" }}</p>
-                                        <a href="#" class="px-3 py-1 bg-green-600 text-white rounded-md text-xs hover:bg-green-700 transition">View</a>
+                                        {% comment %} <a href="" class="px-3 py-1 bg-green-600 text-white rounded-md text-xs hover:bg-green-700 transition">View</a> {% endcomment %}
                                     </div>
-                                </div>
+                                </a>
                             </div>
                             
                             {% endif %}
@@ -155,7 +163,9 @@
 
                     <!-- Notification 5 -->
                     <div class="bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer mt-5">
-                        <p class="text-sm text-gray-700 leading-relaxed">GitHub was live for <span class="font-medium text-[#6feb85]">Rubber Duck Thursdays! Rubber Duck Thursdays! Rubber Duck Thursdays!</span> Come cowork...</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                        This is the first version of Devmate — <span class="font-medium text-[#6feb85]">your gateway to connecting and collaborating with developers</span>
+                        </p>
                     </div>
                     
                 </div>

@@ -22,9 +22,9 @@
         <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-2">
 
             <div class="flex gap-x-1 flex-wrap gap-y-2 items-center justify-center absolute top-20">
-                <div class="flex flex-col gap-y-2 items-center" onclick="getExplore()">
-                    <div class="flex items-center bg-black text-white px-2 py-1 rounded-lg">
-                        <div id="exploreTitle" class="cursor-pointer text-lg"><span class='text-lg'>Organizations</div>
+                <div class="flex flex-col gap-y-2 items-center">
+                    <div id="exploreTrigger" class="flex items-center bg-black text-white px-2 py-1 rounded-lg cursor-pointer">
+                        <div id="exploreTitle" class="text-lg"><span class='text-lg'>Organizations</div>
                         <img src="{% static 'assets/down.svg' %}" alt="" class="w-7 h-7">
                     </div>
                     <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded" id="allExplore">
@@ -60,7 +60,7 @@
                     <div class="bg-white">
                         <div class="flex gap-x-3  justify-between items-end w-full px-6 py-5 rounded-md">
                             <div class="flex gap-x-5 items-start">
-                                <a href='{% url "organization_detail" org.id %}'><img src="{{org.logo.url}}" class="w-12 h-12 rounded-md"></a>
+                                <a href='{% url "organization_detail" org.id %}'><img src="{{org.logo.url}}" class="w-12 h-12 rounded-md object-cover"></a>
                                 <div class="flex flex-col gap-y-1">
                                     <a href="{% url 'organization_detail' org.id %}" class="text-xl font-semibold hover:underline">{{org.name}}</a>
                                     <p class="text-[#686868]">{{org.industry.name}}</p>
@@ -73,7 +73,7 @@
                             </div>
                             <!--Follow Button-->
                             {% if org.user == request.user%}
-                            <a href="{% url 'organization_detail' org.id %}" class="w-24 px-2 py-2 rounded-md bg-[#464646] text-white text-center">
+                            <a href="{% url 'organization_detail' org.id %}" class="bg-green-100 px-6 py-1 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">
                                 View
                             </a>
                             {% elif user.info|is_following_org:org %}
@@ -128,12 +128,15 @@
         <!-- filter section -->
         <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10"
             id="openFilterParent">
-            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex" id="filterElement">
+            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg bottom-2  gap-y-8 lg:flex" id="filterElement">
                 <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
                         class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
-                <h1 class="text-xl font-bold text-center">
-                    < Filters />
-                </h1>
+                <div class="flex flex-row items-center justify-between gap-x-3 w-full py-2 px-4 rounded-lg">
+                            <div class="flex items-center gap-x-2 mx-auto">
+                                <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
+                                <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="h-5 w-5 text-gray-600">
+                            </div>
+                        </div>
 
                 {% if applied_filter %}
                 <a href='{% url "explore_organization" %}' class="group flex items-center justify-center gap-2 p-2 border border-black rounded-2xl  text-black hover:bg-black hover:text-white transition-all duration-200 w-fit">

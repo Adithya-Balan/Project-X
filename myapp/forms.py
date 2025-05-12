@@ -35,6 +35,19 @@ class RegistrationForm(UserCreationForm):
             raise forms.ValidationError("Email already Exists.")
         return email
     
+class Postsignup_infoForm(forms.ModelForm):
+    class Meta:
+        model = userinfo
+        fields = ['availability', 'cringe_badge']
+        widgets = {
+            'availability': forms.Select(attrs={
+                'class': 'w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+            }),
+            'cringe_badge': forms.Select(attrs={
+                'class': 'w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+            }),
+        }
+    
 
 class OrganizationForm(forms.ModelForm):
     founded_date = forms.DateField(
@@ -102,7 +115,7 @@ class EditProfileForm(forms.ModelForm):
     
     class Meta:
         model = userinfo
-        exclude = ['user', 'years_of_experience', 'skills', 'domains', 'timezone']
+        exclude = ['user', 'years_of_experience', 'skills', 'domains', 'profile_views']
         
         widgets = {
             'bio': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Bio...'}),
@@ -170,6 +183,14 @@ class EditProfileForm(forms.ModelForm):
         return instance
     
 class EditEducationForm(forms.ModelForm):
+    start_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'})
+    )
+    end_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'})
+    )
     class Meta:
         model = education
         exclude = ['user']
@@ -178,8 +199,8 @@ class EditEducationForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: Harvard University'}),
             'field_of_study': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: Computer Science'}),
             'degree': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Eg: B.Tech'}),
-            'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
-            'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
+            # 'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
+            # 'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
         }                                                               
         labels = {
             'name': 'University Name',
@@ -191,8 +212,15 @@ class EditEducationForm(forms.ModelForm):
             'name': {'required':'University name is required',},
             'field_of_study': {'required': 'Enter a Valid course',}
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Format initial value to 'YYYY-MM' if data exists
+        if self.instance and self.instance.start_date:
+            self.initial['start_date'] = self.instance.start_date.strftime('%Y-%m')
+        if self.instance and self.instance.end_date:
+            self.initial['end_date'] = self.instance.end_date.strftime('%Y-%m')
+            
     def clean_start_date(self):
-        print("hello")
         start_date = self.cleaned_data.get("start_date")
         print(start_date)
         if start_date:
@@ -229,6 +257,14 @@ class UserProjectForm(forms.ModelForm):
         }
         
 class EditCurrentPositionForm(forms.ModelForm):
+    start_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'})
+    )
+    end_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'})
+    )
     class Meta:
         model = current_position
         exclude = ['user']
@@ -242,11 +278,18 @@ class EditCurrentPositionForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Company Name'}),               
             'role': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Role'}),      
             'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Briefly Describe your Role.'}),
-            'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
-            'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),                       
+            # 'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
+            # 'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),                       
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Format initial value to 'YYYY-MM' if data exists
+        if self.instance and self.instance.start_date:
+            self.initial['start_date'] = self.instance.start_date.strftime('%Y-%m')
+        if self.instance and self.instance.end_date:
+            self.initial['end_date'] = self.instance.end_date.strftime('%Y-%m')
+            
     def clean_start_date(self):
-        print("hello")
         start_date = self.cleaned_data.get("start_date")
         print(start_date)
         if start_date:

@@ -1,0 +1,30 @@
+{% load static %}   
+
+<div class="relative">
+    <svg width="100%" height="100%" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" style="background:#272727;">
+        <!-- Center Title -->
+        <text x="50%" y="80" class="title">{{ organization.name }}</text>
+      
+        <!-- Bottom Wave -->
+        <path class="wave" d="M0,380 Q200,340 400,380 T800,380" stroke-dasharray="1000" stroke-dashoffset="0" />
+      
+        <!-- Location Pulse (centered) -->
+        <circle class="pulse" cx="50%" cy="200" r="5" />
+        <text x="420" y="205" class="label">{{organization.location|default:""}}</text>
+      
+        <!-- Industry with Animated Line -->
+        <text x="50%" y="130" class="label animated-text" text-anchor="middle">Industry: {{ organization.industry.name }}</text>
+      
+        <!-- Slower Animated Line representing Industry -->
+        <line x1="350" y1="145" x2="450" y2="145" class="line" />
+      
+        <!-- Organization Type (capsule/rounded rectangle) -->
+        <rect x="600" y="300" width="90" height="30" class="capsule" fill="#00FF66" opacity="0.7" />
+        <text x="605" y="320" class="label">Type: {{ organization.get_organization_type_display }}</text>
+        
+    </svg>
+
+    <div class="absolute -bottom-16 md:-bottom-20 left-[50%] transform -translate-x-1/2">
+        <img src="{{organization.logo.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40 object-cover cursor-pointer" onclick="viewProfile()">
+    </div>
+</div>

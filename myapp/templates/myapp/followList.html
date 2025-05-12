@@ -47,18 +47,18 @@
                                     <p class="break-words">{{people.cringe_badge.emoji}} {{people.cringe_badge.name}}</p>
                                 </div>
                             </div>
-                            <div class="self-center mt-4">
+                            <div class="self-center">
                                 {% if user.info == people %}
-                                <a href='{% url "user_profile" user.username %}' class="bg-[#303034] px-6 py-2 rounded-md text-white font-bold border  transition">View</a>
+                                <a href='{% url "user_profile" user.username %}' class="bg-green-100 px-3 py-1 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">View</a>
                                 {% else %}
-                                {% if user.info|is_following:people %}
-                                    <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white py-2 text-center rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
-                                        <span class="btn-text">&lt;Unfollow/&gt;</span>
-                                    </a>
-                                {% else %}
-                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] text-center py-2 rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
-                                        <span class="btn-text">&lt;Follow/&gt;</span>
-                                    </a>
+                                    {% if user.info|is_following:people %}
+                                        <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white py-2 text-center rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
+                                            <span class="btn-text">&lt;Unfollow/&gt;</span>
+                                        </a>
+                                    {% else %}
+                                    <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] text-center py-2 rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
+                                            <span class="btn-text">&lt;Follow/&gt;</span>
+                                        </a>
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -79,7 +79,7 @@
                             </div>
                             <div class="self-center">
                                 {% if org in user.organization.all %}
-                                <a href="{% url 'organization_detail' org.id %}" class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View</a>
+                                <a href="{% url 'organization_detail' org.id %}" class="bg-green-100 px-3 py-1 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">View</a>
                                 {% else %}
                                     {% if user.info|is_following_org:org %}
                                     <a href="javascript:void(0);" class="px-4 py-2 rounded-md follow-toggle-org bg-[#464646] text-white w-[100px] text-center flex justify-center" 
@@ -139,16 +139,16 @@
                 <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
                 {% for project in suggested_project %}
                 <div class="flex flex-col gap-y-2 border border-[#6868682f] mx-2 p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="md:w-20 h-20">
-                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='rounded-xl h-16 w-16'></a>
+                    <div class="flex items-start gap-x-4 w-full p-1">
+                        <div class="h-20 shrink-0">
+                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='w-14 h-14 rounded-md shrink-0 object-cover'></a>
                         </div>
-                        <div class="flex flex-col w-4/5 gap-y-1">
+                        <div class="flex flex-col w-4/5  gap-y-2">
                             <div class="font-semibold">{{project.title}}</div>
-                            <a href='{% url "project_detail" project.id %}'><div class="break-words">{{project.description|slice:":80"}}...</div></a>
+                            <a href='{% url "project_detail" project.id %}' class="break-words">{{project.description|slice:":100"}}...</a>
                         </div>
                     </div>
-                    <hr class="border-t border-gray-200">
+                    <hr class="border-t border-gray-300">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <a href='{% url "project_joined_members" project.id %}' class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
                         </a>

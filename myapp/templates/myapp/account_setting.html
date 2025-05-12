@@ -29,19 +29,25 @@
             <!-- Account Details Section -->
             <div class="space-y-6">
                 <!-- Email -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4 transition-all duration-200 hover:bg-gray-50 rounded-md px-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4 transition-all duration-200 rounded-md px-2">
                     <p class="text-gray-800 font-semibold text-lg">Email</p>
                     <p class="text-gray-600 flex-1 text-center sm:text-right">{{user.email}}</p>
                     <a href="{% url 'account_email' %}" class="text-green-600 font-medium hover:text-green-700 hover:underline transition-colors duration-200">Manage Email</a>
                 </div>
     
                 <!-- Password -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4 transition-all duration-200 hover:bg-gray-50 rounded-md px-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4 transition-all duration-200 rounded-md px-2">
                     <p class="text-gray-800 font-semibold text-lg">Password</p>
+                    {% if user.has_usable_password %}
                     <p class="text-gray-600 flex-1 text-center sm:text-right">••••••••</p>
-                    <a href="accounts/password/change/" class="text-green-600 font-medium hover:text-green-700 hover:underline transition-colors duration-200">
+                    <a href="{% url 'account_change_password' %}" class="text-green-600 font-medium hover:text-green-700 hover:underline transition-colors duration-200">
                         {% trans "Change Password" %}
                     </a>
+                    {% else %}
+                    <a href="{% url 'account_set_password' %}" class="text-green-600 font-medium hover:text-green-700 hover:underline transition-colors duration-200">
+                        {% trans "Set Password" %}
+                    </a>
+                    {% endif %}
                 </div>
             </div>
     

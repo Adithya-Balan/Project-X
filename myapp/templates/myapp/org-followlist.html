@@ -14,9 +14,9 @@
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
-    <!-- main section -->
 
-    <div class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
+    <!-- main section -->
+    <div id='entireSection' class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
 
@@ -32,28 +32,31 @@
                 <div class="flex flex-col gap-y-3">
 
                     {% for people in user_list %}
-                    <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
-                        <div class="flex gap-x-5 ">
+                    <div class="bg-white px-3 py-3 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
+                        <div class="flex gap-x-5">
                             <div class="">
                                 <div><a href="{% url 'user_profile' people.user.username %}"><img src="{{people.profile_image.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
                             </div>
                             <div class="flex flex-col gap-y-1 ">
                                 <a href="{% url 'user_profile' people.user.username %}" class="font-bold cursor-pointer hover:underline transition">{{people.user.first_name}} {{people.user.last_name}}</a>
                                 <p>@{{people.user.username}}</p>
-                                <p class="break-words">#mood...</p>
+                                <p class="break-words">{{people.cringe_badge.emoji}} {{people.cringe_badge.name}}</p>
                             </div>
                         </div>
                         <div class="self-center">
                             {% if user.info == people %}
-                            <a href='{% url "user_profile" user.username %}' class="bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black">View Profile</a>
+                            <div class='mt-1'></div>
+                            <a href='{% url "user_profile" user.username %}' class="bg-green-100 px-6 py-1 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">View</a>
                             {% else %}
-                            <a href="javascript:void(0);" class="follow-btn bg-[#6feb8627] px-2 py-1 rounded-md text-[#6feb85] font-bold border border-[#6feb85] transition hover:bg-[#6feb85] hover:text-black" data-user-id="{{ people.id }}">
                                 {% if user.info|is_following:people %}
-                                    <span class="btn-text">Unfollow</span>
+                                    <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white py-2 text-center rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
+                                        <span class="btn-text">&lt;Unfollow/&gt;</span>
+                                    </a>
                                 {% else %}
-                                    <span class="btn-text">Follow</span>
+                                <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] text-center py-2 rounded-md inline-block min-w-[100px]" data-user-id="{{ people.id }}">
+                                        <span class="btn-text">&lt;Follow/&gt;</span>
+                                    </a>
                                 {% endif %}
-                            </a>
                             {% endif %}
                         </div>
                     </div>
@@ -63,14 +66,14 @@
 
                     {% comment %} pagination {% endcomment %}
                 {% if user_list %}
-                <div class="flex justify-center mt-6">
-                    <div class="flex items-center space-x-4">
+                <div class="flex justify-center mb-20 lg:mb-12">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
                         {% if user_list.has_previous %}
                         <a href="?list={{request.GET.list}}&page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
                         <a href="?list={{request.GET.list}}&page={{user_list.previous_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Previous</a>
                         {% endif %}
 
-                        <span class="text-black">
+                        <span class="text-black font-medium">
                             <span class="font-semibold">Page {{ user_list.number }}</span> of {{ user_list.paginator.num_pages }}
                         </span>
 
@@ -100,16 +103,16 @@
                 <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
                 {% for project in suggested_project %}
                 <div class="flex flex-col gap-y-2 border border-[#6868682f] mx-2 p-2 rounded-md">
-                    <div class="flex items-start w-full gap-x-3">
-                        <div class="md:w-20 h-20">
-                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='rounded-xl h-16 w-16'></a>
+                    <div class="flex items-start gap-x-4 w-full p-1">
+                        <div class="h-20 shrink-0">
+                            <a href='{% url "project_detail" project.id %}'><img src="{{project.image.url}}" alt="" class='w-14 h-14 rounded-md shrink-0 object-cover'></a>
                         </div>
-                        <div class="flex flex-col w-4/5 gap-y-1">
+                        <div class="flex flex-col w-4/5  gap-y-2">
                             <div class="font-semibold">{{project.title}}</div>
-                            <a href='{% url "project_detail" project.id %}'><div class="break-words">{{project.description|slice:":80"}}...</div></a>
+                            <a href='{% url "project_detail" project.id %}' class="break-words">{{project.description|slice:":100"}}...</a>
                         </div>
                     </div>
-                    <hr class="border-t border-gray-200">
+                    <hr class="border-t border-gray-300">
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
                         <a href='{% url "project_joined_members" project.id %}' class="bg-[#464646] text-white px-2 py-1 border rounded-md">{{project.tot_member}}  Joined
                         </a>
@@ -120,49 +123,10 @@
                 {% endfor %}    
             </div>
         </div>
-
-
     </div>
-    <script>
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-            }
-        });
-        $(document).ready(function () {
-            $(".follow-btn").click(function (){
-                let btn = $(this);
-                let userId = btn.data("user-id");
-                let actionUrl;
-                let isFollowing = btn.find(".btn-text").text().trim() === "Unfollow";
 
-                if (isFollowing) {
-                    actionUrl = `/unfollow/${userId}/`;
-                }else {
-                    actionUrl = `/follow/${userId}/`;   // URL for follow
-                }
-
-                $.ajax({
-                    url: actionUrl,
-                    type: "POST",
-                    data: {
-                        csrfmiddlewaretoken: "{{ csrf_token }}"  // Include CSRF token
-                    },
-                    success: function (response) {
-                        if (response.status === "followed") {
-                            btn.find(".btn-text").text("Unfollow");
-                        } 
-                        else if (response.status === "unfollowed") {
-                            btn.find(".btn-text").text("Follow");
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Error:", xhr.responseText);
-                    }
-                });
-            });
-        });    
-    </script>
+    {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 </body>
 
 {% endblock  %}

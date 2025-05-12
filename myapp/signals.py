@@ -18,3 +18,9 @@ def create_user_profile(sender, request, user, **kwargs):
         current_position.objects.get_or_create(user=user.info)
         education.objects.get_or_create(user=user.info)
         SavedItem.objects.get_or_create(user=user.info)
+        
+@receiver(user_signed_up)
+def handle_new_social_signup(request, user, **kwargs):
+    if hasattr(user, 'info'):
+        user.info.needs_profile_completion = True
+        user.info.save()
