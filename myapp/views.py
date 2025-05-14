@@ -234,7 +234,7 @@ def signup_character(request, uuid):
         if form.is_valid():
             form.save()
             reverse_url = reverse("signup_skills", args=[request.user.info.uuid])
-        return redirect(reverse_url)
+            return redirect(reverse_url)
     context = {
         'form': form
     }
@@ -257,6 +257,8 @@ def signup_skills(request, uuid):
 
 @login_required
 def index(request):
+    if request.user.info.needs_profile_completion:
+        return redirect('signup_about', uuid=request.user.info.uuid)
     suggested_posts = post.objects.all()
     suggested_projects = projects.objects.all()[:3]
     suggested_peoples = userinfo.objects.all().exclude(user = request.user)[:5]
@@ -744,6 +746,7 @@ def unfollow_organization(request, organization_id):
 def org_event_form(request,id):
     organization_obj = get_object_or_404(organization, id = id)
     createdByUser = True if organization_obj.user == request.user else False
+    post_form = PostForm()
     if createdByUser:
         form = EventForm()
         if request.method == 'POST':
@@ -759,6 +762,7 @@ def org_event_form(request,id):
     context = {
         'event_form': form,
         'is_edit': False,
+        'post_form': post_form,
     }
     return render(request, 'myapp/org-event-form.html', context)
 
@@ -1014,7 +1018,7 @@ def explore_dev(request):
         filter_dev = get_explore_users(filter_dev, request)
         print(filter_dev, True)
         
-    top_domain = Domain.objects.all()[:10]
+    top_domain = Domain.objects.all()[:30]
     top_skill= skill.objects.all()[:10]
     status = user_status.objects.all()
     
@@ -1108,19 +1112,25 @@ def event_detail(request, id):
 def event_forum(request, id):
     Event = get_object_or_404(event, id = id)
     userinfo_obj = get_object_or_404(userinfo, user=request.user)
+    
     if request.method == 'POST':
         content = request.POST.get('content')
         if not content:  # Checks if content is empty or None
             redirect_url = f"{reverse('event_detail', args=[Event.id])}?comment_error=Invalid-Comment#commentsection"
             return redirect(redirect_url)
+        
         parent_comment_id = request.POST.get("parent_comment_id")
         
         if parent_comment_id:
             parent_comment = get_object_or_404(event_comment, id = parent_comment_id)
             r = event_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
+            if parent_comment.user != userinfo_obj:
+                Notification.objects.create(user=r.comment.user, sender=userinfo_obj, event_reply=r, notification_type='event_reply')
             redirect_url = f"{reverse('event_detail', args=[Event.id])}#reply-{r.id}"
         else:
             c = event_comment.objects.create(user=userinfo_obj, event=Event ,content = content)
+            if Event.organization.user != request.user:
+                Notification.objects.create(user=c.event.organization.user.info, sender=userinfo_obj, event_comment=c, notification_type='event_comment')
             redirect_url = f"{reverse('event_detail', args=[Event.id])}#comment-{c.id}"
 
     return redirect(redirect_url)

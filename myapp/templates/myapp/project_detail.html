@@ -4,7 +4,7 @@
 
 
 {% block html_class %}class="scroll-smooth scroll-pt-[50vh]"{% endblock %}
-{% block title %}{{project.title}}{% endblock %} 
+{% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
 {% block content %}
@@ -112,26 +112,35 @@
                         {% if project.creator.phone %}
                         <a href='tell:+{{project.creator.phone}}'><i class="fa-solid fa-phone"></i> &nbsp;<span class='hover:underline'>{{project.creator.phone}}</span></a>
                         {% endif %}
-
+                        {%if project.creator.location%}
                         <div><i class="fa-solid fa-map-marker-alt"></i> &nbsp;{{project.creator.location}}</div>
+                        {%endif%}
                     </div>
 
                     <a href='{% url "project_joined_members" project.id %}' class='text-base'><span class="font-bold" id='membercount'>{{project.tot_member}}</span> <span>Members</span></a>
 
                     <div class="flex gap-x-2 bg-[#6feb8627] px-3 py-2">
                         <div class="w-1 bg-[#6feb85]"></div>
-                        <div><span class="font-bold">Note:</span> Only Project Creator can view all members who joined.</div>
+                        {% if project.creator == request.user.info %}
+                        <div><span class="font-bold">Note:</span> See who joined and connect with those you like.</div>
+                        {% else %}
+                        <div><span class="font-bold">Note:</span> Join the project — the creator will contact you if interested.</div>
+                        {% endif %}
                     </div>
 
                     <div class="flex items-center justify-center gap-x-5">
+                        {% if project.creator == request.user.info %}
+                        <a href='{% url "project_joined_members" project.id %}' class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110">View Members
+                        </a>
+                        {% else %}
                         <button id="joinProjectBtn"  class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110" onclick="joinProject({{ project.id }})">
                             {% if request.user.info in project.members.all %}
                                Leave
                             {% else %}
                                 Join
-                            {% endif %}
-                                
+                            {% endif %}  
                         </button>
+                        {% endif %}
                         {% comment %} <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-7xl text-[#4a5565]" data-project-id = "{{ project.id }}">
                             <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
                         </div> {% endcomment %}

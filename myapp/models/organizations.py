@@ -22,7 +22,7 @@ class organization(models.Model):
     user = models.ForeignKey(User, related_name='organization', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=250)
     description = models.TextField()
-    logo = models.ImageField(upload_to="organization_logo", blank=True, default='organization_logo/organization_logo.svg')
+    logo = models.ImageField(upload_to="organization_logo", blank=True, default='organization_logo/org-logo.png')
     website = models.URLField(null=True, blank=True)
     industry = models.ForeignKey(Industry, on_delete=models.SET_NULL, null=True, related_name='organizations')
     location = models.CharField(max_length=255, blank=True, null=True)

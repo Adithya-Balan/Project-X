@@ -38,12 +38,15 @@ class RegistrationForm(UserCreationForm):
 class Postsignup_infoForm(forms.ModelForm):
     class Meta:
         model = userinfo
-        fields = ['availability', 'cringe_badge']
+        fields = ['status', 'availability', 'cringe_badge']
         widgets = {
             'availability': forms.Select(attrs={
                 'class': 'w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
             }),
             'cringe_badge': forms.Select(attrs={
+                'class': 'w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+            }),
+            'status': forms.Select(attrs={
                 'class': 'w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
             }),
         }

@@ -7,7 +7,6 @@
 {% endblock %} 
 
 {% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
 <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 {% endblock %} 
 
@@ -19,12 +18,12 @@
     
 
     <!-- main section -->
-    <div id = 'entireSection' class="flex w-full gap-x-5 lg:gap-x-2">
+    <div id='entireSection' class="flex w-full gap-x-5 lg:gap-x-2">
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
 
         <!-- explore section -->
-        <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-6">
+        <div class="flex flex-[5] flex-col flex-wrap mt-20 md:mt-32 gap-y-0 md:gap-y-5 lg:px-4 px-2">
             <div class="flex gap-x-1 flex-wrap gap-y-2 items-center justify-center absolute top-20">
                 <div class="flex flex-col gap-y-2 items-center">
                     <div id="exploreTrigger" class="flex items-center bg-black text-white px-2 py-1 rounded-lg cursor-pointer">
@@ -40,11 +39,11 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-y-5 w-full mb-10">
-                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
-                    <div class="text-[#686868] text-base ">({{total_result}} Results)</div>
-                    <!-- <div class="text-[#686868] text-[18px]">Events</div> -->
-                    <div class="flex items-center gap-x-2  w-fit justify-center max-[450px]:w-full">
+            <div class="flex flex-col gap-y-5 mt-1 w-full mb-10">
+                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-10 md:mt-0">
+                    <div class="text-[#686868] text-xs">({{total_result}} Results)</div>
+                    
+                    <div class="flex items-center gap-x-4 w-fit justify-center max-[450px]:w-full">
                         <form method="GET" action="{% url 'explore-project' %}" class="flex gap-x-3 items-center">
                             <input type="text"  name="q" value="{{ query }}" class="w-70 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
                                 <button type="submit"><img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6"></button>
@@ -57,11 +56,11 @@
                 </div>
 
                 <!-- projects area fill all the projects inside this div -->
-                <div class="flex flex-col items-start w-full gap-y-5">
+                <div class="flex flex-col gap-y-3 flex-wrap">
                     <!-- start of 1st project -->
 
                     {% for project in filtered_project %}
-                    <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full">
+                    <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full shadow-md">
                         <div class="flex items-center justify-between gap-x-5">
                             <div class="flex justify-start items-start w-full md:gap-x-5 gap-x-2">
                                 <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
@@ -136,7 +135,7 @@
         <!-- filter section -->
         <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10"
             id="openFilterParent">
-            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
+            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg bottom-2  gap-y-8 lg:flex"
                 id="filterElement">
                 <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
                         class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>

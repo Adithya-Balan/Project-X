@@ -2,11 +2,11 @@
 {% load static %}
 {% load custom_filter %}
 
-{% block title %}{{organization.name}}{% endblock %} 
+{% block title %}DevMate{% endblock %} 
 
 {% block style %}
 <link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
-<link rel="stylesheet" href="{% static 'styles/org-banner.css' %}"/>
+<link rel="stylesheet" href="{% static 'styles/banner.css' %}"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css" integrity="sha512-087vysR/jM0N5cp13Vlp+ZF9wx6tKbvJLwPO8Iit6J7R+n7uIMMjg37dEgexOshDmDITHYY5useeSmfD1MYiQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock  %}
@@ -27,30 +27,7 @@
             <div class="flex flex-col items-center md:gap-y-2 w-full">
 
                 <div class="w-full flex flex-col items-center md:gap-y-10 bg-white">
-                    <div class='relative w-full'>
-                        {% comment %} <div class="h-32 bg-[#444444] md:h-64">
-                            <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)]">
-                                <img src="{{organization.logo.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40 object-cover" onclick="viewProfile()">
-                            </div>
-                        </div> {% endcomment %}
                         {% include "includes/org-banner.html" %}
-                        {% if organization.user == request.user %}
-                        <div class="absolute right-10 -bottom-10 flex flex-col">
-                            <button class="" onclick="showMenu()"><i class="text-2xl fa-solid fa-ellipsis"></i></button>
-                        </div>
-                        <div id="threeDotMenu"
-                            class="hidden absolute right-10 -bottom-40 flex-col gap-y-2 bg-[#00000057] px-3 py-2 rounded-md backdrop-blur">
-                            <div class="flex items-center gap-x-2 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md" onclick="openPost('organization', '{{ organization.id }}')">
-                                <i class="fa-solid fa-plus"></i><span>Post</span>
-                            </div>
-                            <a href='{% url "org_event_form" organization.id %}' class="flex items-center gap-x-2 cursor-pointer hover:bg-black hover:text-white transition px-3 py-1 rounded-md">
-                                <i class="fa-solid fa-plus"></i><span>Event</span>
-                            </a>
-                        </div>
-                        {% endif %}
-                    </div>
-
-
                     <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md mr-auto md:ml-auto w-full md:mr-0 gap-y-2">
                         <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
                             <div class="text-xl font-bold">{{organization.name}}</div>

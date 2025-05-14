@@ -9,5 +9,5 @@ def get_explore_users(filter_dev, request, count=200):
     exclude_ids = list(followed_ids) + [request.user.info.id]
 
     # Step 2: Use `.only()` to limit fields fetched from DB for performance
-    users = filter_dev.exclude(id__in=exclude_ids).only('id', 'profile_image', 'user__username').order_by('?')[:count]
+    users = filter_dev.exclude(id__in=exclude_ids).only('id', 'profile_image', 'user__username').order_by('-created_at')[:count]
     return users

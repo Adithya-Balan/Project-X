@@ -2,7 +2,7 @@
 {% load static %}
 {% load custom_filter %}
 
-{% block title %}Organizations{% endblock %} 
+{% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 {% block script %}
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}" defer></script>
@@ -38,11 +38,11 @@
 
             <div class="flex flex-col gap-y-5 mt-1 w-full mb-10">
                 <!-- top section, search bar and filter option -->
-                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
-                    <div class="text-[#686868] text-[18px] ">({{result_count}} Results)</div>
+                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-12 md:mt-0">
+                    <div class="text-[#686868] text-xs">({{result_count}} Results)</div>
                     <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
                         <form method="GET" action="{% url 'explore_organization' %}" class="flex gap-x-3 items-center">
-                            <input type="text"  name="q" value="{{ query }}" class="w-80 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search...">
+                            <input type="text"  name="q" value="{{ query }}" class="w-70 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search...">
                                 <button type="submit"><img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6"></button>
                         </form>
                         <div class="lg:hidden flex" onclick="openFilter()">
@@ -57,7 +57,7 @@
 
                     {% for org in filtered_org %}
                     <!-- single organization -->
-                    <div class="bg-white">
+                    <div class="bg-white rounded-lg shadow-md">
                         <div class="flex gap-x-3  justify-between items-end w-full px-6 py-5 rounded-md">
                             <div class="flex gap-x-5 items-start">
                                 <a href='{% url "organization_detail" org.id %}'><img src="{{org.logo.url}}" class="w-12 h-12 rounded-md object-cover"></a>

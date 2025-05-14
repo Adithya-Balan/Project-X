@@ -15,11 +15,7 @@
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
-    <!-- z-20 -->
-    
-
     <!-- main section -->
-
     <div class="flex w-full gap-x-5 lg:gap-x-2" id='entireSection'>
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
@@ -42,10 +38,10 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-y-10 w-full">
+            <div class="flex flex-col gap-y-5 mt-1 w-full mb-10">
                 <!-- top section, search bar and filter option -->
-                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-14 md:mt-0">
-                    <div class="text-[#686868] text-[18px] ">({{result_count}} Results)</div>
+                <div class="w-full flex flex-row items-center justify-evenly  md:flex-row gap-x-5 gap-y-5 max-[450px]:flex-col mt-10 md:mt-0">
+                    <div class="text-[#686868] text-xs">({{result_count}} Results)</div>
                     <div class="flex items-center gap-x-4  w-fit justify-center max-[450px]:w-full">
                         <form method="GET" action="{% url 'explore_events' %}" class="flex gap-x-3 items-center">
                             <input type="text" name="q" value="{{ query }}" class="w-70 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search...">
@@ -62,7 +58,7 @@
 
                     <!-- start of 1st event -->
                     {% for event in filtered_event %}                        
-                    <div class="flex flex-col w-full md:w-[34rem] bg-white p-3 pb-4 shadow-lg rounded-xl">
+                    <div class="flex flex-col w-full max-w-[40rem] bg-white p-3 pb-4 shadow-lg rounded-xl">
                         <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative dot">
                             <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover">
                         </div>
@@ -90,7 +86,7 @@
 
                             </div>
                         </div>
-                        <div class='flex flex-row mt-1'>
+                        <div class='flex flex-row mt-2'>
                             <a href='{% url "event_detail" event.id %}' class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center mx-auto">
                                 View
                             </a>
@@ -139,7 +135,7 @@
 
 
         <!-- filter section -->
-        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10 shadow-xl"
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex z-10 shadow-xl"
             id="openFilterParent">
             <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg h-[100%] bottom-2 lg: lg:h-full gap-y-8 lg:flex"
                 id="filterElement">

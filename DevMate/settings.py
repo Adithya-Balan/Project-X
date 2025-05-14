@@ -29,8 +29,8 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '8e14-2409-40f4-4008-2d60-21fe-3945-8b80-53f2.ngrok-free.app']
-CSRF_TRUSTED_ORIGINS = ["https://8e14-2409-40f4-4008-2d60-21fe-3945-8b80-53f2.ngrok-free.app"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'graduation-hundreds-gather-costa.trycloudflare.com']
+CSRF_TRUSTED_ORIGINS = ["https://graduation-hundreds-gather-costa.trycloudflare.com"]
 SITE_ID = 2
 
 # Application definition
@@ -183,7 +183,6 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-
 # Force HTTPS in OAuth redirect URIs
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
@@ -191,6 +190,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'adithyabalan05@gmail.com'  #Replace with your Gmail
-EMAIL_HOST_PASSWORD = 'xqtm ttpp otsx rpat'
+EMAIL_HOST_USER = 'devmate.teams@gmail.com'  #Replace with your Gmail
+EMAIL_HOST_PASSWORD = 'ztft dblc flsd llam'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

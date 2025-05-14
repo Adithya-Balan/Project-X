@@ -226,25 +226,26 @@ class Notification(models.Model):
         ('follow', 'Started following you'),
         ('Join_Project', 'Joined On Your Project'),
         ('project_comment', 'Commented on Your project'),
-        ('project_reply', 'Replied to your Comment')
+        ('project_reply', 'Replied to your Comment'),
+        ('event_comment', 'Commented on your Event'),
+        ('event_reply', 'Replied to your Comment'),
     )
     user = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="notifications")
     sender = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="sent_notifications")
     notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=50)
     post = models.ForeignKey(post, on_delete=models.CASCADE, null=True, blank=True)
     post_comment = models.ForeignKey(post_comments, on_delete=models.CASCADE, null=True, blank=True) 
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(default=now)
     
     project = models.ForeignKey(projects, on_delete=models.CASCADE, null=True, blank=True)
     project_comment = models.ForeignKey(project_comment, null=True, blank=True, on_delete=models.CASCADE)
     project_reply = models.ForeignKey(project_reply, on_delete=models.CASCADE, blank=True, null=True)
     
+    event_comment = models.ForeignKey(event_comment, null=True, blank=True, on_delete=models.CASCADE)
+    event_reply = models.ForeignKey(event_reply, null=True, blank=True, on_delete=models.CASCADE)
     organization = models.ForeignKey(organization, on_delete=models.CASCADE, null=True, blank=True)  # Organization Follow/Like/Comment
 
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=now)
     def __str__(self):
         return f"{self.id} {self.sender} {self.get_notification_type_display()} {self.user}"
-
-    
-    
     

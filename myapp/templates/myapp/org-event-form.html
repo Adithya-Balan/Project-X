@@ -2,7 +2,7 @@
 {% load static %}
 {% load custom_filter %}
 
-{% block title %}Create Event{% endblock %} 
+{% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 
 {% endblock %} 
@@ -11,22 +11,7 @@
 {% block content %}
 <body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
     <!-- navbar -->
-    {% include "includes/navbar.html" %}
-
-    <!-- phone navbar popup -->
-   
-
-
-    <!-- phone navbar -->
-    <div class="z-10 fixed bottom-0 w-full py-2 bg-[#00000057] backdrop-blur lg:hidden">
-        <div class="flex justify-around">
-            <div><i class="text-xl fa-solid fa-house"></i></div>
-            <div><i class="text-xl fa-regular fa-compass"></i></div>
-            <div><i class="text-xl fa-solid fa-house"></i></div>
-            <div><i class="text-xl fa-regular fa-circle-user"></i></div>
-        </div>
-    </div>
-
+    {% include "includes/navbar.html" %}   
 
     <!-- main section -->
     <div class="mt-24 w-full pb-14 lg:pb-4" id='entireSection'>

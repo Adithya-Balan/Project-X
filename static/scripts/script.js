@@ -69,11 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// function getExplore() { //code to select multiple explore pages such as events, projects
-//     const allExplore = document.getElementById('allExplore')
-//     allExplore.classList.toggle('flex')
-//     allExplore.classList.toggle('hidden')
-// }
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.getElementById('exploreTrigger');
     const dropdown = document.getElementById('allExplore');
@@ -120,7 +115,6 @@ const closeFilter = () => {
 
 
 // for handling reply btn action
-
 const handleReply = (commentId, name) => {
     const textArea = document.getElementById('commentTextArea');
     const parentCommentId = document.getElementById('parentCommentId');
@@ -152,12 +146,55 @@ const goTo = (url) => {
 }
 
 
-const showMenu = () => {
-    // Code to show the popup
-    const threeDotMenu = document.getElementById('threeDotMenu');
-    threeDotMenu.classList.toggle('flex')
-    threeDotMenu.classList.toggle('hidden')
-}
+// For post menu
+document.addEventListener('DOMContentLoaded', () => {
+    // Find all post menu triggers
+    const triggers = document.querySelectorAll('[id^="postMenuTrigger-"]');
+    console.log(`Found ${triggers.length} post menu triggers`);
+
+    triggers.forEach(trigger => {
+        const postId = trigger.id.split('-')[1];
+        const menu = document.getElementById(`postMenu-${postId}`);
+        console.log(`Processing trigger: postMenuTrigger-${postId}, menu: ${menu ? 'found' : 'not found'}`);
+
+        if (trigger && menu) {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                console.log(`Clicked trigger: postMenuTrigger-${postId}`);
+                // Close other open menus
+                document.querySelectorAll('[id^="postMenu-"]').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('hidden');
+                        otherMenu.classList.remove('flex');
+                    }
+                });
+                // Toggle current menu
+                menu.classList.toggle('hidden');
+                menu.classList.toggle('flex');
+                console.log(`Menu state: ${menu.classList.contains('hidden') ? 'hidden' : 'visible'}`);
+
+                if (!menu.classList.contains('hidden')) {
+                    const closeOnOutside = (event) => {
+                        if (!menu.contains(event.target) && !trigger.contains(event.target)) {
+                            menu.classList.add('hidden');
+                            menu.classList.remove('flex');
+                            document.removeEventListener('click', closeOnOutside);
+                            console.log(`Closed menu: postMenu-${postId} on outside click`);
+                        }
+                    };
+                    document.addEventListener('click', closeOnOutside);
+                }
+            });
+
+            // Close menu when clicking delete link (if no redirect)
+            menu.querySelector('a').addEventListener('click', () => {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                console.log(`Closed menu: postMenu-${postId} on delete click`);
+            });
+        }
+    });
+});
 
 const viewProfile = () => {
     const entireSection = document.getElementById('entireSection')

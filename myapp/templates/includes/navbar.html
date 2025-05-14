@@ -23,7 +23,7 @@
                 <i id="postOptionTrigger" class="text-xl fa-solid fa-square-plus cursor-pointer"></i>
             </div>
             <div class="relative">
-                <i id="popupTrigger" class="inline-block md:hidden text-xl fa-solid fa-gear cursor-pointer"></i>
+                <i id="popupTrigger" class="inline-block md:hidden text-xl fa-solid fa-bars cursor-pointer"></i>
             </div>
         </div>
     </nav>
@@ -41,6 +41,7 @@
     <div class="flex flex-col gap-y-2">
         <a href = "{% url 'settings_page' %}" class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Account center</a>
         <a href='{% url "manage_organization" %}' class="px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160]">Manage Organization</a>
+        <a href='{% url "saved_page" %}' class="px-2 py-1 lg:hidden text-white rounded-md cursor-pointer hover:bg-[#31313160]">Saved</a>
         <form method="POST" action="/logout/" class="w-full">
             {% csrf_token %}
             <button type="submit" class="inline-flex w-full px-2 py-1 text-white rounded-md cursor-pointer hover:bg-[#31313160] appearance-none text-left items-center">

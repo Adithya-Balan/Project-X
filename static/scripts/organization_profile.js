@@ -75,3 +75,40 @@ const closeEdit = () => {
     editContainer.classList.remove('flex')
     entireSection.classList.remove('blur-md')
 }
+
+// for organization ... option
+document.addEventListener('DOMContentLoaded', () => {
+    const trigger = document.getElementById('threeDotTrigger');
+    const menu = document.getElementById('threeDotMenu');
+    const overlay = document.getElementById('threeDotOverlay');
+
+    if (trigger && menu && overlay) {
+        // Prevent aria-hidden on trigger and parent
+        trigger.removeAttribute('aria-hidden');
+        trigger.parentElement.removeAttribute('aria-hidden');
+
+        trigger.addEventListener('click', () => {
+            const isOpen = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            overlay.classList.toggle('hidden');
+            trigger.setAttribute('aria-expanded', isOpen);
+        });
+
+        overlay.addEventListener('click', () => {
+            menu.classList.add('hidden');
+            menu.classList.remove('flex');
+            overlay.classList.add('hidden');
+            trigger.setAttribute('aria-expanded', 'false');
+        });
+
+        menu.querySelectorAll('div, a').forEach(item => {
+            item.addEventListener('click', () => {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                overlay.classList.add('hidden');
+                trigger.setAttribute('aria-expanded', 'false');
+            });
+        });
+    }
+});
