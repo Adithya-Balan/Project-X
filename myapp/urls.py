@@ -10,6 +10,7 @@ urlpatterns = [
     path("character/<uuid:uuid>", views.signup_character, name="signup_character"),
     path("skills/<uuid:uuid>", views.signup_skills, name="signup_skills"),
     path("", views.index, name="index"),
+    path('load-more-feed/', views.load_more_feed, name='load_more_feed'),
     path("edit-profile", views.edit_profile, name="edit_profile"),
     path("notification", views.notification_page, name="notification_page"),
     path('notifications/count/', views.get_notification_count, name='get_notification_count'),
@@ -23,7 +24,7 @@ urlpatterns = [
     path("project/<int:id>/members", views.project_joined_members, name="project_joined_members"),
     path("project/<int:id>/forum", views.project_forum, name="project_forum"),
     path("join-project/<int:id>/", views.join_project, name="join_project"),
-    path("project-form/<int:id>", views.project_form, name="project_form"), #For Existing Project
+    path("project-form/<uuid:uuid>", views.project_form_edit, name="project_form"), #For Existing Project
     path('project-form', views.project_form, name='project_form_new'),   # For creating new project
     path("create-org", views.create_organization, name="create_organization"),
     path("manage-org", views.manage_organization, name="manage_organization"),
@@ -53,7 +54,11 @@ urlpatterns = [
     path("save-comment/", views.save_comment, name="save_comment"),
     path('delete-post-comment/<int:comment_id>/', views.delete_post_comment, name='delete_post_comment'),
     
+    path("delete-project/<uuid:uuid>/", views.delete_project, name="delete_project"),
+    path("delete-event/<uuid:uuid>/", views.delete_event, name="delete_event"),
     path("calendar", views.calendar_page, name="calendar_page"),
     path("settings", views.settings_page, name="settings_page"),
-    path('delete-data', views.delete_data, name = 'delete_data')
+    path('delete-data', views.delete_data, name = 'delete_data'),
+    
+    path("delete_account/<uuid:uuid>/", views.delete_account, name="delete_acount")
 ]

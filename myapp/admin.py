@@ -3,12 +3,11 @@ from .models import organization, skill, userinfo, education, current_position, 
 
 # Register your models here.
 admin.site.register(skill)
-admin.site.register(userinfo)
+# admin.site.register(userinfo)
 admin.site.register(organization)
 admin.site.register(education)
 admin.site.register(current_position)
 admin.site.register(experience)
-admin.site.register(projects)
 admin.site.register(follow)
 admin.site.register(Domain)
 admin.site.register(user_project)
@@ -18,7 +17,22 @@ admin.site.register(user_status)
 admin.site.register(SavedItem)
 admin.site.register(post)
 admin.site.register(post_comments)
-admin.site.register(event)
 admin.site.register(Notification)
 admin.site.register(Industry)
 admin.site.register(CringeBadge)
+
+@admin.register(userinfo)
+class userinfoAdmin(admin.ModelAdmin):
+    # Show UUID as read-only in the detail/edit page
+    readonly_fields = ('uuid',)
+
+@admin.register(projects)
+class projectsAdmin(admin.ModelAdmin):
+    # Show UUID as read-only in the detail/edit page
+    readonly_fields = ('uuid',)
+    
+@admin.register(event)
+class projectsAdmin(admin.ModelAdmin):
+    # Show UUID as read-only in the detail/edit page
+    readonly_fields = ('uuid',)
+    

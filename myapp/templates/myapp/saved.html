@@ -76,7 +76,7 @@
                             </div>
                             <div class="absolute right-3 top-2 flex items-start gap-x-5">
                                 {% comment %} <i class="text-xl fa-solid fa-certificate" aria-hidden="true"></i> {% endcomment %}
-                                <p class="text-xs text-gray-700">{{project.type}}</p>
+                                <p class="text-xs text-gray-700">{{project.type|default:""}}</p>
 
                                 <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
                                     <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>

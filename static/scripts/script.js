@@ -375,7 +375,7 @@ $(document).ready(function() {
 
 // #Toggle like for post
 $(document).ready(function() {
-    $(".like-container").click(function() {
+    $(document).on('click', '.like-container', function() {
         let container = $(this);
         let postId = container.data("post-id");
         let heartIcon = container.find("i");
@@ -404,17 +404,22 @@ $(document).ready(function() {
 });
 
 //For toggling the comments
-const commentBtn = document.querySelectorAll('.commentBtn')
-const commentsSection = document.querySelectorAll('.commentsSection')
-commentBtn.forEach((element, i) => {
-    element.addEventListener('click', () => {   //shifted this from profile.js
-        if (commentsSection[i].classList.contains("hidden")){
-            commentsSection[i].classList.remove('hidden')
-        }
-        else{
-            commentsSection[i].classList.add('hidden')
-        }
-    })
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.commentBtn')) {
+        const btn = e.target.closest('.commentBtn');
+        const allBtns = document.querySelectorAll('.commentBtn');
+        const allSections = document.querySelectorAll('.commentsSection');
+
+        allBtns.forEach((b, i) => {
+            if (b === btn) {
+                if (allSections[i].classList.contains('hidden')) {
+                    allSections[i].classList.remove('hidden');
+                } else {
+                    allSections[i].classList.add('hidden');
+                }
+            }
+        });
+    }
 });
 
 //For saving post comments
@@ -498,7 +503,7 @@ $(document).ready(function(){
 
 // Post save Toggle
 $(document).ready(function() {
-    $(".bookmark-container").click(function() {
+    $(document).on('click', '.bookmark-container', function() {
         let container = $(this);
         let postId = container.data("post-id");
         let bookmarkIcon = container.find("i");
@@ -526,7 +531,7 @@ $(document).ready(function() {
 
 // Project Save Toggle
 $(document).ready(function() {
-    $(".bookmark-container-project").click(function() {
+    $(document).on('click', '.bookmark-container-project', function() {
         let container = $(this);
         let projectId = container.data("project-id");
         let bookmarkIcon = container.find("i");
@@ -553,7 +558,7 @@ $(document).ready(function() {
 
 //event save toggle
 $(document).ready(function() {
-    $(".bookmark-container-event").click(function() {
+    $(document).on('click', '.bookmark-container-event', function() {
         let container = $(this);
         let eventId = container.data("event-id");
         let bookmarkIcon = container.find("i");

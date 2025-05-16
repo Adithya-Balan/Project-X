@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevMate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: #fff;
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Background SVG Decorations */
+    .bg-decorations {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .bg-decorations svg {
+      position: absolute;
+      fill: #6feb85;
+      filter: drop-shadow(0 0 10px rgba(111, 235, 133, 0.3));
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 1200px;
+      z-index: 2;
+      padding: 20px;
+      position: relative;
+    }
+
+    .left {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .typed-text {
+      font-size: 3rem;
+      font-weight: 400;
+      white-space: pre-line;
+      background: linear-gradient(90deg, #6feb85, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      line-height: 1.2;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 4px;
+      height: 2.5rem;
+      background: #6feb85;
+      animation: blink 0.7s infinite;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(111, 235, 133, 0.1);
+      max-width: 400px;
+    }
+
+    .right h2 {
+      font-size: 1.8rem;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .button {
+      background: #6feb85;
+      color: #000;
+      padding: 0.75rem 2.5rem;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(111, 235, 133, 0.3);
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+    }
+
+    .button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(111, 235, 133, 0.5);
+    }
+
+    .try-it {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .try-it:hover {
+      color: #6feb85;
+    }
+
+    /* Enhanced Responsiveness */
+    @media (max-width: 1024px) {
+      .container {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .typed-text {
+        font-size: 2.5rem;
+      }
+
+      .cursor {
+        height: 2.2rem;
+      }
+
+      .right {
+        max-width: 350px;
+        padding: 1.8rem;
+      }
+
+      .right h2 {
+        font-size: 1.6rem;
+      }
+
+      .button {
+        max-width: 180px;
+        padding: 0.7rem 2rem;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .left {
+        padding: 1.5rem;
+      }
+
+      .typed-text {
+        font-size: 2rem;
+      }
+
+      .cursor {
+        height: 1.8rem;
+        width: 3px;
+      }
+
+      .right {
+        padding: 1.5rem;
+        max-width: 90%;
+        border-radius: 10px;
+        width: 100%;
+      }
+
+      .right h2 {
+        font-size: 1.5rem;
+      }
+
+      .button {
+        max-width: 160px;
+        padding: 0.65rem 1.8rem;
+        font-size: 0.95rem;
+      }
+
+      .try-it {
+        font-size: 0.85rem;
+      }
+
+      .bg-decorations svg {
+        transform: scale(0.8);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+
+      .left {
+        padding: 1rem;
+      }
+
+      .typed-text {
+        font-size: 1.5rem;
+      }
+
+      .cursor {
+        height: 1.4rem;
+        width: 2px;
+      }
+
+      .right {
+        padding: 1.2rem;
+        gap: 1rem;
+      }
+
+      .right h2 {
+        font-size: 1.3rem;
+      }
+
+      .button {
+        max-width: 140px;
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+      }
+
+      .try-it {
+        font-size: 0.8rem;
+      }
+
+      .bg-decorations svg {
+        transform: scale(0.6);
+      }
+
+      .bg-decorations svg:nth-child(1) {
+        top: 5%;
+        left: 2%;
+      }
+
+      .bg-decorations svg:nth-child(2) {
+        bottom: 5%;
+        right: 2%;
+      }
+
+      .bg-decorations svg:nth-child(3) {
+        top: 15%;
+        right: 5%;
+      }
+
+      .bg-decorations svg:nth-child(4) {
+        bottom: 15%;
+        left: 5%;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .typed-text {
+        font-size: 1.3rem;
+      }
+
+      .cursor {
+        height: 1.2rem;
+        width: 2px;
+      }
+
+      .right h2 {
+        font-size: 1.1rem;
+      }
+
+      .button {
+        max-width: 120px;
+        padding: 0.5rem 1.2rem;
+        font-size: 0.85rem;
+      }
+
+      .try-it {
+        font-size: 0.75rem;
+      }
+
+      .bg-decorations svg {
+        transform: scale(0.5);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Decorations -->
+  <div class="bg-decorations">
+    <svg width="50" height="50" viewBox="0 0 24 24" style="top: 10%; left: 5%;">
+      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-13h2v4h4v2h-4v4h-2v-4H7v-2h4V7z"/>
+    </svg>
+    <svg width="60" height="60" viewBox="0 0 24 24" style="bottom: 15%; right: 10%;">
+      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 14l-2-2 4-4-4-4 2-2 6 6-6 6z"/>
+    </svg>
+    <svg width="40" height="40" viewBox="0 0 24 24" style="top: 20%; right: 20%;">
+      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-4-6h8v-2H8v2z"/>
+    </svg>
+    <svg width="45" height="45" viewBox="0 0 24 24" style="bottom: 20%; left: 15%;">
+      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm3 14H9v-2h6v2zm0-4H9v-2h6v2zm0-4H9V6h6v2z"/>
+    </svg>
+  </div>
+
+  <div class="container">
+    <div class="left">
+      <div class="typed-text" id="typed-text"></div>
+    </div>
+    <div class="right">
+      <h2>Get Started</h2>
+      <a href='{% url "login" %}' class="button">Log in</a>
+      <a href='{% url "sign_up" %}' class="button">Sign up</a>
+      <div class="try-it">Version-1.0</div>
+    </div>
+  </div>
+
+  <script>
+    const text = "Welcome to DevMate!\n\nDevelopers Don't Wait — They Connect.";
+    const typedTextEl = document.getElementById('typed-text');
+    let i = 0;
+
+    function type() {
+      if (i < text.length) {
+        typedTextEl.innerHTML = text.substring(0, i + 1).replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+        i++;
+        setTimeout(type, 60);
+      } else {
+        typedTextEl.innerHTML = text.replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+      }
+    }
+
+    type();
+  </script>
+</body>
+</html>

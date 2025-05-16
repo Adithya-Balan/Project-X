@@ -29,8 +29,8 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'graduation-hundreds-gather-costa.trycloudflare.com']
-CSRF_TRUSTED_ORIGINS = ["https://graduation-hundreds-gather-costa.trycloudflare.com"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'finish-system-carmen-cooked.trycloudflare.com']
+CSRF_TRUSTED_ORIGINS = ["https://finish-system-carmen-cooked.trycloudflare.com"]
 SITE_ID = 2
 
 # Application definition
@@ -152,7 +152,6 @@ MEDIA_URL = '/user-media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # print("DB_NAME:", env('DB_NAME'))  # Add this temporarily to check if it's being read
-
 LOGIN_REDIRECT_URL = '/post-login-check/'
 LOGOUT_REDIRECT_URL = '/login'
 LOGIN_URL = '/login'

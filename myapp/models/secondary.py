@@ -1,10 +1,12 @@
 from django.db import models
 from django.urls import reverse
+import uuid
 from .users import userinfo
 from .filter import Domain, skill
 from .organizations import organization
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.timezone import now
+
     
 class projects(models.Model):
     TYPES = [
@@ -32,6 +34,7 @@ class projects(models.Model):
     skill_needed = models.ManyToManyField(skill, related_name='projects')
     domain = models.ForeignKey(Domain, related_name='projects', on_delete=models.SET_NULL, null=True)
     level = models.CharField(max_length=50, blank=True, null= True, choices=LEVELS, db_index=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     
     class Meta:
         verbose_name_plural = "projects"
@@ -143,7 +146,7 @@ class event(models.Model):
     contact_name = models.CharField(max_length=50, blank=True, null=True)
     contact_email =  models.EmailField(blank=True, null=True)
     contact_phone = PhoneNumberField(blank=True, null=True)
-    
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return f"{self.title} ({self.get_event_type_display()})"

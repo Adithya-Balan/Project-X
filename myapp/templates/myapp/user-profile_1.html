@@ -73,7 +73,7 @@
                         <a href="?section=posts"
                             class="{% if section == 'posts' %}{{color.active}}{% else %}{{color.normal}}{% endif %}">Posts</a>
                         <a href="?section=projects"
-                            class="{% if section == 'projects' %}{{color.active}}{% else %}{{color.normal}}{% endif %}">Projects</a>
+                            class="{% if section == 'projects' %}{{color.active}}{% else %}{{color.normal}}{% endif %}">My Work</a>
                         <a href="?section=info"
                             class="{% if section == 'info'%}{{color.active}}{% else %}{{color.normal}}{% endif %}">Info</a>
                     </div>
@@ -380,7 +380,7 @@
                                     </div>
                                     <div class="absolute right-3 top-2 flex items-start gap-x-5">
                                         {% comment %} <i class="text-xl fa-solid fa-certificate">F</i> {% endcomment %}
-                                        <p class="text-sm text-gray-700">{{project.type}}</p>
+                                        <p class="text-sm text-gray-700">{{project.type|default:""}}</p>
         
                                         <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
                                             <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>

@@ -41,12 +41,12 @@
                         <!-- Quick Stats -->
                         <div class="space-y-2">
                             <div class="flex items-center justify-between gap-x-3 bg-white px-4 py-3 rounded-lg shadow-sm border border-gray-200">
-                                <span class="font-medium text-gray-600">Followers</span>
-                                <span class="text-green-600 font-bold text-2xl">{{ org.get_followers.count }}</span>
+                                <span class="font-medium text-gray-600">Follower Views</span>
+                                <span class="text-green-600 font-bold text-2xl">{{ org.profile_views_followers }}</span>
                             </div>
                             <div class="flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm border border-gray-200">
-                                <span class="font-medium text-gray-600">Events</span>
-                                <span class="text-blue-600 font-bold text-2xl">{{ org.events.count }}</span>
+                                <span class="font-medium text-gray-600">Non Follower Views</span>
+                                <span class="text-blue-600 font-bold text-2xl">{{ org.profile_views_nonfollowers }}</span>
                             </div>
                             <div class="flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm border border-gray-200">
                                 <span class="font-medium text-gray-600">Likes</span>
@@ -108,7 +108,7 @@
         return new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ['Followers', 'Events', 'Likes'],
+                labels: ['Follower Views', 'Non Follower Views', 'Total Likes'],
                 datasets: [{
                     data: data,
                     backgroundColor: ['#ff6c6c', '#FFCC00', '#4285F4'],
@@ -139,8 +139,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         {% for org in org_list %}
             createPieChart('statsChart{{ org.id }}', [
-                {{ org.get_followers.count }},
-                {{ org.events.count }},
+                {{ org.profile_views_followers }},
+                {{ org.profile_views_nonfollowers }},
                 {{ org.get_total_likes }}
             ]);
         {% endfor %}

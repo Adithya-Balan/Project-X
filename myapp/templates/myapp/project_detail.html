@@ -38,7 +38,7 @@
                         <div class='flex gap-x-4 items-center'>
                             <div class="font-bold text-3xl">{{project.title}}</div>
                             {% if project.creator == request.user.info %}
-                            <a href='{% url "project_form" project.id %}'>
+                            <a href='{% url "project_form" project.uuid %}'>
                                 <img src='{% static "assets/pencil.svg" %}' class='h-5 w-5'>
                             </a>
                             {% endif %}

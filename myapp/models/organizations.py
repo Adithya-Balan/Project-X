@@ -37,6 +37,8 @@ class organization(models.Model):
     instagram = models.URLField(blank=True, null=True)
     followers = models.ManyToManyField(userinfo, related_name='followed_organization', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+    profile_views_followers = models.IntegerField(default=0)
+    profile_views_nonfollowers = models.IntegerField(default=0)
     
     def __str__(self):
         return f"{self.id} {self.name }"

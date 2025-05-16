@@ -7,175 +7,30 @@ from django.db.models import F
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm, ProjectForm, EditOrgForm, Postsignup_infoForm
 from django.contrib.auth.models import User
 from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification, Industry, follow
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
-from django.db.models import Q, Count
-import random
+from django.db.models import Q
+from django.template.loader import render_to_string
 from itertools import groupby
-from .algorithms import get_explore_users
+from .algorithms import get_explore_users, get_personalized_feed
+from allauth.account.views import PasswordChangeView
 
 # Create your views here.
+class CustomPasswordChangeView(PasswordChangeView):
+    # Redirect to this URL after a successful password change
+    success_url = reverse_lazy('index')
+
 @login_required
 def post_login_check(request):
     user_info = request.user.info
     if user_info.needs_profile_completion:
         return redirect('signup_about', uuid=user_info.uuid)
     return redirect('/')
-
-def get_personalized_feed(user, limit_per_type=5, recent_days=7, trending_days=14):
-    """
-    Generate a personalized feed for a user with posts, projects, and events.
-    
-    Args:
-        user: User instance
-        limit_per_type: Max items per content type (default: 5)
-        recent_days: Days for recent posts/projects (default: 7)
-        trending_days: Days for trending posts (default: 14)
-    
-    Returns:
-        List of dicts with 'type', 'item', and 'score' keys.
-    """
-    today = timezone.now().date()
-    recent_threshold = today - timedelta(days=recent_days)
-    trending_threshold = today - timedelta(days=trending_days)
-    
-    # Fetch user data
-    user_info = user.info  # Access userinfo via OneToOneField
-    followed_users = user_info.following.all().values_list('following', flat=True)
-    followed_orgs = user_info.followed_organization.all().values_list('id', flat=True)  # Assumed field
-    user_skills = user_info.skills.all().values_list('id', flat=True)
-    
-    # Track items to avoid duplicates
-    seen_ids = set()
-    feed_items = []
-    
-    # Scoring functions
-    def post_score(post):
-        time_diff = timezone.now() - post.created_at
-        hours_since = time_diff.total_seconds() / 3600
-        if hours_since <= 24:
-            recency = 20 - (hours_since / 24) * 10  # 20 to 10 over 24 hours
-        else:
-            recency = 10 - (hours_since / 24)  # Decreases from 10
-        engagement = post.like_count * 1.5
-        connections = post.connection_likes * 3
-        return recency + engagement + connections
-    
-    def project_score(project):
-        days_since = (today - project.created_at.date()).days
-        recency = -days_since
-        creator_bonus = 5 if project.creator_id in followed_users else 0
-        member_bonus = project.connection_members * 2
-        skill_bonus = project.skill_needed.filter(id__in=user_skills).count() * 2
-        return recency + creator_bonus + member_bonus + skill_bonus
-    
-    def event_score(event):
-        days_until = (event.start_date - today).days
-        timeliness = -days_until  # Closer events = higher score
-        org_bonus = 5 if event.organization_id in followed_orgs else 0
-        return timeliness + org_bonus
-    
-    # Fetch Posts
-    posts = post.objects.filter(
-        Q(user_id__in=followed_users) | Q(Organization_id__in=followed_orgs),
-        created_at__gte=recent_threshold
-    ).annotate(
-        like_count=Count('likes'),
-        connection_likes=Count('likes', filter=Q(likes__in=followed_users))
-    ).order_by('-created_at')[:50]
-    
-    for p in posts:
-        if p.id not in seen_ids:
-            feed_items.append({'type': 'post', 'item': p, 'score': post_score(p)})
-            seen_ids.add(p.id)
-    
-    trending_posts = post.objects.exclude(
-        Q(user_id__in=followed_users) | Q(Organization_id__in=followed_orgs)
-    ).filter(
-        created_at__gte=trending_threshold
-    ).annotate(
-        like_count=Count('likes')
-    ).order_by('-like_count')[:10]
-    
-    for p in trending_posts:
-        if p.id not in seen_ids:
-            score = p.like_count * 1.2  # Trending boost
-            feed_items.append({'type': 'post', 'item': p, 'score': score})
-            seen_ids.add(p.id)
-    
-    # Fetch Projects
-    projects_qs = projects.objects.filter(
-        Q(creator_id__in=followed_users) | Q(skill_needed__in=user_skills),
-        created_at__gte=recent_threshold
-    ).distinct().annotate(
-        connection_members=Count('members', filter=Q(members__in=followed_users))
-    ).order_by('-created_at')[:50]
-    
-    for proj in projects_qs:
-        if proj.id not in seen_ids:
-            feed_items.append({'type': 'project', 'item': proj, 'score': project_score(proj)})
-            seen_ids.add(proj.id)
-    
-    random_projects = projects.objects.exclude(
-        creator_id__in=followed_users
-    ).filter(
-        skill_needed__in=user_skills,
-        created_at__gte=recent_threshold
-    ).order_by('?')[:5]
-    
-    for proj in random_projects:
-        if proj.id not in seen_ids:
-            skill_bonus = proj.skill_needed.filter(id__in=user_skills).count() * 1
-            score = random.uniform(2, 6) + skill_bonus
-            feed_items.append({'type': 'project', 'item': proj, 'score': score})
-            seen_ids.add(proj.id)
-    
-    # Fetch Events
-    events = event.objects.filter(
-        organization_id__in=followed_orgs,
-        start_date__gte=today
-    ).order_by('start_date')[:50]
-    
-    for e in events:
-        if e.id not in seen_ids:
-            feed_items.append({'type': 'event', 'item': e, 'score': event_score(e)})
-            seen_ids.add(e.id)
-    
-    random_events = event.objects.exclude(
-        organization_id__in=followed_orgs
-    ).filter(
-        start_date__gte=today
-    ).order_by('?')[:5]
-    
-    for e in random_events:
-        if e.id not in seen_ids:
-            score = random.uniform(2, 6)
-            feed_items.append({'type': 'event', 'item': e, 'score': score})
-            seen_ids.add(e.id)
-    
-    # Sort by score
-    feed_items.sort(key=lambda x: x['score'], reverse=True)
-    
-    # Enforce diversity
-    total_limit = limit_per_type * 3  # e.g., 15 if limit_per_type=5
-    max_per_type = total_limit // 3 + 1  # e.g., 6
-    type_counts = {'post': 0, 'project': 0, 'event': 0}
-    filtered_items = []
-    
-    for item in feed_items:
-        item_type = item['type']
-        if type_counts[item_type] < max_per_type:
-            filtered_items.append(item)
-            type_counts[item_type] += 1
-        if len(filtered_items) >= total_limit:
-            break
-    # print(filtered_items)
-    return filtered_items
 
 #Auth:
 class sign_up(View):
@@ -255,31 +110,47 @@ def signup_skills(request, uuid):
     }
     return render(request, 'myapp/signup-selectskill.html', context)
 
-@login_required
+# @login_required
 def index(request):
+    if not request.user.is_authenticated:
+        return render(request, 'myapp/landing_page.html')
+    
     if request.user.info.needs_profile_completion:
         return redirect('signup_about', uuid=request.user.info.uuid)
-    suggested_posts = post.objects.all()
-    suggested_projects = projects.objects.all()[:3]
-    suggested_peoples = userinfo.objects.all().exclude(user = request.user)[:5]
-    suggested_events = event.objects.all()[:3]
-    feed = get_personalized_feed(request.user)
-    # print(feed)
+    type = request.GET.get('feed', "all")
+    suggested_peoples = get_explore_users(filter_dev=userinfo.objects.all(), request=request, count=7, order_by='?')
+    page = 1 
+    feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
     followed_orgs = request.user.info.followed_organization.all() | request.user.organization.all()
     followed_orgs = followed_orgs.distinct() 
     tot_upcoming_events = event.objects.filter(organization__in=followed_orgs, start_date__gte=timezone.now()).count()
     post_form = PostForm()
+    print(request.user.info._meta.related_objects)
     context = {
         'active_home': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
-        'posts': suggested_posts,
         'post_form': post_form,
-        'suggested_projects' : suggested_projects,
         'suggested_peoples': suggested_peoples,
-        'suggested_events': suggested_events,
-        'feed': feed,
+        'feed_items': feed_page,
         'tot_upcoming_events': tot_upcoming_events,
+        'type': type,
     }
     return render(request, 'myapp/index.html', context) 
+
+@login_required
+def load_more_feed(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    page = int(request.GET.get('page', 1))
+    type = request.GET.get('feed', 'all')
+
+    feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
+    html = render_to_string('myapp/feed_items.html', {'feed_items': feed_page}, request=request)
+
+    return JsonResponse({
+        'html': html,
+        'has_next': feed_page.has_next()
+    })
 
 @login_required
 def notification_page(request):
@@ -371,8 +242,10 @@ def user_profile(request, user_name):
         skill_form = EditSkillForm(instance=request.user.info)
         cp_form = EditCurrentPositionForm(instance=request.user.info.current_position)
     else:
-        userinfo_obj.profile_views = F('profile_views') + 1
-        userinfo_obj.save()
+        session_key = f'user_viewed_{user_name}'
+        if not request.session.get(session_key, False):
+            userinfo.objects.filter(user__username=user_name).update(profile_views=F('profile_views') + 1)
+            request.session[session_key] = True
         
     if request.method == 'POST' and userinfo_obj == request.user.info:
         form_type = request.POST.get('form_type')
@@ -540,6 +413,7 @@ def follow_list(request, username):
         return render(request, 'myapp/followList.html', context)
     
 # Organization
+@login_required
 def create_organization(request):
     if request.method == "POST":
         form = OrganizationForm(request.POST, request.FILES)
@@ -630,6 +504,19 @@ def organization_detail(request, id):
     post_form = PostForm()
     section = request.GET.get('section', 'overview') 
     
+    session_key = f'org_viewed_{id}'
+    has_viewed = request.session.get(session_key, False)
+
+    if not has_viewed and getattr(organization_obj, 'user', None) != request.user:
+        if organization_obj.followers.filter(id=request.user.info.id).exists():
+            organization.objects.filter(id=id).update(
+                profile_views_followers=F('profile_views_followers') + 1
+            )
+        else:
+            organization.objects.filter(id=id).update(
+                profile_views_nonfollowers=F('profile_views_nonfollowers') + 1
+            )
+        request.session[session_key] = True  # Mark as viewed in this session
     social_links = { 
         'github': organization_obj.github if organization_obj.github else None,
         'linkedin': organization_obj.linkedin if organization_obj.linkedin else None,
@@ -771,6 +658,7 @@ def event_form_edit(request, org_id, event_id):
     organization_obj = get_object_or_404(organization, id = org_id)
     event_obj = get_object_or_404(event, id = event_id)
     createdByUser = True if organization_obj.user == request.user else False
+    post_form = PostForm()
     if createdByUser:
         form = EventForm(instance=event_obj)
         print(event_obj.__dict__)
@@ -784,7 +672,9 @@ def event_form_edit(request, org_id, event_id):
         return redirect('/')
     context = {
         'event_form': form,
-        'is_edit': True
+        'is_edit': True,
+        'post_form': post_form,
+        'event_obj': event_obj,
     }
     return render(request, 'myapp/org-event-form.html', context)
 
@@ -863,33 +753,48 @@ def explore_project(request):
     return render(request,"myapp/explore-projects.html", context)
 
 @login_required
-def project_form(request, id=None):
+def project_form(request):
     post_form = PostForm()
-    form = ProjectForm() if not id else ProjectForm(instance=get_object_or_404(projects, id = id))
-        
+    form = ProjectForm()
     if request.method == 'POST':
-        if id:
-            form = ProjectForm(request.POST, request.FILES, instance=get_object_or_404(projects, id = id))
-            if form.is_valid():
-                project = form.save()
-                return redirect(f"{reverse('project_detail', args=[project.id])}")
-        else:
-            form = ProjectForm(request.POST, request.FILES)
-            if form.is_valid():
-                print(True)
-                project = form.save(commit=False)
-                project.creator = request.user.info
-                project.save()
-                form.save_m2m()
-                print("POST data:", request.POST)
-                print("FILES:", request.FILES)
-                return redirect(f"{reverse('project_detail', args=[project.id])}")
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            print(True)
+            project = form.save(commit=False)
+            project.creator = request.user.info
+            project.save()
+            form.save_m2m()
+            print("POST data:", request.POST)
+            print("FILES:", request.FILES)
+            return redirect(f"{reverse('project_detail', args=[project.id])}")
             
     context = {
         'post_form': post_form,
         'form': form,
+        'is_edit': False,
     }
     return render(request, 'myapp/project-form.html', context)
+
+@login_required
+def project_form_edit(request, uuid):
+    post_form = PostForm()
+    project_obj = get_object_or_404(projects, uuid = uuid)
+    if project_obj.creator == request.user.info:
+        form = ProjectForm(instance=project_obj)
+        if request.method == "POST":
+            form = ProjectForm(request.POST, request.FILES, instance=project_obj)
+            if form.is_valid():
+                project = form.save()
+                return redirect(f"{reverse('project_detail', args=[project.id])}")
+        context = {
+            'post_form': post_form,
+            'form': form,
+            'is_edit': True,
+            'project_obj': project_obj,
+        }
+        return render(request, 'myapp/project-form.html', context)
+    else:
+        return redirect("/")
 
 @login_required
 def project_detail(request, id):
@@ -1045,6 +950,7 @@ def explore_dev(request):
     return render(request, 'myapp/explore_dev.html', context)
 
 #Explore event and single page event
+@login_required
 def explore_events(request):
     #filter
     type_filter = request.GET.get('type', '').strip()  #string
@@ -1098,6 +1004,7 @@ def explore_events(request):
     print(types)
     return render(request, 'myapp/explore-events.html', context)
 
+@login_required
 def event_detail(request, id):
     event_obj = get_object_or_404(event, pk=id)
     post_form = PostForm()
@@ -1109,6 +1016,7 @@ def event_detail(request, id):
     }
     return render(request, 'myapp/event_detail.html', context)
 
+@login_required
 def event_forum(request, id):
     Event = get_object_or_404(event, id = id)
     userinfo_obj = get_object_or_404(userinfo, user=request.user)
@@ -1135,6 +1043,7 @@ def event_forum(request, id):
 
     return redirect(redirect_url)
 
+@login_required
 def saved_page(request):
     saved_item  = request.user.info.saved_items
     saved_post = saved_item.posts.all()
@@ -1153,6 +1062,7 @@ def saved_page(request):
     }
     return render(request, 'myapp/saved.html', context)
 
+@login_required
 def calendar_page(request):
     post_form = PostForm()
     followed_orgs = request.user.info.followed_organization.all() | request.user.organization.all()
@@ -1238,6 +1148,7 @@ def toggle_like(request, post_id):
             Notification.objects.create(user=post_owner, sender=userinfo_obj, notification_type="like", post=post_obj)
     return JsonResponse({'liked': liked, 'total_likes': post_obj.total_likes()}) 
 
+@login_required
 #for saving post
 def save_post(request):
     form = PostForm(request.POST, request.FILES)
@@ -1264,6 +1175,25 @@ def save_post(request):
         else:
             return HttpResponseRedirect('/')
         
+@login_required
+def delete_project(request, uuid):
+    project_obj = get_object_or_404(projects, uuid = uuid)
+    reverse_url = f"{reverse('user_profile', args=[request.user.username])}?section=projects"
+    if project_obj.creator == request.user.info:
+        project_obj.delete()
+        return redirect(reverse_url) 
+    return redirect('/')
+
+@login_required
+def delete_event(request,uuid):
+    event_obj = get_object_or_404(event, uuid = uuid)
+    reverse_url = f"{reverse('organization_detail', args=[event_obj.organization.id])}?section=events"
+    if event_obj.organization.user == request.user:
+        event_obj.delete()
+        return redirect(reverse_url) 
+    return redirect('/')
+        
+@login_required
 def delete_post(request, post_id):
     post_obj = get_object_or_404(post, id = post_id)
     User = request.user
@@ -1276,6 +1206,7 @@ def delete_post(request, post_id):
         return redirect(request.META.get('HTTP_REFERER', '/')) 
     return HttpResponse("Sorry! You Can't have permission To Delete!...")
     
+@login_required
 #for saving post comments
 def save_comment(request):
     comment_text = request.POST.get('comment')   
@@ -1338,6 +1269,7 @@ def logout_view(request):
     logout(request)
     return redirect("/")
 
+@login_required
 def delete_data(request):
     if request.method == "POST":
         form_type = request.POST.get("form_type")
@@ -1400,3 +1332,11 @@ def delete_data(request):
                 return HttpResponse("You have No Authority to Delete.")     
     return JsonResponse({"success": False, "error": "Invalid request"})
 
+@login_required
+def delete_account(request, uuid):
+    print(True)
+    user = request.user
+    if uuid == user.info.uuid:
+        user.delete()
+        logout(request)
+    return redirect('/')

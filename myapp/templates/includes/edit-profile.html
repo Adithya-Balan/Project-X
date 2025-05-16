@@ -167,16 +167,6 @@
                 </div>
             </div>
 
-            {% if ep_form.errors %}
-            <div class="text-red-500">
-                <strong>Form Errors:</strong>
-                <ul>
-                    {% for field, errors in ep_form.errors.items %}
-                        <li>{{ field }}: {{ errors|join:", " }}</li>
-                    {% endfor %}
-                </ul>
-                </div>
-            {% endif %}
             <div class="self-center mt-5">
                 <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
             </div>
@@ -339,13 +329,6 @@
                {{edu_form.end_date}}
             </div>
         </div>
-        {% if edu_form.errors %}
-                <div class="text-red-500 text-sm">
-                    {% for error in edu_form.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
         <div class="self-center flex flex-row gap-x-5">
             <button type="submit" name="action" value="save" class="bg-[#6feb85] text-black px-3 py-1 rounded-lg cursor-pointer">Save</button>
             {% if edu_form.name.value %}

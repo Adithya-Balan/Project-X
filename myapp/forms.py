@@ -170,6 +170,12 @@ class EditProfileForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "Username must start with a letter and contain only letters, numbers, underscores, and a single dot (with no consecutive dots)."
                 )
+
+            qs = User.objects.filter(username=username)
+            if self.instance.user:
+                qs = qs.exclude(pk=self.instance.user.pk)
+            if qs.exists():
+                raise forms.ValidationError("This username is already taken.")
         return username
             
     def save(self,commit=True):
@@ -369,7 +375,7 @@ class EventForm(forms.ModelForm):
                 'id': 'eventShortDescription'
             }),
             'description': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-42',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-80',
                 'placeholder': 'Give a Brief Overview of the Event, details, rewards...',
                 'id': 'eventDescription'
             }),

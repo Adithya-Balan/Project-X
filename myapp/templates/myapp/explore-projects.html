@@ -69,8 +69,7 @@
                                     <div>{{project.description|truncatewords:25}}</div>
                                     <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
                                         <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
-                                            <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span>
-                                            <span>{{project.tot_member}} Users</span>
+                                            <a href='{% url "project_joined_members" project.id %}'>{{project.tot_member}} Users</a>
                                         </div>
                                         <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
                                     </div>

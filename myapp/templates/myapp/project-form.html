@@ -129,8 +129,11 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="self-center">
+                    <div class="self-center flex gap-x-5">
                         <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
+                        {% if is_edit %}
+                        <a href='{% url "delete_project" project_obj.uuid %}' class="bg-red-700 text-white px-3 py-1 rounded-lg">Delete</a>
+                        {% endif %}
                     </div>
                     {% if form.non_field_errors %}
                         <ul class="errorlist">

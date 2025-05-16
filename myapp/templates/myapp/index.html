@@ -11,257 +11,43 @@
     {% include "includes/navbar.html" %}
 
     <!-- main section -->
-    <div class="w-full lg:flex-row lg:gap-x-5 flex" onclick="bodyClick()" id='entireSection'>
+    <div class="w-full lg:flex-row lg:gap-x-5 flex" id='entireSection'>
         <!-- sidenav -->
         {% include "includes/sidenav.html" %}
 
         <!-- post events section -->
         <div class="w-full md:w-3/5 flex justify-center mx-auto">
-        {% if feed %}
             <div class="mt-24 md:mt-24 flex flex-col gap-y-6 w-full max-w-[36rem] mb-20 px-4 md:px-0">
                 <!-- Filter tabs - now scrollable on mobile -->
                 <div class="flex gap-x-3 overflow-x-auto scrollbar-hide px-2">
-                    <div
-                        class="text-white bg-black px-3 py-1 rounded hover:bg-[#6feb85] hover:text-black hover:scale-105 transition-all cursor-pointer shrink-0">
-                        Trending
-                    </div>
-                    <div
-                        class="text-white bg-black px-3 py-1 rounded hover:bg-[#6feb85] hover:text-black hover:scale-105 transition-all cursor-pointer shrink-0">
-                        Popular
-                    </div>
-                    <div
-                        class="text-white bg-black px-3 py-1 rounded hover:bg-[#6feb85] hover:text-black hover:scale-105 transition-all cursor-pointer shrink-0">
+                    <a href='?feed=all'
+                        class="px-3 py-1 rounded hover:scale-105 transition-all cursor-pointer shrink-0 {% if type == 'all' or type == '' or type == none %}bg-[#6feb85] text-black{% else %}text-white bg-black hover:bg-[#6feb85] hover:text-black{% endif %}">
+                        All
+                    </a>
+                    <a href='?feed=following'
+                        class="px-3 py-1 rounded hover:scale-105 transition-all cursor-pointer shrink-0 {% if type == 'following' %}bg-[#6feb85] text-black{% else %}text-white bg-black hover:bg-[#6feb85] hover:text-black{% endif %}">
                         Following
-                    </div>
+                    </a>
+                    <a href='?feed=trending'
+                        class="px-3 py-1 rounded hover:scale-105 transition-all cursor-pointer shrink-0 {% if type == 'trending' %}bg-[#6feb85] text-black{% else %}text-white bg-black hover:bg-[#6feb85] hover:text-black{% endif %}">
+                        Trending
+                    </a>
                 </div>
-                {% for entry in feed %}
-                    <!-- post and events section -->
-                    <div class="flex flex-col gap-y-6">
-                        {% if entry.type == 'post' %}            
-                        <!-- Single Post -->
-                        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4">
-                            <!-- User Info -->
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    {% if entry.item.user %}
-                                    <a href='{% url "user_profile" entry.item.user.user.username %}'>
-                                        <img src="{{ entry.item.user.profile_image.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
-                                    </a>
-                                    <div>
-                                        <a href='{% url "user_profile" entry.item.user.user.username %}' class="font-semibold">
-                                            {{ entry.item.user.user.first_name }} {{ entry.item.user.user.last_name }}
-                                        </a>
-                                        <p class="text-xs text-gray-500">{{ entry.item.created_at }}</p>
-                                    </div>
-                                    {% elif entry.item.Organization %}
-                                    <a href='{% url "organization_detail" entry.item.Organization.id %}'>
-                                        <img src="{{ entry.item.Organization.logo.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
-                                    </a>
-                                    <div>
-                                        <a href='{% url "organization_detail" entry.item.Organization.id %}' class="font-semibold">
-                                            {{ entry.item.Organization.name }}
-                                        </a>
-                                        <p class="text-xs text-gray-500">{{ entry.item.created_at }}</p>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- More Options Button -->
-                                {% if entry.item.user == request.user.info or entry.item.Organization.user == request.user%}
-                                <div class="relative">
-                                    <button id="postMenuTrigger-{{ post.id }}" class="text-gray-500 hover:text-gray-700 text-xl">
-                                        •••
-                                    </button>
-                                    <div id="postMenu-{{ post.id }}" class="hidden absolute right-0 top-8 flex-col backdrop-blur rounded-md shadow-md border border-gray-200 z-10">
-                                        <a href="{% url 'delete_post' entry.item.id %}" class="flex items-center gap-x-1 px-4 py-2 text-red-800 hover:bg-red-100 hover:text-red-800 transition duration-200 w-full text-left">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                            <span>Delete</span>
-                                        </a>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
-                
-                            <!-- Post Content -->
-                            <p class="mt-3 text-[#686868]">
-                                {{entry.item.content}}
-                            </p>
-                            {% comment %} ORIGINAL = video | 1:1: SQUARE object-cover | 16: 9 = VIDEO object-cover{% endcomment %}
-                            <div class="mt-3 w-full {% if entry.item.aspect == 'Original' or entry.item.aspect == '16:9' %}aspect-video {% else %} aspect-square{% endif %} overflow-hidden">
-                                <img src="{{entry.item.file.url}}" alt="Post" class="w-full h-full {% if entry.item.aspect == 'Original' %}object-contain{% else %} object-cover{% endif %}">  
-                            </div>
-                
-                            <!-- Actions -->
-                            <div class="flex justify-between mt-3 text-gray-600 text-sm">
-                                <div class="flex gap-x-3">
-                
-                                    <div class="flex items-center space-x-2 cursor-pointer like-container" data-post-id="{{ entry.item.id }}">
-                                        <i class="text-xl fa-solid fa-heart {% if user.info in entry.item.likes.all %}text-[#6feb85]{% endif %}"></i> 
-                                        <span class="like-count">{{ entry.item.total_likes }}</span>
-                                    </div>
-                
-                                    <div class="commentBtn flex items-center space-x-2 cursor-pointer hover:text-[rgb(111,235,133)]">
-                                        <i class="text-xl fa-solid fa-comment"></i> <span id='postCommentCount{{entry.item.id}}'>{{entry.item.tot_comments}}</span>
-                                    </div>
-                                </div>
-                                <div class="bookmarkBtn cursor-pointer bookmark-container" data-post-id = "{{ entry.item.id }}">
-                                    <i class="text-xl fa-solid fa-bookmark {% if post in user.info.saved_items.posts.all %}text-[#6feb85]{% endif %}"></i>
-                                </div>
-                            </div>
-                
-                            <!-- Comments Section -->
-                            <div class="mt-3 hidden commentsSection">
-                
-                                <!-- Add a Comment -->
-                                <form method='post' action="{% url 'save_comment' %}" class="postCommentForm flex items-center space-x-2 mt-3" data-post-id="{{ entry.item.id }}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="post_id" value="{{ entry.item.id }}">
-                                    <input type="text" name="comment" placeholder="Write a comment..." class="flex-1 border p-2 rounded-lg outline-none" required>
-                                    <button type='submit' class="bg-black text-white px-3 py-2 rounded-md transition hover:scale-105">Post</button>
-                                </form>
-                
-                                <!-- all Comments -->
-                                <div class="flex flex-col gap-y-4 mt-6"  id ='postCommentContainer{{ entry.item.id }}'>
-                                    {% for comment in entry.item.comments.all %}
-                                    <!-- single comment -->
-                                    <div class="flex items-start space-x-2" id="postComment{{ comment.id }}" >
-                                        <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
-                                        <div class="bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between">
-                                            <div>
-                                                <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>
-                                                <p class="text-sm mt-2">{{comment.content}}</p>
-                                            </div>
-                                            {% if comment.user == user.info %}
-                                            <button class="deletePostComment" data-comment-id="{{ comment.id }}">
-                                                <img src='{% static "assets/trash-bin.svg" %}' class='h-6 w-6 cursor-pointer'>
-                                            </button>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <!-- end of single comment -->
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Project cards with responsive layout -->
-                        {% for project in suggested_projects %}
-                        <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-2 w-full shadow-lg">
-                            <div class="flex items-center justify-between gap-x-5">
-                                <div class="flex justify-start items-start w-full md:gap-x-5 gap-x-4">
-                                    <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
-                                    <div class="w-5/6 md:w-[90%]">
-                                        <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a>
-                                        <div>{{project.description|truncatewords:20}}</div>
-                                        <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
-                                            <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
-                                                <span class='hover:underline'><a href='{% url "project_joined_members" project.id %}'>{{project.tot_member}} Users</a></span>
-                                            </div>
-                                            <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="absolute right-3 top-2 flex items-start gap-x-5">
-                                    <p class="text-xs text-gray-700">{{project.type|default:""}}</p>
-                                    <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]" data-project-id = "{{ project.id }}">
-                                        <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="border-t border-gray-200">
-                            <div class="flex items-center justify-between gap-x-5">
-                                <div class="flex items-center gap-x-5">
-                                    {% if project.github_link %}
-                                    <a href='{{project.github_link}}' target='_blank'><i class="text-2xl fa-brands fa-github cursor-pointer"></i></a>
-                                    {% endif %}  
-                                    <div class="underline">{{project.domain.name}}</div>
-                                </div>
-                                <div class="flex items-center gap-x-2 text-[#686868]">
-                                    <!-- <p class="px-2 py-1 text-black border border-black rounded-md">Free</p> -->
-                                    <a href='{% url "project_detail" project.id%}' class="bg-[#6feb85] px-2 py-1 rounded-md text-white font-bold border border-[#6feb85] transition hover:scale-[1.2]">View</a>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-
-                        <!-- suggested profile section -->
-                        {% comment %} <div class="w-full mt-2">
-                            <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 px-2">Suggested Profiles</h2>
-
-                            <div class="flex space-x-3 md:space-x-4 overflow-x-auto scrollbar-hide p-2">
-                                <!-- Profile Cards with responsive sizing -->
-                                {% for people in suggested_peoples %}
-                                <div class="w-36 md:w-48 bg-white border border-gray-300 p-2 md:p-4 rounded-lg flex flex-col gap-y-1 items-center shrink-0 shadow-lg">
-                                    <a href='{% url "user_profile" people.user.username %}'>
-                                        <img src="{{people.profile_image.url}}" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2 mx-auto">
-                                        <p class="text-xs font-semibold md:text-sm text-center">@{{people.user.username}}</p>
-                                        <p class='text-center text-gray-600'>{{people.status|default:""}}</p>
-                                        <p class="text-gray-500 text-xs md:text-sm mt-1">{{people.cringe_badge|default:"&nbsp;"}}</p>
-                                        {% if user.info|is_following:people %}
-                                                <a href="javascript:void(0);" class="follow-btn bg-[#464646] mt-1 md:mt-2 text-white px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm" data-user-id="{{ people.id }}">
-                                                    <span class="btn-text">&lt;Unfollow/&gt;</span>
-                                                </a>
-                                        {% else %}
-                                            <a href="javascript:void(0);" class="follow-btn mt-1 md:mt-2 bg-[#6feb85] text-black px-2 md:px-3 py-1 rounded-md hover:scale-105 transition text-xs md:text-sm" data-user-id="{{ people.id }}">   
-                                                <span class="btn-text">&lt;Follow/&gt;</span>
-                                            </a>
-                                        {% endif %}
-                                    </a>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div> {% endcomment %}
-
-                        <!-- suggestion events section -->
-                        {% for event in suggested_events %}
-                        <div class="flex flex-col w-full  bg-white p-3 pb-4 shadow-lg rounded-xl">
-                            <div class="w-full aspect-video overflow-hidden bg-[#d4d4d4] relative dot">
-                                <img src="{{event.banner.url}}" alt="Post" class="w-full h-full object-cover">
-                            </div>
-                            <div class=" flex justify-between pt-2 items-end">
-                                <div class="flex flex-col gap-y-2 mt-2">
-                                    <div class="flex gap-x-2 items-start">
-                                        <img src="{% static 'assets/org_event.svg' %}" alt="" class="w-7 h-7">
-                                        <div class="font-bold">{{event.title}}</div>
-                                    </div>
-                                    <!-- <div>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aut quo eum suscipit aliquid enim porro quos, iste quaerat cumque, omnis delectus aperiam, dolores earum tempora cum! Quas veritatis inventore consectetur!</div> -->
-                                    <div class="flex gap-x-2 items-start">
-                                        <img src="{% static 'assets/category.svg' %}" alt="" class="w-7 h-7">
-                                        <div class="text-[#686868]">{{event.event_type}}</div>
-                                    </div>
-                                    
-                                    <div class="flex gap-x-2 items-start">
-                                        <img src="{% static 'assets/organization.svg' %}" alt="" class="w-7 h-7">
-                                        <div class="text-[#686868]">{{event.organization.name}}</div>
-                                    </div>
-
-                                    <div class="flex gap-x-2 items-center">
-                                        <img src="{% static 'assets/calendar.svg' %}" alt="" class="w-7 h-7">
-                                        <p class='text-[#686868]'>{{ event.start_date|date:"F j, Y" }}</p>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class='flex flex-row mt-1'>
-                                <a href='{% url "event_detail" event.id %}' class="bg-black px-5 text-white py-1 rounded hover:bg-[#00000067] transition cursor-pointer text-center mx-auto">
-                                    View
-                                </a>
-
-                                <div class="bookmarkBtn cursor-pointer bookmark-container-event text-[#4a5565]" data-event-id = "{{ event.id }}">
-                                    <i class="text-xl fa-solid fa-bookmark {% if event in user.info.saved_items.events.all %}text-[#6feb85]{% endif %}"></i>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+                {% if feed_items %}
+                    <!-- post, projects & events section -->
+                    <div class="flex flex-col gap-y-6" id="feed-container">
+                        {% include "myapp/feed_items.html" %}
                     </div>
-                {% endfor %}
+                    <div id="loading" class="text-center my-4 hidden">
+                        <span class="text-gray-500">Loading...</span>
+                    </div>
+                {% else %}
+                    <div class='mt-20 flex flex-col gap-y-6 items-center mx-auto'>
+                        <img src='{% static "assets/no_feed.svg" %}' class='h-60 w-60'>
+                        <p class='text-gray-600'>No items in your feed yet!</p>
+                    </div>
+                {% endif %}
             </div>
-        {% else %}
-            <p>No items in your feed yet!</p>
-        {% endif %}
         </div>
 
         <div class='flex flex-col gap-y-2'>
@@ -304,4 +90,56 @@
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 
 </body>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let currentPage = 2;
+    let loading = false;
+    let hasNext = true;
+    let debounceTimer;
+
+    function loadMoreFeed() {
+        if (loading || !hasNext) return;
+        loading = true;
+        $('#loading').removeClass('hidden');
+
+        $.ajax({
+            url: "{% url 'load_more_feed' %}",
+            data: {
+                page: currentPage,
+                feed: "{{ type }}"
+            },
+            success: function (data) {
+                if (data.html.trim()) {
+                    $('#feed-container').append(data.html);
+                    currentPage += 1;
+                    hasNext = data.has_next;
+                } else {
+                    hasNext = false;
+                }
+            },
+            complete: function () {
+                $('#loading').addClass('hidden');
+                loading = false;
+            },
+            error: function () {
+                $('#loading').addClass('hidden');
+                loading = false;
+            }
+        });
+        
+    }
+
+    $(window).on('scroll', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
+                loadMoreFeed();
+            }
+        }, 150);  // 150ms debounce delay
+    });
+</script>
+
+
 {% endblock %}
