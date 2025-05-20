@@ -100,19 +100,19 @@ WSGI_APPLICATION = 'DevMate.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# if config('IS_DEVELOPMENT', cast=bool):
-#     DATABASES = {
-#     'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': config('DB_NAME'),  
-#             'USER': config('DB_USER'),
-#             'PASSWORD': config('DB_PASSWORD'),
-#             'HOST': config('DB_HOST'),
-#             'PORT': config('DB_PORT'),
-#         }
-#     }
-# else:
-DATABASES = {
+if config('IS_DEVELOPMENT', cast=bool):
+    DATABASES = {
+    'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),  
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+        }
+    }
+else:
+    DATABASES = {
         'default': dj_database_url.parse(config('DB_DATABASE_URL'))
     }
 
@@ -196,6 +196,10 @@ ACCOUNT_FORMS = {
 # Force HTTPS in OAuth redirect URIs
 if not config('IS_DEVELOPMENT'):
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
