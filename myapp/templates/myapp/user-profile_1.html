@@ -82,14 +82,14 @@
                     {% if section == 'overview' or section == '' %}
                     <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-9">
                         <div class="flex flex-col text-justify gap-y-3">
-                            {% if userinfo_obj.user.first_name %}<h1 class="text-xl font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>{% else %}<h1 class="text-xl font-bold">{{userinfo_obj.user.username}}</h1>{% endif %}                            <p class="text-justify">
+                            {% if userinfo_obj.user.first_name %}<h1 class="text-lg font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>{% else %}<h1 class="text-xl font-bold">{{userinfo_obj.user.username}}</h1>{% endif %}                            <p class="text-justify">
                                 {% if userinfo_obj.bio %}{{userinfo_obj.bio}}{% else %}Not Updated Yet...{% endif %}
                             </p>
                         </div>
                         
                         {% comment %} Links {% endcomment %}
                         <div class="flex flex-col gap-y-2">
-                            <h1 class="text-xl font-bold">Links</h1>
+                            <h1 class="text-lg font-bold">Links</h1>
                             {% if link_available %}
                             <div class="flex flex-wrap gap-x-5 gap-y-2">
                                 {% for link, url in social_links.items %}
@@ -118,12 +118,12 @@
                             <div class="absolute right-0 top-5 cursor-pointer"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""
                                     class="h-7 w-7" onclick="openEditCurrentPosition()"></div>
                             {% endif %}
-                            <h1 class="text-xl font-semibold mb-2">{Current Position}</h1>
+                            <h1 class="text-lg mb-2 font-bold">{Current Position}</h1>
                             {% if userinfo_obj.current_position.name%}
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
                                     <img src="{% static 'assets/work-exp.svg' %}" alt=""
-                                        class="rounded-lg w-12 h-12">
+                                        class="rounded-lg lg:w-12 lg:h-12 w-10 h-10">
                                 </div>
                                 <div class="w-4/5">
                                     <h1 class="text-xl font-semibold">{{userinfo_obj.current_position.name}}</h1>
@@ -147,7 +147,7 @@
                             {% else %}
                             <div class='flex items-start justify-start gap-x-5'>
                                 <img src="{% static 'assets/work-exp.svg' %}" alt="" class="rounded-lg w-12 h-12">
-                            <p class="text-base font-light text-gray-600 pb-3 mt-3">Not Updated Yet...</p>
+                            <p class="pb-3 mt-3">Not Updated Yet...</p>
                             </div>
                             {% endif %}
                         </div>
@@ -160,12 +160,12 @@
                                     class="h-7 w-7" onclick="openEditEducation()"></div>
                             {% endif %}
                             <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="text-xl font-semibold">Education</h1>
+                                <h1 class="text-lg font-bold">Education</h1>
                             </div>
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
                                     <img src="{% static 'assets/degree-hat.svg' %}" alt=""
-                                        class="rounded-lg w-14 h-14">
+                                        class="rounded-lg lg:w-14 lg:h-14 w-12 h-12">
                                 </div>
                                 <div class="w-4/5" id = 'edu'>
                                     {% if userinfo_obj.education.name %}
@@ -187,7 +187,7 @@
                                         
                                         
                                     {% else %}
-                                    <p class="text-base font-light text-gray-600 pb-3 mt-3">Not Updated Yet...</p>
+                                    <p class="pb-3 mt-3">Not Updated Yet...</p>
                                     {% endif %}
                                 </div>
                             </div>
@@ -204,7 +204,7 @@
                     
                         <div class="flex flex-col gap-y-5 pb-4">
                             <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="mt-5 text-xl font-bold pb-2">{ Experience }</h1>
+                                <h1 class="mt-5 text-lg font-bold pb-2">{ Experience }</h1>
                             </div>
                     
                             {% if exp_obj %}
@@ -244,7 +244,7 @@
                             {% endif %} 
                             {% endfor %}
                             {% else %}
-                            <p class="text-base font-light text-gray-600 pb-3">Not Updated Yet...</p>
+                            <p class="pb-3">Not Updated Yet...</p>
                             {% endif %}
                         </div>
                     </div>                    
@@ -428,7 +428,7 @@
         </div>
 
         <!-- skill section -->
-        <div class="flex flex-col px-4 mt-2 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-col md:items-start md:w-full md:gap-x-5 md:mr-3">
+        <div class="flex flex-col px-4 mt-2 lg:w-1/4 lg:flex-col lg:mt-28 gap-y-5 md:flex-col md:items-center md:w-full md:gap-x-5 md:mr-3">
             <div class="flex flex-col px-2 py-4 bg-white gap-y-3 md:w-1/2 lg:w-full relative border border-gray-300">
                 {% if request.user.info == userinfo_obj%}
                 <div class="cursor-pointer absolute top-4 right-4"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""

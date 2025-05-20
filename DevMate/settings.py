@@ -13,24 +13,25 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 import environ
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
+# env = environ.Env()
+# environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('IS_DEVELOPMENT', cast=bool, default=True)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'finish-system-carmen-cooked.trycloudflare.com']
-CSRF_TRUSTED_ORIGINS = ["https://finish-system-carmen-cooked.trycloudflare.com"]
+ALLOWED_HOSTS = config('ALLOWED_HOST').split(",")
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(",")
 SITE_ID = 2
 
 # Application definition
@@ -66,8 +67,12 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = 'DevMate.urls'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
+]
 
+ROOT_URLCONF = 'DevMate.urls'
 
 
 TEMPLATES = [
@@ -93,16 +98,17 @@ WSGI_APPLICATION = 'DevMate.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-   'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),  
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+if config('IS_DEVELOPMENT'):
+    DATABASES = {
+    'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),  
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+        }
     }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -143,7 +149,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
-MEDIA_ROOT = BASE_DIR/'static'/'uploads'
+MEDIA_ROOT = BASE_DIR/'uploads'
 MEDIA_URL = '/user-media/'
 
 # Default primary key field type
@@ -153,18 +159,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # print("DB_NAME:", env('DB_NAME'))  # Add this temporarily to check if it's being read
 LOGIN_REDIRECT_URL = '/post-login-check/'
-LOGOUT_REDIRECT_URL = '/login'
-LOGIN_URL = '/login'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = '/accounts/login/'
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Default backend
-    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
-]
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True  # Ensure email is required during signup
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  #Use email for authentication
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_UNIQUE_EMAIL = True
 
+ACCOUNT_USERNAME_REQUIRED = True  # Default is True, so this is optional
+ACCOUNT_USERNAME_MIN_LENGTH = 3
 
 SOCIALACCOUNT_PROVIDERS = {
     "google":{
@@ -175,20 +180,18 @@ SOCIALACCOUNT_PROVIDERS = {
     "AUTH_PARAMS": {"access_type":"online"},
     "OAUTH_PKCE_ENABLED": True
     },
-    
-    'github': {
-        'SCOPE': ['user', 'repo', 'read:org'],
-        'AUTH_PARAMS': {'scope': 'user repo read:org'},
-    },
+}
+ACCOUNT_FORMS = {
+    'signup': 'myapp.forms.CustomSignupForm',
 }
 
 # Force HTTPS in OAuth redirect URIs
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+# ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'devmate.teams@gmail.com'  #Replace with your Gmail
-EMAIL_HOST_PASSWORD = 'ztft dblc flsd llam'
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

@@ -6,7 +6,7 @@
         {% if post_qs %}    
         {% for post in post_qs %}        
         <!-- Single Post -->
-        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4" id='{{post.id}}'>
+        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] min-w-[20rem] lg:min-w-[30rem] p-4 mt-3" id='{{post.id}}'>
             <!-- User Info -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -17,7 +17,7 @@
                         <a href='{% url "user_profile" userinfo_obj.user.username %}' class="font-semibold">
                             {{ post.user.user.first_name }} {{ post.user.user.last_name }}
                         </a>
-                        <p class="text-xs text-gray-500">{{ post.created_at }}</p>
+                        <p class="text-xs text-gray-500">{{ post.created_at|date:"F j, Y"  }}</p>
                     </div>
                 </div>
                 

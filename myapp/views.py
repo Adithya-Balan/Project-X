@@ -19,6 +19,7 @@ from django.template.loader import render_to_string
 from itertools import groupby
 from .algorithms import get_explore_users, get_personalized_feed
 from allauth.account.views import PasswordChangeView
+from django.contrib import messages
 
 # Create your views here.
 class CustomPasswordChangeView(PasswordChangeView):
@@ -118,7 +119,6 @@ def index(request):
     if request.user.info.needs_profile_completion:
         return redirect('signup_about', uuid=request.user.info.uuid)
     type = request.GET.get('feed', "all")
-    suggested_peoples = get_explore_users(filter_dev=userinfo.objects.all(), request=request, count=7, order_by='?')
     page = 1 
     feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
     followed_orgs = request.user.info.followed_organization.all() | request.user.organization.all()
@@ -129,7 +129,6 @@ def index(request):
     context = {
         'active_home': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
         'post_form': post_form,
-        'suggested_peoples': suggested_peoples,
         'feed_items': feed_page,
         'tot_upcoming_events': tot_upcoming_events,
         'type': type,
@@ -144,8 +143,11 @@ def load_more_feed(request):
     page = int(request.GET.get('page', 1))
     type = request.GET.get('feed', 'all')
 
+    suggested_peoples = get_explore_users(filter_dev=userinfo.objects.all(), request=request, count=7, order_by='?')
+    print(suggested_peoples)
+    offset = (page - 1) * 10
     feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
-    html = render_to_string('myapp/feed_items.html', {'feed_items': feed_page}, request=request)
+    html = render_to_string('myapp/feed_items.html', {'feed_items': feed_page, 'suggested_peoples': suggested_peoples, 'offset': offset}, request=request)
 
     return JsonResponse({
         'html': html,
@@ -232,8 +234,7 @@ def user_profile(request, user_name):
     if request.user.info.skills.all():
         suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
     else:
-        suggested_project = projects.objects.all()[:5] #For user, with no skill    
-           
+        suggested_project = projects.objects.all().order_by('-created_at')[:5] #For user, with no skill    
     if request.user.info == userinfo_obj: #Edit options
         edu_form = EditEducationForm(instance=request.user.info.education)
         exp_form = EditExperienceForm()
@@ -398,7 +399,7 @@ def follow_list(request, username):
             suggested_project = projects.objects.all()[:5] #For user, with no skill
             
         print(list)
-        p = Paginator(list, 10)
+        p = Paginator(list, 20)
         page_number = request.GET.get('page')
         page_obj = p.get_page(page_number)
         context = {
@@ -456,7 +457,7 @@ def explore_organization(request):
     if not (applied_filter or query):
         filtered_org = filtered_org[:20]
     
-    p = Paginator(filtered_org, 4)
+    p = Paginator(filtered_org, 20)
     page_number = request.GET.get("page")
     try:
         page_obj = p.get_page(page_number)  # returns the desired page object
@@ -542,7 +543,6 @@ def organization_detail(request, id):
     if request.method == "POST" and organization_obj.user == request.user:
         orgForm = EditOrgForm(request.POST, request.FILES, instance=organization_obj)   
         if orgForm.is_valid():
-           if orgForm.is_valid():
             org_obj = orgForm.save(commit=False)
             cropped_image_data = request.POST.get('croppedImage', '')
             if cropped_image_data:
@@ -559,6 +559,7 @@ def organization_detail(request, id):
             reverse_url = reverse('organization_detail', args=[organization_obj.id])
             return redirect(reverse_url) 
         else:
+            print("Validation errors:", orgForm.errors)
             editOrg_flag = True
     context = {
         'organization': organization_obj,
@@ -815,7 +816,6 @@ def project_detail(request, id):
         comments = comments.order_by('-created_at')
         
     post_form = PostForm()
-
     context = {
         'project': project,
         'skill_needed': project.skill_needed.all(),
@@ -832,7 +832,7 @@ def project_joined_members(request, id):
     members =  project.members.all()
     post_form = PostForm()
     
-    p = Paginator(members, 50)
+    p = Paginator(members, 25)
     page_number = request.GET.get('page')
     try:
         page_obj = p.page(page_number)
@@ -1265,10 +1265,6 @@ def toggle_post_save(request, post_id):
         saved = True
     return JsonResponse({'saved': saved})
 
-def logout_view(request):
-    logout(request)
-    return redirect("/")
-
 @login_required
 def delete_data(request):
     if request.method == "POST":
@@ -1340,3 +1336,9 @@ def delete_account(request, uuid):
         user.delete()
         logout(request)
     return redirect('/')
+
+@login_required
+def logout_view(request):
+    logout(request)
+    list(messages.get_messages(request))  # Force-clear any leftover messages
+    return redirect('account_login')

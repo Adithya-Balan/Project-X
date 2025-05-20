@@ -6,6 +6,44 @@ import re
 from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position, projects
 from django.forms.widgets import ClearableFileInput
 # from django_select2.forms import Select2MultipleWidget
+from allauth.account.forms import SignupForm
+
+class CustomSignupForm(SignupForm):
+    first_name = forms.CharField(max_length=30, label="First Name", required=True)
+    last_name = forms.CharField(max_length=30, label="Last Name", required=False)
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if username:
+            is_valid = (
+                username[0].isalpha() and
+                bool(re.match(r'^[a-zA-Z0-9_.]+$', username)) and
+                username.count('.') <= 1 and
+                '..' not in username
+            )
+            if not is_valid:
+                raise forms.ValidationError(
+                    "Username must start with a letter and contain only letters, numbers, underscores, and at most one dot."
+                )
+            if User.objects.filter(username=username).exists():
+                raise forms.ValidationError("A user with this username already exists.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if not email:
+            raise forms.ValidationError("Email should not be empty.")
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already exists.")
+        return email
+
+    def save(self, request):
+        user = super().save(request)
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.save()
+        return user
+
 class CustomClearableFileInput(ClearableFileInput):
     clear_checkbox_label = ''
     initial_text = ''
@@ -58,7 +96,7 @@ class OrganizationForm(forms.ModelForm):
     )
     class Meta:
         model = organization
-        exclude = ['user', 'followers']
+        exclude = ['user', 'followers', 'profile_views_followers', 'profile_views_nonfollowers']
 
         widgets = {
             'logo': forms.ClearableFileInput(attrs={

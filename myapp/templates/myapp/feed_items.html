@@ -5,7 +5,7 @@
 
     {% if item.feed_type == "post" %} 
     <!-- Single Post -->
-    <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4">
+    <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] min-w-[20rem] lg:min-w-[30rem] p-4">
         <!-- User Info -->
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -17,7 +17,7 @@
                     <a href='{% url "user_profile" item.user.user.username %}' class="font-semibold">
                         {{ item.user.user.first_name }} {{ item.user.user.last_name }}
                     </a>
-                    <p class="text-xs text-gray-500">{{ item.created_at }}</p>
+                    <p class="text-xs text-gray-500">{{ item.created_at|date:"F j, Y" }}</p>
                 </div>
                 {% elif item.Organization %}
                 <a href='{% url "organization_detail" item.Organization.id %}'>
@@ -193,7 +193,7 @@
 
     {% endif %}
 
-    {% if forloop.counter == 11 %}
+    {% if forloop.counter0|add:offset == 10 %}
     <!-- suggested profile section -->
     <div class="w-full mt-2">
         <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 px-2">Suggested Profiles</h2>

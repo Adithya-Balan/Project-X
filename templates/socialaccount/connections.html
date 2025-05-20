@@ -1,0 +1,120 @@
+{% extends "myapp/base.html" %}
+{% load socialaccount %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}
+    DevMate - Manage Third-Party Accounts
+{% endblock %}
+
+{% block content %}
+{% get_providers as socialaccount_providers %}
+{% get_social_accounts user as accounts %}
+<div class="bg-[#0b111c] text-white min-h-screen flex items-center justify-center px-4 py-8">
+    <div class="bg-gray-900 p-8 rounded-lg shadow-lg max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h2 class="text-2xl font-bold ">Social Accounts</h2>
+            <p class="mt-2 text-gray-400">{% trans "Connect, view, or disconnect third-party accounts." %}</p>
+        </div>
+
+        <!-- Connected Accounts Section -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-semibold ">{% trans "Connected Accounts" %}</h3>
+            {% if user.is_authenticated %}
+                {% if accounts %}
+                    {% for provider, provider_accounts in accounts.items %}
+                        {% for account in provider_accounts %}
+                            <div class="bg-gray-800 p-4 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <!-- Provider Icon or Avatar -->
+                                    {% if account.get_avatar_url %}
+                                        <img src="{{ account.get_avatar_url }}" alt="{{ provider }} avatar" class="w-10 h-10 rounded-full">
+                                    {% else %}
+                                        {% if provider == 'google' %}
+                                            <i class="fab fa-google  text-2xl"></i>
+                                        {% elif provider == 'facebook' %}
+                                            <i class="fab fa-facebook  text-2xl"></i>
+                                        {% elif provider == 'github' %}
+                                            <i class="fab fa-github  text-2xl"></i>
+                                        {% else %}
+                                            <i class="fas fa-link  text-2xl"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                    <div class='flex flex-col gap-y-1'>
+                                        <!-- Provider and Username -->
+                                        <p class="capitalize font-medium text-white">{{ provider }}</p>
+                                        <p class="text-gray-400 text-sm">
+                                            {% if account.get_profile_url %}
+                                                <a href="{{ account.get_profile_url }}" target="_blank" class=" hover:underline">
+                                                    {{ account }}
+                                                </a>
+                                            {% else %}
+                                                {{ account }}
+                                            {% endif %}
+                                        </p>
+                                        <!-- Additional Details -->
+                                        {% if account.extra_data %}
+                                            {% if provider == 'google' and account.extra_data.email %}
+                                                <p class="text-gray-500 text-xs">Email: {{ account.extra_data.email }}</p>
+                                            {% endif %}
+                                        {% endif %}
+                                        <!-- Disconnect Button -->
+                                        <form method="POST" action="{% url 'socialaccount_connections' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="account" value="{{ account.id }}">
+                                            <input type="hidden" name="action" value="remove">
+                                            <button type="submit" class="text-red-500 hover:underline text-sm font-medium cursor-pointer">{% trans "Disconnect" %}</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-400 text-center">{% trans "No connected accounts." %}</p>
+                {% endif %}
+            {% else %}
+                <p class="text-gray-400 text-center">{% trans "Please log in to manage your accounts." %}</p>
+            {% endif %}
+        </div>
+
+        <!-- Connect New Accounts Section -->
+        <div class="space-y-4">
+        {% if user.is_authenticated %}
+        {% if socialaccount_providers %}
+        {% for provider in socialaccount_providers %}
+        <!-- Skip if the provider is already connected -->
+        {% if provider.id not in accounts %}
+                            <form method="POST" action="{% provider_login_url provider process='connect' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full flex items-center justify-center bg-green-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-200 cursor-pointer">
+                                    {% if provider.id == 'google' %}
+                                        <i class="fab fa-google mr-2"></i>
+                                    {% elif provider.id == 'facebook' %}
+                                        <i class="fab fa-facebook mr-2"></i>
+                                    {% elif provider.id == 'github' %}
+                                        <i class="fab fa-github mr-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-link mr-2"></i>
+                                    {% endif %}
+                                    <span class="capitalize">{{ provider.name }}</span>
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-400 text-center">{% trans "No third-party providers available." %}</p>
+                {% endif %}
+            {% else %}
+                <p class="text-gray-400 text-center">{% trans "Please log in to connect a new account." %}</p>
+            {% endif %}
+        </div>
+
+        <!-- Back to Account Settings -->
+        <div class="text-center mt-6">
+            <a href="{% url 'settings_page' %}" class=" hover:underline font-medium">{% trans "Back to Account Settings" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

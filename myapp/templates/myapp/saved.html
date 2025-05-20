@@ -123,14 +123,14 @@
                                 <a href='{% url "user_profile" post.user.user.username %}'><img src="{{post.user.profile_image.url}}" alt="User" class="w-10 h-10 rounded-lg object-cover"></a>
                                 <div>
                                 <a href='{% url "user_profile" post.user.user.username %}'class="font-semibold">{{post.user.user.first_name}} {{post.user.user.last_name}}</a>
-                                    <p class="text-xs text-gray-500">{{post.created_at}}</p>
+                                    <p class="text-xs text-gray-500">{{ post.created_at|date:"F j, Y" }}</p>
                                 </div>
                                 {% endif %}
                                 {% if post.Organization %}
                                 <a href='{% url "organization_detail" post.Organization.id %}'><img src="{{post.Organization.logo.url}}" alt="User" class="w-10 h-10 rounded-lg object-cover"></a>
                                 <div>
                                     <a href='{% url "organization_detail" post.Organization.id %}'class="font-semibold">{{post.Organization.name}}</a>
-                                    <p class="text-xs text-gray-500">{{post.created_at}}</p>
+                                    <p class="text-xs text-gray-500">{{ post.created_at|date:"F j, Y" }}</p>
                                 </div>
                                 {% endif %}
                             </div>

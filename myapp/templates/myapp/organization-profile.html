@@ -142,6 +142,7 @@
                                 </div>
                             </div>
 
+                            {% if organization.website %}
                             <div class="flex gap-x-3 items-start">
                                 <img class="w-12 h-12" src="{% static 'assets/website.svg' %}" alt="">
                                 <div class="w-full">
@@ -149,6 +150,7 @@
                                     <a href='{{organization.website}}' class="break-words text-justify text-[#686868] underline underline-offset-2" target='_blank'>{% if organization.website %}{{organization.website}}{% else %}Not Updated Yet.{% endif %}</a>
                                 </div>
                             </div>
+                            {% endif %}
                             
                             <div class="flex gap-x-3 items-start">
                                 <img class="w-12 h-12" src="{% static 'assets/building.svg' %}" alt="">
@@ -432,6 +434,16 @@
                         </div>
                         {% endif %}
                     </div>
+
+                    {% if EditOrgForm.non_field_errors %}
+                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm sm:text-base">
+                            <ul>
+                                {% for error in EditOrgForm.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="self-center">
                     <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>

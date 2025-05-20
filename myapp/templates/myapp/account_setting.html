@@ -10,7 +10,12 @@
     <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative w-full">
         <div id="content-container" class="max-w-3xl w-full bg-white shadow-2xl rounded-xl p-8 transition-all duration-300 hover:shadow-3xl">
             <!-- Header -->
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 text-center md:text-left">Account Settings</h2>
+            <div class='flex'>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6 text-center md:text-left">Account Settings</h2>
+                <a href="/"
+                class="ml-auto transition border-black hover:bg-white border hover:border-black hover:text-black right-3 mt-1 bg-black text-white flex items-center gap-x-2 px-3 rounded"><i
+                    class="fa-solid fa-arrow-left"></i><span class="hidden md:block text-sm">Back</span></a>
+            </div>
     
             <!-- Profile Picture Section -->
             <div class="flex flex-col sm:flex-row items-center gap-6 mb-8">
@@ -24,6 +29,7 @@
                 <a href='{% url "user_profile" user.username %}' class="px-6 py-2 bg-green-600 text-white rounded-lg font-medium shadow-md hover:bg-green-700 transition-all duration-200 transform hover:scale-105">
                     {{user.username}}
                 </a>
+
             </div>
     
             <!-- Account Details Section -->
@@ -49,11 +55,20 @@
                     </a>
                     {% endif %}
                 </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4 transition-all duration-200 rounded-md px-2">
+                    <p class="text-gray-800 font-semibold text-lg">Social Accounts</p>
+                
+                    <a href="/accounts/3rdparty" class="text-green-600 font-medium hover:text-green-700 hover:underline transition-colors duration-200">
+                        Manage Connections
+                    </a>
+                </div>
+                
             </div>
     
             <!-- Action Buttons -->
             <div class="mt-10 flex flex-row items-center gap-4 justify-between">
-                <form method="POST" action="{% url 'logout' %}" class="flex items-center">
+                <form method="POST" action="{% url 'account_logout' %}" class="flex items-center">
                     {% csrf_token %}
                     <button type="submit" class="px-4 py-3 bg-black text-white rounded-lg font-semibold shadow-md hover:bg-gray-900 transition-all duration-200 transform hover:scale-105 text-base">Sign Out</button>
                 </form>
@@ -77,6 +92,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
 <!-- ✅ JavaScript for Modal -->

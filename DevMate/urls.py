@@ -19,14 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
-from myapp.views import CustomPasswordChangeView
+from myapp.views import CustomPasswordChangeView, logout_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('select2/', include('django_select2.urls')),
-    path("", include('django.contrib.auth.urls'), name=""),
-    path('accounts/login/', RedirectView.as_view(url='/login/', permanent=True)),  # Specific redirect
-    path("accounts/signup/", RedirectView.as_view(url='/sign-up', permanent=True)),
+    # path("", include('django.contrib.auth.urls'), name=""),
+    # path('accounts/login/', RedirectView.as_view(url='/login/', permanent=True)),  # Specific redirect
+    # path("accounts/signup/", RedirectView.as_view(url='/sign-up', perman{% url 'logout' %}ent=True)),
     path('accounts/password/change/', CustomPasswordChangeView.as_view(), name='account_change_password'),
+    path('accounts/logout/', logout_view, name='account_logout'),
     path('accounts/', include('allauth.urls')),
     path('', include('myapp.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

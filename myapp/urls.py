@@ -5,7 +5,7 @@ urlpatterns = [
     # Auth
     path("post-login-check/", views.post_login_check, name=""),
     
-    path("sign-up/", views.sign_up.as_view(), name="sign_up"),
+    # path("sign-up/", views.sign_up.as_view(), name="sign_up"),
     path("aboutuser/<uuid:uuid>", views.signup_about , name="signup_about"),
     path("character/<uuid:uuid>", views.signup_character, name="signup_character"),
     path("skills/<uuid:uuid>", views.signup_skills, name="signup_skills"),

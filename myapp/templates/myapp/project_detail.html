@@ -12,9 +12,6 @@
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
-    <!-- z-20 -->
-    
-
     <div id = 'entireSection' class="mt-20 w-full px-10 md:px-2 max-[500px]:px-3 pb-20 flex flex-col gap-y-10">
 
         <a href="{% url 'explore-project' %}" class="w-fit transition border-black hover:bg-white border hover:border-black hover:text-black right-3  mt-1 bg-black text-white flex items-center gap-x-2 px-3 py-1 rounded"><i class="fa-solid fa-arrow-left"></i> <span class="hidden md:block">Explore More...</span></a>
@@ -141,9 +138,7 @@
                             {% endif %}  
                         </button>
                         {% endif %}
-                        {% comment %} <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-7xl text-[#4a5565]" data-project-id = "{{ project.id }}">
-                            <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
-                        </div> {% endcomment %}
+                        
                     </div>
                 </div>
 

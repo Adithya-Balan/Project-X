@@ -40,7 +40,7 @@ class userinfo(models.Model):
         ('Unavailable', 'Unavailable'),
     ], blank=True, null=True)
     cringe_badge = models.ForeignKey(CringeBadge, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
-    profile_views = models.IntegerField(default=0)
+    profile_views = models.IntegerField(default=0, blank=True)
     created_at = models.DateField(auto_now=False, auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

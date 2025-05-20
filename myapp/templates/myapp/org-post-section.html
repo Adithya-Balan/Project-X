@@ -14,7 +14,7 @@
             {% endif %}   
         {% for post in org_post %}        
         <!-- Single Post -->
-        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] p-4 -mt-2" id='{{post.id}}'>
+        <div class="bg-white shadow-md rounded-lg w-full max-w-[34rem] min-w-[20rem] lg:min-w-[30rem] p-4 -mt-2" id='{{post.id}}'>
             <!-- User Info -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -22,7 +22,7 @@
                     <img src="{{post.Organization.logo.url}}" alt="Organization" class="w-10 h-10 rounded-lg object-cover"></a>
                     <div>
                         <a href='{% url "organization_detail" organization.id %}' class="font-semibold">{{post.Organization.name}}</a>
-                        <p class="text-xs text-gray-500">{{post.created_at}}</p>
+                        <p class="text-xs text-gray-500">{{ post.created_at|date:"F j, Y" }}</p>
                     </div>
                     
                 </div>

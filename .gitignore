@@ -1,4 +1,6 @@
-/static/uploads/
+uploads/
+node_modules/
+text.txt/
 
 *.pyc
 __pycache__/
