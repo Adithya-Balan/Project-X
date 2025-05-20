@@ -33,7 +33,7 @@ DEBUG = config('IS_DEVELOPMENT', cast=bool, default=True)
 
 ALLOWED_HOSTS = config('ALLOWED_HOST').split(",")
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(",")
-SITE_ID = 2
+SITE_ID = config('SITE_ID', cast=int)
 
 # Application definition
 INSTALLED_APPS = [
@@ -113,7 +113,7 @@ if config('IS_DEVELOPMENT', cast=bool):
     }
 else:
     DATABASES = {
-        'default': dj_database_url.parse(config('DB_EXTERNAL_URL'))
+        'default': dj_database_url.parse(config('DB_DATABASE_URL'))
     }
 
 # Password validation
