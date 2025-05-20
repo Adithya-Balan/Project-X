@@ -199,7 +199,7 @@ def get_notification_count(request):
     return JsonResponse({"unread_count": unread_count})
 
 #profile-page
-@login_required
+# @login_required
 def user_profile(request, user_name):
     userinfo_obj = get_object_or_404(userinfo, user__username = user_name)
     user_project = user_created_project = post_qs= link_available = open_exp_flag = open_edu_flag = open_editprofile_flag = open_project_flag = open_cp_flag =editprofile_form = edu_form = exp_form = project_form = skill_form = cp_form = False

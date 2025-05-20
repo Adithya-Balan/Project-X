@@ -1,6 +1,7 @@
-uploads/
-node_modules/
-text.txt/
+/uploads/
+/node_modules/
+/text.txt/
+/staticfiles/
 
 *.pyc
 __pycache__/

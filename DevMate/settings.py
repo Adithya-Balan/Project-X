@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import environ
 from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
     "allauth.account.middleware.AccountMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware"
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -98,7 +100,7 @@ WSGI_APPLICATION = 'DevMate.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if config('IS_DEVELOPMENT'):
+if config('IS_DEVELOPMENT', cast=bool):
     DATABASES = {
     'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -108,6 +110,10 @@ if config('IS_DEVELOPMENT'):
             'HOST': config('DB_HOST'),
             'PORT': config('DB_PORT'),
         }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(config('DB_EXTERNAL_URL'))
     }
 
 # Password validation
@@ -148,6 +154,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles') #For Collectstatic to store
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = BASE_DIR/'uploads'
 MEDIA_URL = '/user-media/'
@@ -157,7 +166,6 @@ MEDIA_URL = '/user-media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# print("DB_NAME:", env('DB_NAME'))  # Add this temporarily to check if it's being read
 LOGIN_REDIRECT_URL = '/post-login-check/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_URL = '/accounts/login/'
