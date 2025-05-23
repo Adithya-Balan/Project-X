@@ -226,7 +226,7 @@ ACCOUNT_FORMS = {
 }
 
 # Force HTTPS in OAuth redirect URIs
-if not config('IS_DEVELOPMENT'):
+if not config('IS_DEVELOPMENT', cast=bool):
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
