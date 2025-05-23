@@ -12,7 +12,7 @@ npm install
 # Build Tailwind CSS (one-time build for production, no --watch)
 npx @tailwindcss/cli -i ./static/styles/input.css -o ./static/styles/output.css
 
-# Collect static files (for WhiteNoise)
+# Collect static files 
 python manage.py collectstatic --noinput
 
 # Run database migrations (for PostgreSQL)

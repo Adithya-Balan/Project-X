@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from myapp.views import CustomPasswordChangeView, logout_view
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', include('admin_honeypot.urls')),
+    path("admin-project-x/", admin.site.urls),
     path('select2/', include('django_select2.urls')),
     # path("", include('django.contrib.auth.urls'), name=""),
     # path('accounts/login/', RedirectView.as_view(url='/login/', permanent=True)),  # Specific redirect

@@ -15,14 +15,14 @@
             {% csrf_token %}
             <div class="mb-4">
                 <label for="{{ form.login.id_for_label }}" class="block text-sm font-medium mb-1 text-black">Username / Email</label>
-                <input type="text" name="{{ form.login.name }}" id="{{ form.login.id_for_label }}" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black" />
+                <input type="text" name="{{ form.login.name }}" id="{{ form.login.id_for_label }}" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black" required/>
                 {% if form.login.errors %}
                     <div class="text-red-500 text-sm mt-1">{{ form.login.errors }}</div>
                 {% endif %}
             </div>
             <div class="mb-6">
                 <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium mb-1 text-black">Password</label>
-                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black" />
+                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black" required/>
                 {% if form.password.errors %}
                     <div class="text-red-500 text-sm mt-1">{{ form.password.errors }}</div>
                 {% endif %}

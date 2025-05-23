@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     'django_select2',
     'storages',
+    'admin_honeypot',
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,7 @@ if config('IS_DEVELOPMENT', cast=bool):
         }
     }
 else:
+    print("Production DB is Active.")
     DATABASES = {
         'default': dj_database_url.parse(config('DB_DATABASE_URL'))
     }
@@ -155,6 +157,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 if USE_CLOUDFLARE:
+    print("Using Cloudflare Bucket")
     CLOUDFLARE_R2_BUCKET= config("CLOUDFLARE_R2_BUCKET", cast=str, default='devmate')
     CLOUDFLARE_R2_ACCESS_KEY= config("CLOUDFLARE_R2_ACCESS_KEY")
     CLOUDFLARE_R2_BUCKET_ENDPOINT= config("CLOUDFLARE_R2_BUCKET_ENDPOINT")
@@ -226,7 +229,7 @@ ACCOUNT_FORMS = {
 }
 
 # Force HTTPS in OAuth redirect URIs
-if not config('IS_DEVELOPMENT', cast=bool):
+if not DEBUG:
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True

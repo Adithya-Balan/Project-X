@@ -560,3 +560,8 @@ user_tz_str = request.user.info.timezone  # e.g., "America/New_York"
                 </div>
             </div>
         </div>
+
+To work locally with production, db and storage.
+IS_DEV = False
+USE_CLOUDFLARE = True
+Add: SECURE_SSL_REDIRECT = False

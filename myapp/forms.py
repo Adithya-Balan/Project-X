@@ -179,7 +179,7 @@ class EditProfileForm(forms.ModelForm):
         exclude = ['user', 'years_of_experience', 'skills', 'domains', 'profile_views']
         
         widgets = {
-            'bio': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Bio...'}),
+            'bio': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Bio...', 'rows': 7,'cols': 40,}),
             'dob': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"dob"}),
             'location': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Location'}),
             'contact_email': forms.EmailInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Email'}),
@@ -195,11 +195,10 @@ class EditProfileForm(forms.ModelForm):
             'cringe_badge': forms.Select(attrs={'class': 'outline-none border border-black px-2 py-1 bg-white'})
         }
         labels = {
-            'bio': ' Tagline (Short Bio)',
+            'bio': 'Short Bio',
             'contact_email': 'Contact Email (If any)',
         }
         
-    
     def __init__(self, *args, **kwargs):
         super(EditProfileForm, self).__init__(*args, **kwargs)
         if self.instance and self.instance.user:
