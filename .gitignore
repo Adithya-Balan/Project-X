@@ -1,9 +1,10 @@
 /uploads/
 /node_modules/
-/text.txt/
 /staticfiles/
 
 *.pyc
 __pycache__/
 *.log
 db.sqlite3
+
+text.txt

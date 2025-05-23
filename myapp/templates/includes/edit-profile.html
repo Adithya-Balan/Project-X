@@ -264,6 +264,10 @@
                 </div>
             {% endif %}
         </div>
+        <div class="flex flex-col gap-y-1 w-full">
+            <p>{{exp_form.description.label}}</p>
+            {{exp_form.description}}
+        </div>
         <div class="flex gap-x-3 w-full" id="dateSec">
             <div class="flex flex-col gap-y-1 w-full">
                 <p>{{exp_form.start_date.label}}</p>
@@ -274,7 +278,7 @@
                {{exp_form.end_date}}
                 <div class="flex gap-x-2">
                     {{exp_form.till_now}}
-                    <label for="presentDate">{{exp_form.till_now.label}}</label>
+                    <label for="exp_presentDate">{{exp_form.till_now.label}}</label>
                 </div>
             </div>
         </div>

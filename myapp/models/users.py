@@ -14,7 +14,7 @@ class userinfo(models.Model):
     ('N', 'Prefer not to say'),
 ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='info')
-    bio = models.CharField(max_length=150, blank=True, null=True)
+    bio = models.CharField(max_length=500, blank=True, null=True)
     dob = models.DateField(null=True, blank=True)
     contact_email = models.EmailField(max_length=255, blank=True, null=True)
     about_user = models.TextField(max_length=1000, blank=True, null=True) 
@@ -34,10 +34,10 @@ class userinfo(models.Model):
     domains = models.ManyToManyField(Domain, verbose_name="domains", blank=True)
     years_of_experience = models.PositiveIntegerField(blank=True, null=True)
     availability = models.CharField(max_length=50, choices=[
-        ('Available for collaboration', 'Available for collaboration'),
-        ('Open to part-time collaboration', 'Open to part-time collaboration'),
-        ('Open to freelance collaboration', 'Open to freelance collaboration'),
-        ('Unavailable', 'Unavailable'),
+        ('available', 'Available for collaboration'),
+        ('part-time', 'Open to part-time collaboration'),
+        ('freelance', 'Open to freelance collaboration'),
+        ('unavailable', 'Unavailable'),
     ], blank=True, null=True)
     cringe_badge = models.ForeignKey(CringeBadge, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
     profile_views = models.IntegerField(default=0, blank=True)
@@ -72,6 +72,18 @@ class userinfo(models.Model):
     
     def tot_joined_projects(self):
         return self.joined_projects.count()
+    
+    def get_availability_type_filters():
+        AVAILABILITY_TYPES = [
+        ('available', 'Available for collaboration'),
+        ('part-time', 'Open to part-time collaboration'),
+        ('freelance', 'Open to freelance collaboration'),
+        ('unavailable', 'Unavailable'),
+    ]
+        """
+        Returns Availability types in a list of dictionaries for frontend filtering.
+        """
+        return [{'value': value, 'label': label} for value, label in AVAILABILITY_TYPES]
 
 class education(models.Model):
     user = models.OneToOneField(userinfo, on_delete=models.CASCADE, related_name='education')

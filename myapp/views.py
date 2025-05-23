@@ -111,6 +111,9 @@ def signup_skills(request, uuid):
     }
     return render(request, 'myapp/signup-selectskill.html', context)
 
+def contribute_page(request):
+    return render(request, 'myapp/contribute.html')
+
 # @login_required
 def index(request):
     if not request.user.is_authenticated:
@@ -125,7 +128,6 @@ def index(request):
     followed_orgs = followed_orgs.distinct() 
     tot_upcoming_events = event.objects.filter(organization__in=followed_orgs, start_date__gte=timezone.now()).count()
     post_form = PostForm()
-    print(request.user.info._meta.related_objects)
     context = {
         'active_home': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
         'post_form': post_form,
@@ -144,9 +146,9 @@ def load_more_feed(request):
     type = request.GET.get('feed', 'all')
 
     suggested_peoples = get_explore_users(filter_dev=userinfo.objects.all(), request=request, count=7, order_by='?')
-    print(suggested_peoples)
     offset = (page - 1) * 10
     feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
+    print(feed_page)
     html = render_to_string('myapp/feed_items.html', {'feed_items': feed_page, 'suggested_peoples': suggested_peoples, 'offset': offset}, request=request)
 
     return JsonResponse({
@@ -736,7 +738,7 @@ def explore_project(request):
     
     r = filter_project.count()
     top_domain = Domain.objects.all()[:10]
-    top_skill= skill.objects.all()[:10]
+    top_skill= skill.objects.all()[:20]
         
     context = {
         'filtered_project': page_obj,
@@ -889,15 +891,15 @@ def join_project(request, id):
 
 @login_required
 def explore_dev(request):
-    #filter
-    domain_filter = request.GET.get('domain', '').strip()  #ID
+
+    availability_filter = request.GET.get('availability', '').strip()
     status_filter = request.GET.get('status', '').strip()  #ID
     skill_filter = request.GET.get('skill', '').strip()    #ID
     query = request.GET.get('q', '').strip()
     
     filter_conditions = {}
-    if domain_filter:
-        filter_conditions["domains__id"] = domain_filter
+    if availability_filter:
+        filter_conditions["availability"] = availability_filter
     if status_filter:
         filter_conditions["status__id"] = status_filter 
     if skill_filter:
@@ -911,22 +913,19 @@ def explore_dev(request):
             Q(user__last_name__icontains=query) |
             Q(user__username__iexact=query) |
             Q(skills__name__iexact=query) |
-            Q(domains__name__icontains=query) |
             Q(availability__icontains=query) |
             Q(status__name__iexact=query) |
             Q(about_user__icontains=query)
         ).distinct()
     
-    applied_filter = bool(domain_filter or status_filter or skill_filter)
+    applied_filter = bool(availability_filter or status_filter or skill_filter)
     
     if not (applied_filter or query):
         filter_dev = get_explore_users(filter_dev, request)
-        print(filter_dev, True)
         
-    top_domain = Domain.objects.all()[:30]
-    top_skill= skill.objects.all()[:10]
+    top_skill= skill.objects.all()[:30]
     status = user_status.objects.all()
-    
+    availability_list = userinfo.get_availability_type_filters
     #Pagination
     p = Paginator(filter_dev, 25)
     page_number = request.GET.get('page')
@@ -938,9 +937,9 @@ def explore_dev(request):
     post_form = PostForm()
     context = {
         'filter_user': page_obj,
-        'top_domains': top_domain,
         'top_skill': top_skill,
-        'status_list': status,    
+        'status_list': status,   
+        'availability_list': availability_list,
         'total_result': r,  
         'post_form': post_form,  
         'query': query,

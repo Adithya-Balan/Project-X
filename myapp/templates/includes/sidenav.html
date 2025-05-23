@@ -10,12 +10,10 @@
     </div>
 </div>
 <div class="flex flex-col justify-between items-center gap-y-8 px-10">
-    {% if user.organization.exists %}
-    <a href="{% url 'manage_organization' %}"
-        class="px-3 text-center py-1 -ml-5 text-base text-[#2b2b2b]  rounded border border-[#2b2b2b] w-[calc(100%+1.25rem)]">
-       <i class="fa fa-building text-base text-[#2b2b2b]" aria-hidden="true"></i>&nbsp;&nbsp;My Organizations
+    <a href="{% url 'contribute_page' %}" target="_blank" class="inline-flex items-center px-5 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+        <i class="fa-solid fa-hand-holding-heart mr-2"></i>
+        Contribute
     </a>
-    {% endif %}
     <div class="flex justify-around w-full">
         <div><a href='{% url "calendar_page" %}'><i class="text-2xl fa-solid fa-calendar-days"></i></a></div>
         <div><a href='{% url "saved_page" %}'><i class="text-2xl fa-regular fa-bookmark"></i></a></div>

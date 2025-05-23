@@ -39,7 +39,7 @@
                     <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md md:ml-auto w-full gap-y-2">
                         <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
                             <div class="text-xl font-bold">{ {{userinfo_obj.user.username}} }</div>
-                            <div class="text-[#686868] text-lg">{{userinfo_obj.cringe_badge.emoji}} {{userinfo_obj.cringe_badge.name}}</div>
+                            <div class="text-[#5a5858]">{{userinfo_obj.cringe_badge.emoji}} {{userinfo_obj.cringe_badge.name}}</div>
                             {% if userinfo_obj.location %}<div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i>&nbsp; {{userinfo_obj.location}}</div>{% endif %}
 
                             <div class="flex gap-x-2">
@@ -118,7 +118,7 @@
                             <div class="absolute right-0 top-5 cursor-pointer"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""
                                     class="h-7 w-7" onclick="openEditCurrentPosition()"></div>
                             {% endif %}
-                            <h1 class="text-lg mb-2 font-bold">{Current Position}</h1>
+                            <h1 class="text-lg mb-2 font-bold">Current Position</h1>
                             {% if userinfo_obj.current_position.name%}
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
@@ -126,9 +126,11 @@
                                         class="rounded-lg lg:w-12 lg:h-12 w-10 h-10">
                                 </div>
                                 <div class="w-4/5">
-                                    <h1 class="text-xl font-semibold">{{userinfo_obj.current_position.name}}</h1>
+                                    <h1 class="text-lg font-semibold">{{userinfo_obj.current_position.name}}</h1>
                                     <p class="text-[#686868]">{{userinfo_obj.current_position.role}}</p>
+                                    {% if userinfo_obj.current_position.description %}
                                     <div class='mt-2 text-[#686868]'>{{userinfo_obj.current_position.description}}</div>
+                                    {% endif %}
                                     <div class='{% if userinfo_obj.current_position.description %}mt-4{% endif %}'>
                                     <div class="text-[#686868]">
                                         {% if userinfo_obj.current_position.start_date and userinfo_obj.current_position.end_date and not userinfo_obj.current_position.till_now %}
@@ -169,7 +171,7 @@
                                 </div>
                                 <div class="w-4/5" id = 'edu'>
                                     {% if userinfo_obj.education.name %}
-                                        <h1 class="text-xl font-bold">{{userinfo_obj.education.name}}</h1>
+                                        <h1 class="text-lg font-semibold">{{userinfo_obj.education.name}}</h1>
 
                                         {% if userinfo_obj.education.degree != none %}
                                             <p class="text-[#686868]">{{userinfo_obj.education.degree}}, {{userinfo_obj.education.field_of_study}}</p>
@@ -217,10 +219,10 @@
                                     <h1 class="text-xl font-bold">{{ exp.name }}</h1>
                     
                                     <p class="text-[#686868]">{{ exp.role }}</p>
-                                    {% if exp.description %}<p class="text-[#686868] mt-3">{{ exp.description|default:""}}</p>{% endif %}
+                                    {% if exp.description %}<p class="text-[#686868] mt-2">{{ exp.description}}</p>{% endif %}
                                     {% if exp.start_date and exp.end_date %}
                                     <div class="text-[#686868] mt-5">{{ exp.start_date|date:"M Y" }} - {{ exp.end_date|date:"M Y" }}</div>
-                                    {% elif exp.start_date %}
+                                    {% elif exp.start_date and exp.till_now %}
                                     <div class="text-[#686868] mt-5">{{ exp.start_date|date:"M Y" }} - Present</div>
                                     {% elif exp.end_date %}
                                     <div class="text-[#686868] mt-5">{{ exp.end_date|date:"M Y" }}</div>
@@ -233,7 +235,7 @@
                                     <input type = 'hidden' name = 'form_type' value = 'delete_exp_obj'>
                                     <input type = 'hidden' name='exp_id' value='{{exp.id}}'>
                                     <button type="submit">
-                                        <img src="{% static 'assets/trash-bin.svg' %}" alt="Delete" class="h-6 w-6">
+                                        <img src="{% static 'assets/trash-bin.svg' %}" alt="Delete" class="h-6 w-6 hover:cursor-pointer">
                                     </button>
                                 </form>                                
                                 {% endif %}
@@ -411,7 +413,7 @@
                             {% if userinfo_obj.user == request.user %}
                             <button class="flex flex-row gap-x-2 items-center bg-gray-300 text-black mx-auto p-2 rounded-2xl cursor-pointer" onclick = "openEditProject()">
                                 <img src = '{% static "assets/plus-edit.svg" %}' class='w-4 h-4'>
-                                <p>Add Projects</p>
+                                <p>Add work</p>
                             </button>
                             {% endif %}
                             <p class='text-center text-lg text-gray-800 pb-20'>Not updated Yet...</p>

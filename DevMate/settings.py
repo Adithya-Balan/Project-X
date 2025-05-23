@@ -35,6 +35,8 @@ ALLOWED_HOSTS = config('ALLOWED_HOST').split(",")
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(",")
 SITE_ID = config('SITE_ID', cast=int)
 
+USE_CLOUDFLARE = config('USE_CLOUDFLARE', cast=bool, default=False)
+
 # Application definition
 INSTALLED_APPS = [
     'allauth',
@@ -54,6 +56,7 @@ INSTALLED_APPS = [
     'myapp',
     "phonenumber_field",
     'django_select2',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +79,6 @@ AUTHENTICATION_BACKENDS = [
 
 ROOT_URLCONF = 'DevMate.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -95,7 +97,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'DevMate.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -149,17 +150,47 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
-STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles') #For Collectstatic to store
+if USE_CLOUDFLARE:
+    CLOUDFLARE_R2_BUCKET= config("CLOUDFLARE_R2_BUCKET", cast=str, default='devmate')
+    CLOUDFLARE_R2_ACCESS_KEY= config("CLOUDFLARE_R2_ACCESS_KEY")
+    CLOUDFLARE_R2_BUCKET_ENDPOINT= config("CLOUDFLARE_R2_BUCKET_ENDPOINT")
+    CLOUDFLARE_R2_SECRET_KEY= config("CLOUDFLARE_R2_SECRET_KEY")
+    CLOUDFLARE_R2_PUBLIC_URL = config('CLOUDFLARE_R2_PUBLIC_URL')
+    R2_PUBLIC_DOMAIN = CLOUDFLARE_R2_PUBLIC_URL.replace('https://', '')
+    
+    # Media Files Config (private)
+    MEDIA_R2_CONFIG = {
+        'bucket_name': CLOUDFLARE_R2_BUCKET,
+        'endpoint_url': CLOUDFLARE_R2_BUCKET_ENDPOINT,
+        'access_key': CLOUDFLARE_R2_ACCESS_KEY,
+        'secret_key': CLOUDFLARE_R2_SECRET_KEY,
+        'signature_version': 's3v4',
+        'default_acl': 'public-read',
+        'querystring_auth': False,  # Presigned URLs
+        'file_overwrite': False,
+        'custom_domain': R2_PUBLIC_DOMAIN,
+    }
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Storage Configuration
+    STORAGES = {
+        'default': {
+            'BACKEND': 'helpers.cloudflare.storages.MediaFileStorage',
+            'OPTIONS': MEDIA_R2_CONFIG,
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',  # Local storage on Render
+        },
+    }
+    MEDIA_URL = f'{CLOUDFLARE_R2_PUBLIC_URL}/uploads/'  # Presigned URLs handled by storage backend
 
-MEDIA_ROOT = BASE_DIR/'uploads'
-MEDIA_URL = '/user-media/'
+else:
+    # Local Storage Fallback (for development)
+    MEDIA_URL = '/user-media/'
+    MEDIA_ROOT = BASE_DIR /'uploads'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -171,11 +202,11 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_URL = '/accounts/login/'
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_EMAIL_REQUIRED = True  # Ensure email is required during signup
-ACCOUNT_AUTHENTICATION_METHOD = 'email'  #Use email for authentication
-ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True  # Ensure email is required during signup
 
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  #Use username or email for authentication
 ACCOUNT_USERNAME_REQUIRED = True  # Default is True, so this is optional
 ACCOUNT_USERNAME_MIN_LENGTH = 3
 
@@ -191,6 +222,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 ACCOUNT_FORMS = {
     'signup': 'myapp.forms.CustomSignupForm',
+    'login': 'myapp.forms.CustomLoginForm'
 }
 
 # Force HTTPS in OAuth redirect URIs
@@ -199,7 +231,6 @@ if not config('IS_DEVELOPMENT'):
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

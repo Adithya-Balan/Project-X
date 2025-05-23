@@ -121,21 +121,21 @@
                     <div class=" bg-white rounded-md px-3 py-5">
                         <div class="flex flex-col gap-y-5">
                             <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="{% static 'assets/birthday_icon.svg' %}"alt="">
+                                <img class="w-10 h-10 lg:w-12 lg:h-12" src="{% static 'assets/birthday_icon.svg' %}"alt="">
                                 <div class="w-full">
                                     <p class="font-bold">Founded</p>
                                     <p class="break-words text-justify text-[#686868]">{% if organization.founded_date %}{{organization.founded_date}}{% else %}Not Updated Yet.{% endif %}</p>
                                 </div>
                             </div>
                             <div class="flex gap-x-3 items-center">
-                                <img class="w-12 h-12" src="{% static 'assets/email_icon.svg' %}" alt="">
+                                <img class="w-10 h-10 lg:w-12 lg:h-12" src="{% static 'assets/email_icon.svg' %}" alt="">
                                 <div class="w-full">
                                     <p class="font-bold">Email</p>
                                     <p class="break-words text-justify text-[#686868]">{% if organization.contact_email %}{{organization.contact_email}}{% else %}Not Updated Yet.{% endif %}</p>
                                 </div>
                             </div>
                             <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="{% static 'assets/call_icon.svg' %}" alt="">
+                                <img class="w-10 h-10 lg:w-12 lg:h-12" src="{% static 'assets/call_icon.svg' %}" alt="">
                                 <div class="w-full">
                                     <p class="font-bold">Phone</p>
                                     <p class="break-words text-justify text-[#686868]">{% if organization.phone %}{{organization.phone}}{% else %}Not Updated Yet.{% endif %}</p>
@@ -144,7 +144,7 @@
 
                             {% if organization.website %}
                             <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="{% static 'assets/website.svg' %}" alt="">
+                                <img class="w-10 h-10 lg:w-12 lg:h-12" src="{% static 'assets/website.svg' %}" alt="">
                                 <div class="w-full">
                                     <p class="font-bold">Website</p>
                                     <a href='{{organization.website}}' class="break-words text-justify text-[#686868] underline underline-offset-2" target='_blank'>{% if organization.website %}{{organization.website}}{% else %}Not Updated Yet.{% endif %}</a>
@@ -153,13 +153,12 @@
                             {% endif %}
                             
                             <div class="flex gap-x-3 items-start">
-                                <img class="w-12 h-12" src="{% static 'assets/building.svg' %}" alt="">
+                                <img class="w-10 h-10 lg:w-12 lg:h-12" src="{% static 'assets/building.svg' %}" alt="">
                                 <div class="w-full">
                                     <p class="font-bold">Organization Type</p>
                                     <p class="break-words text-justify text-[#686868]">{{organization.get_organization_type_display}}</p>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     {% endif %}

@@ -1,5 +1,5 @@
 {% load static %}    
-{% if userinfo_obj.availability == 'Available for collaboration' %}
+{% if userinfo_obj.get_availability_display == 'Available for collaboration' %}
     <!-- Banner 1 -->
     <div class="developer-banner flex flex-col items-center justify-center mx-auto h-60 md:h-96">
         <div class="circuit-pattern"></div>
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-{% elif userinfo_obj.availability == 'Open to part-time collaboration' %}
+{% elif userinfo_obj.get_availability_display == 'Open to part-time collaboration' %}
     <!-- Banner 2 -->
     <div class="developer-banner flex flex-col items-center justify-center mx-auto h-60 md:h-96">
         <div class="circuit-pattern"></div>
@@ -102,7 +102,7 @@
                 id="originalProfile">
         </div>
     </div>
-{% elif userinfo_obj.availability == 'Open to freelance collaboration' %}
+{% elif userinfo_obj.get_availability_display == 'Open to freelance collaboration' %}
 
     <!-- Banner 3 -->
     <div class="developer-banner flex flex-col items-center justify-center mx-auto h-60 md:h-96">
@@ -154,7 +154,7 @@
                 id="originalProfile">
         </div>
     </div>
-{% elif userinfo_obj.availability == 'Unavailable' %}
+{% elif userinfo_obj.get_availability_display == 'Unavailable' %}
 
     <!-- Banner 4 -->
     <div class="developer-banner flex flex-col items-center justify-center mx-auto h-60 md:h-96">

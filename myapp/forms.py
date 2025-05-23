@@ -6,7 +6,25 @@ import re
 from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position, projects
 from django.forms.widgets import ClearableFileInput
 # from django_select2.forms import Select2MultipleWidget
-from allauth.account.forms import SignupForm
+from allauth.account.forms import SignupForm, LoginForm
+from django.contrib.auth import authenticate, get_user_model
+
+User = get_user_model()
+
+class CustomLoginForm(LoginForm):
+    def clean(self):
+        login_input = self.cleaned_data.get('login')
+        password = self.cleaned_data.get('password')
+
+        # If it's an email, resolve it to a username
+        try:
+            user = User.objects.get(email__iexact=login_input)
+            self.cleaned_data['login'] = user.username
+        except User.DoesNotExist:
+            # Assume it's a username
+            pass
+
+        return super().clean()
 
 class CustomSignupForm(SignupForm):
     first_name = forms.CharField(max_length=30, label="First Name", required=True)
@@ -15,6 +33,8 @@ class CustomSignupForm(SignupForm):
     def clean_username(self):
         username = self.cleaned_data.get("username")
         if username:
+            if not username.islower():
+                raise forms.ValidationError("Username must not contain uppercase letters.")
             is_valid = (
                 username[0].isalpha() and
                 bool(re.match(r'^[a-zA-Z0-9_.]+$', username)) and
@@ -198,6 +218,8 @@ class EditProfileForm(forms.ModelForm):
         """
         username = self.cleaned_data.get("username")
         if username:
+            if not username.islower():
+                raise forms.ValidationError("Username must not contain uppercase letters.")
             is_valid = (
                 username[0].isalpha() and
                 bool(re.match(r'^[a-zA-Z0-9_.]+$', username)) and
@@ -325,6 +347,7 @@ class EditCurrentPositionForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Company Name'}),               
             'role': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Role'}),      
             'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Briefly Describe your Role.'}),
+            'till_now': forms.CheckboxInput(attrs={'id': 'presentDate'}),
             # 'start_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'}),
             # 'end_date': forms.DateInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),                       
         }
@@ -350,6 +373,14 @@ class EditCurrentPositionForm(forms.ModelForm):
         return None
 
 class EditExperienceForm(forms.ModelForm):
+    start_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'})
+    )
+    end_date = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'type': 'month', 'class': 'outline-none border border-black px-2 py-1'})
+    )
     class Meta:
         model = experience
         exclude = ['user']
@@ -360,13 +391,35 @@ class EditExperienceForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Company Name'}),
             'role': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Role'}),
-            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
-            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1', 'id':"endDate"}),
+            'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Briefly Describe your Role.'}),
+            'till_now': forms.CheckboxInput(attrs={'id': 'exp_presentDate'})
         }
         error_messages = {
             'name': {'required':'Company name is required',},
             'role': {'required': 'Enter a Valid role',}
         }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Format initial value to 'YYYY-MM' if data exists
+        if self.instance and self.instance.start_date:
+            self.initial['start_date'] = self.instance.start_date.strftime('%Y-%m')
+        if self.instance and self.instance.end_date:
+            self.initial['end_date'] = self.instance.end_date.strftime('%Y-%m')
+            
+    def clean_start_date(self):
+        start_date = self.cleaned_data.get("start_date")
+        print(start_date)
+        if start_date:
+            return datetime.strptime(start_date, "%Y-%m").date().replace(day=1)  # Convert YYYY-MM to YYYY-MM-01
+        return None
+
+    def clean_end_date(self):
+        end_date = self.cleaned_data.get("end_date")
+        if end_date:
+            return datetime.strptime(end_date, "%Y-%m").date().replace(day=1)  # Convert YYYY-MM to YYYY-MM-01
+        return None
+
 
 class EditSkillForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(

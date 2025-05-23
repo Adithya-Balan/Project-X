@@ -1,4 +1,4 @@
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from itertools import chain
 from .models import follow, post, post, event, organization
 from .models import projects as Project
@@ -72,4 +72,9 @@ def get_personalized_feed(request, type='all', page=1, per_page=10):
 
     # Pagination
     paginator = Paginator(combined, per_page)
-    return paginator.get_page(page)
+    # return paginator.get_page(page)
+    try:
+        page_obj = paginator.page(page)
+    except EmptyPage:
+        return paginator.get_page(1)[:0]  # Return empty page
+    return page_obj

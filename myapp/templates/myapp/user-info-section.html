@@ -10,11 +10,11 @@
                 <p class="break-words text-justify text-[#686868]">{% if userinfo_obj.dob %}{{userinfo_obj.dob}}{% else %}Not Updated yet..{% endif %}</p>
             </div>
         </div>
-        <div class="flex gap-x-3 items-start">
-            <img class="w-10 h-10 lg:w-12 lg:h-12" src="{% static 'assets/about_icon.svg' %}" alt="">
+        <div class="flex gap-x-4 items-start">
+            <img class="w-10 h-10 lg:w-10 lg:h-10" src="{% static 'assets/status-icon.svg' %}" alt="">
             <div class="w-full">
-                <p class="font-bold">About</p>
-                <p class="break-words text-[#686868]">{% if userinfo_obj.about_user %}{{userinfo_obj.about_user}}{% else %}Not Updated yet..{% endif %}</p>
+                <p class="font-bold">Status</p>
+                <p class="break-words text-[#686868]">{% if userinfo_obj.status %}{{userinfo_obj.status}}{% else %}Not Updated yet..{% endif %}</p>
             </div>
         </div>
         {% if userinfo_obj.gender %}

@@ -62,7 +62,7 @@
                             <div class="flex gap-x-5 items-start">
                                 <a href='{% url "organization_detail" org.id %}'><img src="{{org.logo.url}}" class="w-12 h-12 rounded-md object-cover"></a>
                                 <div class="flex flex-col gap-y-1">
-                                    <a href="{% url 'organization_detail' org.id %}" class="text-xl font-semibold hover:underline">{{org.name}}</a>
+                                    <a href="{% url 'organization_detail' org.id %}" class="lg:text-xl text-lg font-semibold hover:underline">{{org.name}}</a>
                                     <p class="text-[#686868]">{{org.industry.name}}</p>
                                     <p class="text-[#686868] text-sm">{{org.get_organization_type_display}}</p>
                                     <div class="flex gap-x-3 mt-4">
@@ -126,57 +126,84 @@
         </div>
 
         <!-- filter section -->
-        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-2 lg:w-1/4 lg:h-[calc(100vh-10px)] gap-y-8 lg:flex overflow-y-scroll z-10"
+        <div class="absolute lg:sticky top-0 flex-col hidden mr-2 lg:mr-4 lg:w-1/4 lg:h-[calc(100vh-1.5rem)] gap-y-6 lg:flex overflow-y-auto z-10"
             id="openFilterParent">
-            <div class="lg:relative bg-[#00000057] backdrop-blur-md w-[calc(100%-80px)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-5 py-10 overflow-y-scroll lg:bg-white rounded-lg bottom-2  gap-y-8 lg:flex" id="filterElement">
-                <button class="absolute lg:hidden top-5 right-5" onclick="closeFilter()"><i
-                        class="text-2xl text-[#e83f4f] fa-solid fa-circle-xmark"></i></button>
-                <div class="flex flex-row items-center justify-between gap-x-3 w-full py-2 px-4 rounded-lg">
-                            <div class="flex items-center gap-x-2 mx-auto">
-                                <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
-                                <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="h-5 w-5 text-gray-600">
-                            </div>
+            <div class="lg:relative bg-white w-[calc(100%-5rem)] md:w-3/4 lg:w-full top-16 right-0 flex-col hidden px-6 py-8 overflow-y-auto lg:bg-white rounded-xl border border-gray-100 bottom-2 gap-y-6 lg:flex"
+                id="filterElement">
+                
+                <!-- Close Button (Mobile) -->
+                <button class="absolute lg:hidden top-5 right-5 text-gray-400 hover:text-gray-600 transition-colors duration-150" 
+                        onclick="closeFilter()">
+                    <i class="text-2xl fa-solid fa-xmark"></i>
+                </button>
+
+                <!-- Header -->
+                <div class="flex flex-row items-center justify-between w-full pb-4 border-b border-gray-100 mt-3 lg:mt-0">
+                    <div class="flex items-center gap-x-3">
+                        <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
+                        <div class="p-1.5 rounded-md bg-green-50">
+                            <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="w-5 h-5 text-green-600">
                         </div>
+                    </div>
+                    {% if applied_filter %}
+                    <a href='{% url "explore_organization" %}' class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-green-600 rounded-lg transition-all duration-300 group">
+                        <span class="transition-all duration-200 group-hover:font-medium">Reset</span>
+                        <i class="fa-solid fa-arrow-rotate-left text-xs transition-transform duration-500 group-hover:rotate-180"></i>
+                    </a>
+                    {% endif %}
+                </div>
 
-                {% if applied_filter %}
-                <a href='{% url "explore_organization" %}' class="group flex items-center justify-center gap-2 p-2 border border-black rounded-2xl  text-black hover:bg-black hover:text-white transition-all duration-200 w-fit">
-                        <p class="text-sm font-medium">Clear</p>
-                        <img src='{% static "assets/clear-filter.svg" %}' alt="Clear Filter"  class="w-5 h-5 transition-all duration-200 group-hover:invert">
-                </a>
-                {% endif %}
-
-                <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Type</h1>
-                    <div class="flex flex-wrap gap-2 items-center text-white">
+                <!-- Type Filter -->
+                <div class="space-y-3">
+                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
+                        Type
+                        <i class='fas fa-university'></i>
+                    </h2>
+                    <div class="flex flex-wrap gap-2">
                         {% for type in types %}
                         <a href="?industry={{ request.GET.industry|default:'' }}&type={% if request.GET.type == type.value %}{% else %}{{ type.value }}{% endif %}"
-                        class="relative {% if request.GET.type == type.value %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border transition-all duration-200
+                                {% if request.GET.type == type.value %} 
+                                    bg-green-50 border-green-200 text-green-700
+                                {% else %} 
+                                    bg-white border-gray-200 text-gray-600 hover:border-green-300 hover:text-gray-800
+                                {% endif %}">
                             {{type.label}}
                             {% if request.GET.type == type.value %}
-                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            <i class="ml-1.5 text-xs fa-solid fa-xmark opacity-70 hover:opacity-100 transition-opacity"></i>
                             {% endif %}
                         </a>
                         {% endfor %}
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-y-3">
-                    <h1 class="text-xl font-bold">Industry</h1>
-                    <div class="flex flex-wrap gap-2 items-center text-white">
+                <!-- Industry Filter -->
+                <div class="space-y-3">
+                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
+                        Industry
+                        <i class="fa-solid fa-building"></i>
+                    </h2>
+                    <div class="flex flex-wrap gap-2">
                         {% for industry in industries %}
                         <a href="?type={{ request.GET.type|default:'' }}&industry={% if request.GET.industry == industry.id|stringformat:'s' %}{% else %}{{ industry.id|stringformat:'s' }}{% endif %}"
-                        class="relative {% if request.GET.industry == industry.id|stringformat:'s' %}text-black border bg-white hover:text-black{% else %}hover:text-[#6feb85] border border-[#323234] bg-[#323234]{% endif %} px-2 py-1 rounded-md font-bold">
+                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border transition-all duration-200
+                                {% if request.GET.industry == industry.id|stringformat:'s' %} 
+                                    bg-green-50 border-green-200 text-green-700
+                                {% else %} 
+                                    bg-white border-gray-200 text-gray-600 hover:border-green-300 hover:text-gray-800
+                                {% endif %}">
                             {{industry}}
                             {% if request.GET.industry == industry.id|stringformat:'s' %}
-                            <i class="cross-icon fa-solid fa-xmark"></i>
+                            <i class="ml-1.5 text-xs fa-solid fa-xmark opacity-70 hover:opacity-100 transition-opacity"></i>
                             {% endif %}
                         </a>
                         {% endfor %}
                     </div>
                 </div>
-
             </div>
-        </div>
+        </div>   
     </div>
 
     {% include "includes/create-post.html" %}
