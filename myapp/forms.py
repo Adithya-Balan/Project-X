@@ -6,6 +6,7 @@ import re
 from .models import project_comment, project_reply, userinfo, skill, Domain, organization, education, experience, post, user_project, event, current_position, projects
 from django.forms.widgets import ClearableFileInput
 # from django_select2.forms import Select2MultipleWidget
+from django.core.exceptions import ValidationError
 from allauth.account.forms import SignupForm, LoginForm
 from django.contrib.auth import authenticate, get_user_model
 
@@ -311,14 +312,14 @@ class UserProjectForm(forms.ModelForm):
             'url': 'URL (If any)',
             'repo_link': 'Github-URL (If any)',
             'end_date': "End Date",
-            'media': 'Thumbnail'
+            'media': 'Thumbnail (If any)'
         }
         
         widgets = {
             'name': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Project Name'}),
             'description': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Tell More about your Project'}),
             'url': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder':'https://livedemo.in/'}),
-            'repo_link': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'https://github.com/project-x'}),
+            'repo_link': forms.TextInput(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'https://github.com'}),
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'outline-none border border-black px-2 py-1'}),
             'media': forms.ClearableFileInput(attrs={'class': 'border border-gray-700 p-2 rounded-lg w-full file:bg-black file:text-white file:border-none file:px-4 file:py-2 file:rounded-lg cursor-pointer'})
@@ -533,6 +534,8 @@ class EventForm(forms.ModelForm):
         }
     
 class ProjectForm(forms.ModelForm):
+    MAX_FILE_SIZE = 5 * 1000 * 1000  # 5 MB 
+    MAX_VIDEO_SIZE = 20 * 1000 * 1000 # 20 MB
     skill_needed = forms.ModelMultipleChoiceField(
         queryset=skill.objects.all(),
         widget=forms.SelectMultiple(attrs={
@@ -603,3 +606,17 @@ class ProjectForm(forms.ModelForm):
             }),
             
         }
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        if file:
+            print(file.size)
+            if file.size > self.MAX_FILE_SIZE:
+                raise ValidationError(f'File size must not exceed 5 MB. Current size: {(file.size / 1000 / 1000):.2f} MB')
+        return file
+
+    def clean_video(self):
+        video = self.cleaned_data.get('video')
+        if video:
+            if video.size > self.MAX_VIDEO_SIZE:
+                raise ValidationError(f'Video size must not exceed 20 MB. Current size: {(video.size / 1000 / 1000):.2f} MB')
+        return video

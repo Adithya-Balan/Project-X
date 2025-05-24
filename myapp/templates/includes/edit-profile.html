@@ -385,8 +385,8 @@
                 </div>
             {% endif %}
         </div>
-        <div class="flex gap-x-3 w-full" id="dateSec">
-            <div class="flex flex-col gap-y-1 w-full">
+        <div class="flex gap-x-3 w-full">
+            <div class="flex flex-col gap-y-1 w-1/2">
                 <p>{{project_form.url.label}}</p>
                 {{project_form.url}}
                 {% if project_form.url.errors %}
@@ -395,9 +395,9 @@
                         <p>{{ error }}</p>
                     {% endfor %}
                 </div>
-            {% endif %}
+                {% endif %}
             </div>
-            <div class="flex flex-col gap-y-1 w-full">
+            <div class="flex flex-col gap-y-1 w-1/2">
                 <p>{{project_form.repo_link.label}}</p>
                {{project_form.repo_link}}
                {% if project_form.repo_link.errors %}
@@ -406,7 +406,7 @@
                         <p>{{ error }}</p>
                     {% endfor %}
                 </div>
-            {% endif %}
+                {% endif %}
             </div>
         </div>
         <div class="flex gap-x-3 w-full" id="dateSec">

@@ -79,7 +79,7 @@ class post(models.Model):
         ('16:9', '16:9'),
     ]
     content = models.TextField()
-    file = models.ImageField(upload_to='user-posts', null=True)
+    file = models.ImageField(upload_to='user-posts', null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(userinfo, related_name='liked_posts', blank=True)
     aspect = models.CharField(max_length=10, choices=ASPECT_CHOICES, default='16:9')

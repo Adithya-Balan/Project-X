@@ -16,7 +16,7 @@
 
     <!-- main section -->
     <div class="mt-20 w-full pb-20 lg:pb-10" id='entireSection'>
-        <div class="flex justify-center flex-col items-center gap-y-4 w-[90%] md:w-1/2 lg:w-1/3 bg-white p-6 mx-auto rounded-xl shadow-lg border border-gray-100">  
+        <div class="flex justify-center flex-col items-center gap-y-4 w-[90%] md:w-1/2 lg:w-2/5 bg-white p-6 mx-auto rounded-xl shadow-lg border border-gray-100">  
             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mt-2 tracking-tight">Create a Project & <br>Find Collaborators 🚀</h1>
             <div class="w-full mt-4">
                 <form method="POST" enctype="multipart/form-data" class="flex flex-col gap-y-5 w-full">
@@ -87,7 +87,7 @@
                             {{form.url}}
                         </div>
                     </div>
-                    <div class="flex gap-x-4 items-center">
+                    <div class="flex gap-x-4 items-start">
                         <!-- File Field -->
                         <div class="flex flex-col gap-y-2 w-full">
                             <label for="{{ form.file.id_for_label }}" class="text-sm font-medium text-gray-700">Documentation</label>
@@ -107,8 +107,14 @@
                             {% if form.instance.file %}
                                 <p class="text-sm text-gray-500">Current: <a href="{{ form.instance.file.url }}" target="_blank">View File</a></p>
                             {% endif %}
+
+                            {% if form.file.errors %}
+                            <div class="text-red-500 text-sm">
+                                {{ form.file.errors }}
+                            </div>
+                            {% endif %}
                         </div>
-                        
+
                         <!-- Video Field -->
                         <div class="flex flex-col gap-y-2 w-full">
                             <label for="{{ form.video.id_for_label }}" class="text-sm font-medium text-gray-700">Demo Video</label>
@@ -118,7 +124,7 @@
                                 <img src="{% static 'assets/videoUpload.svg' %}" alt="Upload Video" class="w-6 h-6">
                                 <p class="text-gray-600 font-medium upload-text-video truncate" style="max-width: 150px;">
                                     {% if form.instance.video %}
-                                        {{ form.instance.video.name|cut:"project/videos/"|truncatechars:12 }}  <!-- Show video filename -->
+                                        {{ form.instance.video.name|cut:"project/videos/"|truncatechars:10 }}  <!-- Show video filename -->
                                     {% else %}
                                         Upload Video
                                     {% endif %}
@@ -127,10 +133,16 @@
                             {% if form.instance.video %}
                                 <p class="text-sm text-gray-500">Current: <a href="{{ form.instance.video.url }}" target="_blank">View Video</a></p>
                             {% endif %}
+
+                            {% if form.video.errors %}
+                            <div class="text-red-500 text-sm">
+                                {{ form.video.errors }}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="self-center flex gap-x-5">
-                        <button class="bg-[#6feb85] px-3 py-1 rounded-lg" type="submit">Save</button>
+                        <button class="bg-[#6feb85] px-3 py-1 rounded-lg cursor-pointer" type="submit">Save</button>
                         {% if is_edit %}
                         <a href='{% url "delete_project" project_obj.uuid %}' class="bg-red-700 text-white px-3 py-1 rounded-lg">Delete</a>
                         {% endif %}
@@ -163,7 +175,11 @@
             const fileInput = event.target;
             const uploadText = fileInput.parentElement.querySelector('.upload-text-file');
             if (fileInput.files.length > 0) {
-                uploadText.textContent = fileInput.files[0].name; // Display the selected file name
+                let fileName = fileInput.files[0].name;
+                if (fileName.length > 10) {
+                    fileName = fileName.substring(0, 9) + '...'; // Truncate to 7 chars + '...'
+                }
+                uploadText.textContent = fileName; // Display the selected file name
             } else {
                 uploadText.textContent = 'Upload File'; // Reset to default if no file is selected
             }
@@ -174,9 +190,13 @@
             const fileInput = event.target;
             const uploadText = fileInput.parentElement.querySelector('.upload-text-video');
             if (fileInput.files.length > 0) {
-                uploadText.textContent = fileInput.files[0].name; // Display the selected file name
+                let fileName = fileInput.files[0].name;
+                if (fileName.length > 10) {
+                    fileName = fileName.substring(0, 9) + '...';
+                }
+                uploadText.textContent = fileName;
             } else {
-                uploadText.textContent = 'Upload Video'; // Reset to default if no file is selected
+                uploadText.textContent = 'Upload Video';
             }
         });
     </script>

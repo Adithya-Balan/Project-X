@@ -463,9 +463,9 @@
                     <div class="flex flex-wrap gap-2"> 
                         {% if skill_list %}
                             {% for skill in skill_list %}
-                            <div
+                            <a href='{% url "explore-project" %}?skill={{ skill.id }}'
                                 class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#22682f] font-bold border border-[#6feb85] cursor-pointer">
-                                {{skill.name}}</div>
+                                {{skill.name}}</a>
                             {% endfor %}
                         {% else %}
                         <div class="bg-[#6feb8627] px-2 py-2 rounded-md text-[#22682f] font-bold border border-[#6feb85] cursor-pointer mx-auto">Not Updated Yet...</div>

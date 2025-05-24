@@ -17,7 +17,7 @@ from django.core.paginator import Paginator, PageNotAnInteger
 from django.db.models import Q
 from django.template.loader import render_to_string
 from itertools import groupby
-from .algorithms import get_explore_users, get_personalized_feed
+from .algorithms import get_explore_users, get_personalized_feed, top_skills_list
 from allauth.account.views import PasswordChangeView
 from django.contrib import messages
 
@@ -233,9 +233,8 @@ def user_profile(request, user_name):
     
     is_following = request.user.info.is_following(userinfo_obj)
     # Suggested Project
-    if request.user.info.skills.all():
-        suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
-    else:
+    suggested_project = projects.objects.filter(skill_needed__in = request.user.info.skills.all()).distinct().order_by('-created_at')[:5]
+    if not suggested_project:
         suggested_project = projects.objects.all().order_by('-created_at')[:5] #For user, with no skill    
     if request.user.info == userinfo_obj: #Edit options
         edu_form = EditEducationForm(instance=request.user.info.education)
@@ -738,7 +737,7 @@ def explore_project(request):
     
     r = filter_project.count()
     top_domain = Domain.objects.all()[:10]
-    top_skill= skill.objects.all()[:20]
+    top_skills = top_skills_list()
         
     context = {
         'filtered_project': page_obj,
@@ -746,7 +745,7 @@ def explore_project(request):
         'top_domains': top_domain,
         'types': ['Open-Source', 'Learning', 'Paid', 'Freelance'],
         'levels': ['Beginner', 'Intermediate', 'Expert'],
-        'top_skill': top_skill,
+        'top_skill': top_skills,
         'applied_filter': applied_filter,
         'post_form': post_form,
         'query': query,
@@ -767,8 +766,6 @@ def project_form(request):
             project.creator = request.user.info
             project.save()
             form.save_m2m()
-            print("POST data:", request.POST)
-            print("FILES:", request.FILES)
             return redirect(f"{reverse('project_detail', args=[project.id])}")
             
     context = {
@@ -923,7 +920,7 @@ def explore_dev(request):
     if not (applied_filter or query):
         filter_dev = get_explore_users(filter_dev, request)
         
-    top_skill= skill.objects.all()[:30]
+    top_skill= top_skills_list()
     status = user_status.objects.all()
     availability_list = userinfo.get_availability_type_filters
     #Pagination
@@ -1166,7 +1163,7 @@ def save_post(request):
         org = get_object_or_404(organization, id = action)
         if form.is_valid() and org.user == request.user:
             new_post = form.save(commit=False)
-            new_post.Organization = org  # Set current user's profile
+            new_post.Organization = org
             new_post.aspect = request.POST.get("aspect_ratio", "16:9")
             new_post.save()
             redirect_url = reverse('organization_detail', args=[org.id])

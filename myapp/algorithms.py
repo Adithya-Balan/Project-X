@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage
 from itertools import chain
-from .models import follow, post, post, event, organization
+from .models import follow, post, post, event, organization, skill
 from .models import projects as Project
 from django.db.models import Q
 from django.utils.timezone import now
@@ -78,3 +78,13 @@ def get_personalized_feed(request, type='all', page=1, per_page=10):
     except EmptyPage:
         return paginator.get_page(1)[:0]  # Return empty page
     return page_obj
+
+def top_skills_list():
+    top_skills = list(skill.objects.all()[0:10])     # Programming Languages
+    top_skills += list(skill.objects.all()[40:50])   # Frameworks and Libraries
+    top_skills += list(skill.objects.all()[80:87])   # Databases
+    top_skills += list(skill.objects.all()[100:103]) # Cloud Platforms
+    top_skills += list(skill.objects.all()[125:127]) # Version Control
+    top_skills += list(skill.objects.all()[150:152]) # Backend Frameworks
+    top_skills += list(skill.objects.all()[180:182]) # AI/ML
+    return top_skills

@@ -117,7 +117,7 @@ class user_project(models.Model):
     url = models.URLField(blank=True, null=True)
     repo_link = models.URLField(blank=True, null=True)
     tech_stack = models.ManyToManyField(skill, related_name='user_projects', blank=True)
-    media = models.FileField(upload_to="user-project-files", blank=True, null=True)
+    media = models.ImageField(upload_to="user-project-files", blank=True, null=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(blank=True, null=True)
 
