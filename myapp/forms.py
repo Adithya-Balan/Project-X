@@ -34,8 +34,6 @@ class CustomSignupForm(SignupForm):
     def clean_username(self):
         username = self.cleaned_data.get("username")
         if username:
-            if not username.islower():
-                raise forms.ValidationError("Username must not contain uppercase letters.")
             is_valid = (
                 username[0].isalpha() and
                 bool(re.match(r'^[a-zA-Z0-9_.]+$', username)) and
@@ -46,6 +44,13 @@ class CustomSignupForm(SignupForm):
                 raise forms.ValidationError(
                     "Username must start with a letter and contain only letters, numbers, underscores, and at most one dot."
                 )
+                
+            if not any(char.isalpha() for char in username):
+                raise forms.ValidationError("Username must contain at least one letter and cannot be entirely numeric.")
+            
+            if not username.islower():
+                raise forms.ValidationError("Username must not contain uppercase letters.")
+        
             if User.objects.filter(username=username).exists():
                 raise forms.ValidationError("A user with this username already exists.")
         return username
@@ -218,8 +223,6 @@ class EditProfileForm(forms.ModelForm):
         """
         username = self.cleaned_data.get("username")
         if username:
-            if not username.islower():
-                raise forms.ValidationError("Username must not contain uppercase letters.")
             is_valid = (
                 username[0].isalpha() and
                 bool(re.match(r'^[a-zA-Z0-9_.]+$', username)) and
@@ -230,6 +233,11 @@ class EditProfileForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "Username must start with a letter and contain only letters, numbers, underscores, and a single dot (with no consecutive dots)."
                 )
+            if not any(char.isalpha() for char in username):
+                raise forms.ValidationError("Username must contain at least one letter and cannot be entirely numeric.")
+            
+            if not username.islower():
+                raise forms.ValidationError("Username must not contain uppercase letters.")
 
             qs = User.objects.filter(username=username)
             if self.instance.user:

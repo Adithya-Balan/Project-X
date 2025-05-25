@@ -680,14 +680,6 @@ def event_form_edit(request, org_id, event_id):
     }
     return render(request, 'myapp/org-event-form.html', context)
 
-@login_required
-def edit_profile(request):
-    form = EditProfileForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'myapp/editprofile.html', context)
-
 #explore page:
 @login_required
 def explore_project(request):
