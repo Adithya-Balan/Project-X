@@ -12,7 +12,6 @@ urlpatterns = [
     path("skills/<uuid:uuid>", views.signup_skills, name="signup_skills"),
     path("", views.index, name="index"),
     path('load-more-feed/', views.load_more_feed, name='load_more_feed'),
-    path("edit-profile", views.edit_profile, name="edit_profile"),
     path("notification", views.notification_page, name="notification_page"),
     path('notifications/count/', views.get_notification_count, name='get_notification_count'),
     
