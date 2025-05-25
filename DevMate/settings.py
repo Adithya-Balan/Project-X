@@ -200,6 +200,8 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
 LOGIN_REDIRECT_URL = '/post-login-check/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_URL = '/accounts/login/'
@@ -207,9 +209,9 @@ LOGIN_URL = '/accounts/login/'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True  # Ensure email is required during signup
-
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  #Use username or email for authentication
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  #Use email for authentication
+
 ACCOUNT_USERNAME_REQUIRED = True  # Default is True, so this is optional
 ACCOUNT_USERNAME_MIN_LENGTH = 3
 
@@ -225,7 +227,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 ACCOUNT_FORMS = {
     'signup': 'myapp.forms.CustomSignupForm',
-    'login': 'myapp.forms.CustomLoginForm'
 }
 
 # Force HTTPS in OAuth redirect URIs

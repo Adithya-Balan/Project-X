@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, get_user_model
 
 User = get_user_model()
 
-class CustomLoginForm(LoginForm):
+class CustomLoginForm(LoginForm): #Not user. becoz it enforces username and email both.
     def clean(self):
         login_input = self.cleaned_data.get('login')
         password = self.cleaned_data.get('password')
