@@ -19,7 +19,7 @@ def get_explore_users(filter_dev, request, count=200, order_by='-created_at'):
     return users
 
 
-def get_personalized_feed(request, type='all', page=1, per_page=10):
+def get_personalized_feed(request, type='all', page=1, per_page=7):
     user = request.user
     info = user.info
     following_users = set(info.get_following())

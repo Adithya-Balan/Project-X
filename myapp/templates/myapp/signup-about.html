@@ -25,11 +25,11 @@
                         class="w-full p-3 border rounded-lg h-40 resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder="About Yourself..."
                         name="bio"
-                        maxlength="500"
+                        maxlength="1000"
                         id="bioTextarea"
                         oninput="updateCharCount(this)">
                     </textarea>
-                    <p id="charCount" class="text-sm text-gray-500 mt-1">0/500 characters</p>
+                    <p id="charCount" class="text-sm text-gray-500 mt-1">0/1000 characters</p>
                 </div>
                                               
                 <!-- GitHub URL -->
@@ -95,7 +95,7 @@
         function updateCharCount(textarea) {
             // Ensure there are no invisible characters like whitespace affecting the count
             const count = textarea.value.trim().length;
-            document.getElementById('charCount').textContent = `${count}/500 characters`;
+            document.getElementById('charCount').textContent = `${count}/1000 characters`;
         }
     </script>
         

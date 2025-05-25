@@ -83,7 +83,7 @@
                     <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-9">
                         <div class="flex flex-col text-justify gap-y-3">
                             {% if userinfo_obj.user.first_name %}<h1 class="text-lg font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>{% else %}<h1 class="text-xl font-bold">{{userinfo_obj.user.username}}</h1>{% endif %}                            <p class="text-justify">
-                                {% if userinfo_obj.bio %}{{userinfo_obj.bio}}{% else %}Not Updated Yet...{% endif %}
+                                {% if userinfo_obj.bio %}{{userinfo_obj.bio|linebreaks}}{% else %}Not Updated Yet...{% endif %}
                             </p>
                         </div>
                         

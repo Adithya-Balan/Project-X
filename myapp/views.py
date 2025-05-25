@@ -123,7 +123,7 @@ def index(request):
         return redirect('signup_about', uuid=request.user.info.uuid)
     type = request.GET.get('feed', "all")
     page = 1 
-    feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
+    feed_page = get_personalized_feed(request, type=type, page=page, per_page=7)
     followed_orgs = request.user.info.followed_organization.all() | request.user.organization.all()
     followed_orgs = followed_orgs.distinct() 
     tot_upcoming_events = event.objects.filter(organization__in=followed_orgs, start_date__gte=timezone.now()).count()
@@ -147,7 +147,7 @@ def load_more_feed(request):
 
     suggested_peoples = get_explore_users(filter_dev=userinfo.objects.all(), request=request, count=7, order_by='?')
     offset = (page - 1) * 10
-    feed_page = get_personalized_feed(request, type=type, page=page, per_page=10)
+    feed_page = get_personalized_feed(request, type=type, page=page, per_page=7)
     print(feed_page)
     html = render_to_string('myapp/feed_items.html', {'feed_items': feed_page, 'suggested_peoples': suggested_peoples, 'offset': offset}, request=request)
 
