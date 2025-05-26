@@ -10,7 +10,10 @@
 
   <!-- Email Management Box -->
   <div class="relative bg-white text-gray-800 rounded-xl shadow-2xl p-8 max-w-lg w-full border border-gray-200 transform transition-all duration-300 hover:shadow-3xl">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center tracking-tight">Manage Email Addresses</h1>
+    <a href="{% url 'settings_page' %}" class="mr-auto p-2 transition border-black hover:bg-white border hover:border-black hover:text-black bg-black text-white rounded h-fit self-center">
+        <i class="fa-solid fa-arrow-left"></i><span>Back</span>
+    </a>
+    <h1 class="text-3xl mt-6 font-bold text-gray-900 mb-6 text-center tracking-tight">Manage Email Addresses</h1>
 
     <!-- Messages -->
     {% if messages %}
