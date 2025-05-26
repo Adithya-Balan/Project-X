@@ -225,7 +225,7 @@
     <!-- for viewing the profile -->
     <div id="zoomProfile" class="hidden items-center justify-center fixed top-0 bottom-0  w-full">
         <div class="relative">
-            <img src="{{organization.logo.url}}" alt=""
+            <img src="{{organization.logo.url}}?v={{organization.updated_at.timestamp}}" alt=""
                 class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-3xl border-4 border-[#00000070]">
             <button class="absolute -right-3 -top-3 md:top-0 md:right-0 border border-black rounded-full w-8 h-8 bg-gray-300"
                 onclick="closeProfile()"><img src="{% static 'assets/close.svg' %}" alt=""></button>
@@ -246,7 +246,7 @@
                 <div class="self-center mb-4">
                     <div class="flex gap-x-5 items-center max-[500px]:flex-col gap-y-5">
                         <div class="relative">
-                            <img src="{{organization.logo.url}}" alt="" class="rounded-lg w-40 h-40 object-cover" id="image">
+                            <img src="{{organization.logo.url}}?v={{organization.updated_at.timestamp}}" alt="" class="rounded-lg w-40 h-40 object-cover" id="image">
                             <label id="imageContainer" for="imgInput"
                                 class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
                                     src="{% static 'assets/edit.svg' %}" alt="" class="w-7 h-7"></label>

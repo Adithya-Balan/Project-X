@@ -505,7 +505,7 @@
     <!-- zooming profile section -->
     <div id="zoomProfile" class="fixed hidden items-center justify-center  top-0 bottom-0  w-full">
         <div class="relative">
-            <img src="{{userinfo_obj.profile_image.url}}" alt=""
+            <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt=""
                 class="w-52 h-52 md:w-80 md:h-80 object-cover rounded-3xl border-4 border-[#00000070]">
             <button
                 class="absolute -right-3 -top-3 md:top-0 md:right-0 rounded-full w-8 h-8 bg-gray-400" onclick="closeProfile()"><img src="{% static 'assets/close.svg' %}" alt=""></button>

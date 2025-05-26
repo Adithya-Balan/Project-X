@@ -13,7 +13,7 @@
             <div class="self-center mb-4">
                 <div class="flex gap-x-5 items-center max-[500px]:flex-col gap-y-5">
                     <div class="relative">
-                        <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-40 h-40" id="image">
+                        <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-40 h-40" id="image">
                         <label id="imageContainer" for="imgInput"
                             class="absolute -right-3 -bottom-3 bg-black rounded-full p-2 cursor-pointer"><img
                                 src="{% static 'assets/edit.svg' %}" alt="" class="w-7 h-7"></label>

@@ -59,7 +59,7 @@
     </div>
     <!-- profile pic inside banner -->
     <div class="absolute -bottom-16 md:-bottom-20 left-[50%] transform -translate-x-1/2">
-        <img src="{{organization.logo.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40 object-cover cursor-pointer" onclick="viewProfile()">
+        <img src="{{organization.logo.url}}?v={{organization.updated_at.timestamp}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40 object-cover cursor-pointer" onclick="viewProfile()">
     </div>
     {% if organization.user == request.user %}
     <div class="absolute right-10 -bottom-10 flex flex-col">
@@ -76,7 +76,3 @@
     <div id="threeDotOverlay" class="hidden fixed inset-0 bg-transparent z-0"></div>
     {% endif %}
 </div>
-
-{% comment %} <div class="absolute -bottom-16 md:-bottom-20 left-[50%] transform -translate-x-1/2">
-    <img src="{{organization.logo.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40 object-cover cursor-pointer" onclick="viewProfile()">
-</div> {% endcomment %}

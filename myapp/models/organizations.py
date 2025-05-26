@@ -39,6 +39,7 @@ class organization(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     profile_views_followers = models.IntegerField(default=0, blank=True)
     profile_views_nonfollowers = models.IntegerField(default=0, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"{self.id} {self.name }"

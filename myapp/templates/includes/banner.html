@@ -46,7 +46,7 @@
         </div>
         <!-- profile pic inside banner -->
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
-            <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
+            <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
         </div>
     </div>
@@ -98,7 +98,7 @@
         </div>
         <!-- profile pic inside banner -->
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
-            <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
+            <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
         </div>
     </div>
@@ -137,7 +137,7 @@
             <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#6feb85" stroke-width="2">
                 <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                 <path
-                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l-.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v-.09A1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l-.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v-.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
         </div>
         <div class="terminal-icon absolute bottom-[5%] left-[5%]">
@@ -150,7 +150,7 @@
         </div>
         <!-- profile pic inside banner -->
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
-            <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
+            <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
         </div>
     </div>
@@ -202,14 +202,14 @@
         </div>
         <!-- profile pic inside banner -->
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
-            <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
+            <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
         </div>
     </div>
 {% else %}
 <div class="relative w-full h-32 bg-black md:h-64 dot-white">
     <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-3xl">
-        <img src="{{userinfo_obj.profile_image.url}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()" id="originalProfile">
+        <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()" id="originalProfile">
     </div>      
 </div>
 {% endif %}
