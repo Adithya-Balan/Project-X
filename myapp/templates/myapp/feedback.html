@@ -1,0 +1,35 @@
+{% extends "myapp/base.html" %}
+
+{% block title %}
+  Feedback & Bug Reporting - DevMate
+{% endblock %}
+
+{% block content %}
+  <!-- Feedback Page Container -->
+  <div class="min-h-screen bg-black text-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl w-full space-y-8 text-center">
+      <!-- Header Section -->
+      <h1 class="text-4xl font-bold text-[#00a63e] mb-4">We Value Your Input!</h1>
+      <p class="text-lg text-gray-300 mb-8">
+        DevMate is a platform for developers to collaborate on projects. Your feedback and bug reports help us improve the experience for everyone. Choose an option below to share your thoughts in a quick 3-minute form.
+      </p>
+
+      <!-- Buttons Section -->
+      <div class="flex flex-col sm:flex-row justify-center gap-6">
+        <!-- Feedback Button -->
+        <a href="https://forms.gle/SBjZiapjMvvif6Tc7" target="_blank" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+          Share Feedback
+        </a>
+        <!-- Bug Report Button -->
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfTFOm8Iury9Jh4IVV79Lonc7T7IbT_7hGxkXtlAoWhFAFjLA/viewform?pli=1" target="_blank" class="w-full sm:w-auto bg-gray-800 border-2 border-green-500 hover:bg-green-500  text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+          Report a Bug
+        </a>
+      </div>
+
+      <!-- Additional Info -->
+      <p class="text-sm text-gray-400 mt-6">
+        Your input is anonymous unless you choose to share your email in the form. Thank you for helping us make DevMate better!
+      </p>
+    </div>
+  </div>
+{% endblock %}

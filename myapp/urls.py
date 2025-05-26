@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # Auth
     path("contribute/", views.contribute_page, name="contribute_page"),
+    path("feedback/", views.feedback_page, name="feedback_page"),
     path("post-login-check/", views.post_login_check, name=""),
     
     # path("sign-up/", views.sign_up.as_view(), name="sign_up"),

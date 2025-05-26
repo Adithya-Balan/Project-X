@@ -183,10 +183,12 @@
                     {% endfor %} 
 
                     <!-- Notification 5 -->
-                    <div class="bg-white p-4 rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer mt-5">
-                        <p class="text-sm text-gray-700 leading-relaxed">
-                        This is the first version of Devmate — <span class="font-medium text-[#6feb85]">your gateway to connecting and collaborating with developers</span>
-                        </p>
+                    <div class="bg-white rounded-lg border border-gray-100 hover:border-[#6feb85] hover:shadow-md transition-all duration-200 cursor-pointer mt-5">
+                        <a href="{% url 'feedback_page' %}">
+                            <div class='p-4'>
+                                <p class="text-sm text-gray-700 leading-relaxed">Help us improve DevMate! <span class="font-medium text-green-600 underline">Share your feedback or report a bug</span> to make collaboration even better.</p>
+                            </div>
+                        </a>
                     </div>
                     
                 </div>

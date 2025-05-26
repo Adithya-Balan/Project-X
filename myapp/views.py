@@ -114,6 +114,9 @@ def signup_skills(request, uuid):
 def contribute_page(request):
     return render(request, 'myapp/contribute.html')
 
+def feedback_page(request):
+    return render(request, 'myapp/feedback.html')
+
 # @login_required
 def index(request):
     if not request.user.is_authenticated:
