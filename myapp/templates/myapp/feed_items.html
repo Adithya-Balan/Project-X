@@ -27,7 +27,7 @@
                     <a href='{% url "organization_detail" item.Organization.id %}' class="font-semibold">
                         {{ item.Organization.name }}
                     </a>
-                    <p class="text-xs text-gray-500">{{ item.created_at }}</p>
+                    <p class="text-xs text-gray-500">{{ item.created_at|date:"F j, Y" }}</p>
                 </div>
                 {% endif %}
             </div>
