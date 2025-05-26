@@ -206,7 +206,7 @@
                                 </div>
                                 <div class="flex items-end justify-between gap-x-3 relative pb-5">
                                     <div class="break-word mt-3">
-                                    {{comment.content}}
+                                    {{comment.content|linebreaksbr}}
                                     </div>
                                     <a href="#commentTextArea" class="replyBtn absolute right-5 -bottom-5 bg-black text-white px-5 py-1 rounded transition hover:scale-110" onclick="handleReply({{ comment.id }}, '{{ comment.user.user.first_name }}')">Reply</a>
                                 </div>
@@ -231,7 +231,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="break-word">
-                                            {{reply.content}}
+                                            {{reply.content|linebreaksbr}}
                                         </div>
                                         <p class="text-[#686868] text-right w-full">{{reply.created_at|date:"M j, Y"}}</p>
                                     </div>
