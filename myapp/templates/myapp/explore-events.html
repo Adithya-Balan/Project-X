@@ -148,7 +148,7 @@
                 <!-- Header -->
                 <div class="flex flex-row items-center justify-between w-full pb-4 border-b border-gray-100 mt-3 lg:mt-0">
                     <div class="flex items-center gap-x-3">
-                        <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
+                        <p class="text-xl font-semibold text-gray-800">Filters</p>
                         <div class="p-1.5 rounded-md bg-green-50">
                             <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="w-5 h-5 text-green-600">
                         </div>
@@ -163,11 +163,11 @@
 
                 <!-- Type Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Type
                         <i class="fa fa-dot-circle-o" aria-hidden="true"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for type in types %}
                         <a href="?mode={{ request.GET.mode|default:'' }}&type={% if request.GET.type == type.value %}{% else %}{{ type.value }}{% endif %}"
@@ -188,11 +188,11 @@
 
                 <!-- Mode Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Mode
                         <i class="fa-solid fa-map-pin"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for mode in modes %}
                         <a href="?type={{ request.GET.type|default:'' }}&mode={% if request.GET.mode == mode.value %}{% else %}{{ mode.value }}{% endif %}"

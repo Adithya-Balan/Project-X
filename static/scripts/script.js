@@ -13,12 +13,12 @@ function getCSRFToken() {
     return cookieValue;
 }
 
-// static/js/navbar.js
+// Post option navbar Menu
 document.addEventListener('DOMContentLoaded', () => {
     const popupTrigger = document.getElementById('popupTrigger');
     const postOptionTrigger = document.getElementById('postOptionTrigger');
     const popup = document.getElementById('popup');
-    const postOption = document.getElementById('postOption');
+    const postOption = document.getElementById('postOption'); // Fixed: Correct ID
 
     // Helper to toggle visibility
     const toggleElement = (element, showClass, hideClass) => {
@@ -64,6 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 };
                 document.addEventListener('click', closeOnOutside);
+
+                // Add click listeners to each option inside postOption to close the menu
+                postOption.querySelectorAll('.cursor-pointer').forEach(option => {
+                    option.addEventListener('click', () => {
+                        postOption.classList.add('hidden');
+                        postOption.classList.remove('absolute');
+                    });
+                });
             }
         });
     }

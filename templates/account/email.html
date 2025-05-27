@@ -13,7 +13,7 @@
     <a href="{% url 'settings_page' %}" class="mr-auto p-2 transition border-black hover:bg-white border hover:border-black hover:text-black bg-black text-white rounded h-fit self-center">
         <i class="fa-solid fa-arrow-left"></i><span>Back</span>
     </a>
-    <h1 class="text-3xl mt-6 font-bold text-gray-900 mb-6 text-center tracking-tight">Manage Email Addresses</h1>
+    <p class="text-3xl mt-6 font-bold text-gray-900 mb-6 text-center tracking-tight">Manage Email Addresses</p>
 
     <!-- Messages -->
     {% if messages %}
@@ -78,7 +78,7 @@
     </ul>
 
     <!-- Add Email Form -->
-    <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">Add Email Address</h2>
+    <p class="text-xl font-semibold text-gray-900 mb-4 text-center">Add Email Address</p>
     <form method="post" action="{% url 'account_email' %}" class="space-y-4">
       {% csrf_token %}
       <input type="email" name="email" required 

@@ -54,7 +54,7 @@
             <div class="mt-28 self-start max-[850px]:hidden block w-64 lg:w-80  min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
                 <div class="flex flex-col items-center">
                     <img src="{{user.info.profile_image.url}}" class="w-24 h-24 bg-gray-200 rounded-lg object-cover" alt="Profile Picture">
-                    <h2 class="mt-4 text-xl font-semibold text-black">{{user.username}}</h2>
+                    <p class="mt-4 text-xl font-semibold text-black">{{user.username}}</p>
                     <p class="text-sm text-gray-600 mt-1">{{user.info.status|default:""}}</p>
                     <p class="text-xs text-gray-500 mt-1">{{user.info.location|default:""}}</p>
                 </div>

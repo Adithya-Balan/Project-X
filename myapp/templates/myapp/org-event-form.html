@@ -4,7 +4,7 @@
 
 {% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
-
+{% block meta %}{{event_form.media}}{% endblock  %}
 {% endblock %} 
     
 
@@ -95,7 +95,7 @@
                     </div><hr class="border-t border-gray-200 my-8">
 
                     <!--Timings-->
-                    <h2 class="text-xl font-light text-black mb-4 mx-auto border-b pb-2">Event Schedule</h2>
+                    <p class="text-xl font-light text-black mb-4 mx-auto border-b pb-2">Event Schedule</p>
                     <div class="flex gap-x-3"> <!--Start date & time-->
                         <div class="flex flex-col gap-y-1 w-full"> 
                             <label for="">Event date</label>
@@ -125,7 +125,7 @@
                     </div><hr class="border-t border-gray-200 my-6">
 
                     <!--Organizers Detail-->
-                    <h2 class="text-xl font-light text-black mb-4 mx-auto border-b pb-2">Organizer Details</h2>
+                    <p class="text-xl font-light text-black mb-4 mx-auto border-b pb-2">Organizer Details</p>
                     <div class="flex flex-col gap-y-3">
                         <label for="eventOrganizerName">{{event_form.contact_name.label}}</label>
                        {{event_form.contact_name}}

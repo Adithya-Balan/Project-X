@@ -9,6 +9,7 @@ from django.forms.widgets import ClearableFileInput
 from django.core.exceptions import ValidationError
 from allauth.account.forms import SignupForm, LoginForm
 from django.contrib.auth import authenticate, get_user_model
+from tinymce.widgets import TinyMCE
 
 User = get_user_model()
 
@@ -122,7 +123,7 @@ class OrganizationForm(forms.ModelForm):
     )
     class Meta:
         model = organization
-        exclude = ['user', 'followers', 'profile_views_followers', 'profile_views_nonfollowers']
+        exclude = ['user', 'followers', 'profile_views_followers', 'profile_views_nonfollowers', 'updated_at']
 
         widgets = {
             'logo': forms.ClearableFileInput(attrs={
@@ -182,7 +183,7 @@ class EditProfileForm(forms.ModelForm):
     
     class Meta:
         model = userinfo
-        exclude = ['user', 'years_of_experience', 'skills', 'domains', 'profile_views']
+        exclude = ['user', 'years_of_experience', 'skills', 'domains', 'profile_views', 'updated_at']
         
         widgets = {
             'bio': forms.Textarea(attrs={'class': 'outline-none border border-black px-2 py-1', 'placeholder': 'Bio...', 'rows': 7,'cols': 40,}),
@@ -443,6 +444,11 @@ class EditSkillForm(forms.ModelForm):
         fields = ('skills',)
         
 class PostForm(forms.ModelForm):
+    content = forms.CharField(widget=TinyMCE(attrs={
+                'class': 'text-gray-700 w-full h-36 mx-auto',
+                'placeholder': 'Content....',
+                'id': 'eventDescription'
+            }))
     class Meta:
         model = post
         fields = ['file', 'content']
@@ -452,13 +458,18 @@ class PostForm(forms.ModelForm):
                 'id': 'uploadPost',
                 'name': 'post',
             }),
-            'content': forms.Textarea(attrs={
-                'class': 'text-gray-700 w-full h-36 outline-none resize-none',
-                'placeholder': 'Content....'
-            }),
+            # 'content': forms.Textarea(attrs={
+            #     'class': 'text-gray-700 w-full h-36 outline-none resize-none',
+            #     'placeholder': 'Content....'
+            # }),
         }
         
-class EventForm(forms.ModelForm):
+class EventForm(forms.ModelForm):          
+    description = forms.CharField(widget=TinyMCE(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-80',
+                'placeholder': 'Give a Brief Overview of the Event, details, rewards...',
+                'id': 'eventDescription'
+            }))
     class Meta:
         model = event
         exclude = ['organization', 'created_at', 'updated_at']
@@ -472,11 +483,6 @@ class EventForm(forms.ModelForm):
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-20',
                 'placeholder': 'Event Description',
                 'id': 'eventShortDescription'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-80',
-                'placeholder': 'Give a Brief Overview of the Event, details, rewards...',
-                'id': 'eventDescription'
             }),
             'event_type': forms.Select(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500',
@@ -575,7 +581,7 @@ class ProjectForm(forms.ModelForm):
                 'id': 'projectTitle'
             }),
             'description': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-40',
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 h-80',
                 'placeholder': 'Briefly describe your project, requirements and timeline.',
                 'id': 'projectDescription'
             }),

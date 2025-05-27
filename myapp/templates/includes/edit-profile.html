@@ -7,9 +7,9 @@
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeEdit()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>
         <div class="max-[500px]:self-stretch self-center flex flex-col gap-y-3 w-full lg:w-[85%]">
-            <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
+            <p class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
                 Edit Details
-            </h1>
+            </p>
             <div class="self-center mb-4">
                 <div class="flex gap-x-5 items-center max-[500px]:flex-col gap-y-5">
                     <div class="relative">
@@ -181,7 +181,7 @@
         class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full lg:w-2/5 px-5 border">
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeCurrentPosition()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>
-        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Edit Current Position</h1>
+        <p class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Edit Current Position</p>
         <input type ='hidden' name = 'form_type' value='current_position'>
         <div class="flex flex-col gap-y-1 w-full">
             <p>{{cp_form.name.label}}</p>
@@ -239,8 +239,8 @@
         class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full lg:w-2/5 px-5 border">
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditExp()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>
-        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Edit
-            Experience</h1>
+        <p class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Edit
+            Experience</p>
         <input type ='hidden' name = 'form_type' value='experience'>
         <div class="flex flex-col gap-y-1 w-full">
             <p>{{exp_form.name.label}}</p>
@@ -293,8 +293,8 @@
         class="relative flex flex-col gap-y-4 h-full overflow-y-scroll item-c py-10 bg-white w-full md:w-3/4 lg:w-2/5 px-5 border">
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditEducation()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>
-        <h1 class="mt-5 w-fit self-center text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded">Edit
-            Education</h1>
+        <p class="mt-5 w-fit self-center text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded">Edit
+            Education</p>
         <input type ='hidden' name = 'form_type' value='education'>
         <div class="flex flex-col gap-y-1 w-full">
             <p>{{edu_form.name.label}}</p>
@@ -350,7 +350,7 @@
     {% csrf_token %}
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditProject()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>
-        <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Add Work</h1>
+        <p class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">Add Work</p>
         <input type ='hidden' name = 'form_type' value='project'>
         <div class="flex flex-col gap-y-1 w-full">
             <p>{{project_form.name.label}}</p>

@@ -140,7 +140,7 @@
                 <!-- Header -->
                 <div class="flex flex-row items-center justify-between w-full pb-4 border-b border-gray-100 mt-3 lg:mt-0">
                     <div class="flex items-center gap-x-3">
-                        <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
+                        <p class="text-xl font-semibold text-gray-800">Filters</p>
                         <div class="p-1.5 rounded-md bg-green-50">
                             <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="w-5 h-5 text-green-600">
                         </div>
@@ -155,11 +155,11 @@
 
                 <!-- Type Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Type
                         <i class='fas fa-university'></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for type in types %}
                         <a href="?industry={{ request.GET.industry|default:'' }}&type={% if request.GET.type == type.value %}{% else %}{{ type.value }}{% endif %}"
@@ -180,11 +180,11 @@
 
                 <!-- Industry Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Industry
                         <i class="fa-solid fa-building"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for industry in industries %}
                         <a href="?type={{ request.GET.type|default:'' }}&industry={% if request.GET.industry == industry.id|stringformat:'s' %}{% else %}{{ industry.id|stringformat:'s' }}{% endif %}"

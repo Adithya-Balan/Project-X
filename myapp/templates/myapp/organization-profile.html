@@ -83,7 +83,7 @@
                     {% if section == 'overview' or section == '' %}
                     <div class="flex flex-col px-3 py-2 bg-white rounded-md md:px-5 gap-y-10">
                         <div class="flex flex-col text-justify gap-y-3 mt-3">
-                            <h1 class="text-xl font-bold">{ Description }</h1>
+                            <p class="text-xl font-bold">{ Description }</p>
                             <p class="break-words">
                                 {{organization.description|linebreaks}}
                             </p>
@@ -91,7 +91,7 @@
                         
                         {% comment %} Links {% endcomment %}
                         <div class="flex flex-col gap-y-2">
-                            <h1 class="text-xl font-bold">Links</h1>
+                            <p class="text-xl font-bold">Links</p>
                             {% if link_available %}
                                 <div class="flex flex-wrap gap-x-5 gap-y-2">
                                     {% for link, url in social_links.items %}
@@ -176,8 +176,8 @@
         <!-- similar Orgainization -->
         <div class="flex w-full lg:w-1/4 lg:mt-28 flex-col px-3 lg:px-2  gap-y-5 pb-14 lg:pb-0">
             <div class="flex flex-col gap-y-6 bg-white">
-                <h1 class="text-center text-2xl font-bold bg-[#000000] px-3 py-2 text-white rounded-md">Similar Organization
-                </h1>
+                <p class="text-center text-2xl font-bold bg-[#000000] px-3 py-2 text-white rounded-md">Similar Organization
+                </p>
                 {% if suggested_org %}
                 <!-- all Orgainization present inside this div -->
                 <div class="flex flex-col gap-y-5 px-3 py-5 pt-0">
@@ -240,9 +240,9 @@
             <div class="cursor-pointer absolute top-5 right-5" onclick="closeEdit()"><i
                     class="text-3xl fa-solid fa-circle-xmark"></i></div>
             <div class="max-[500px]:self-stretch self-center flex flex-col gap-y-3 w-full lg:w-[85%]">
-                <h1 class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
+                <p class="mt-5 text-2xl font-bold bg-black text-white px-3 py-1 text-center rounded w-fit self-center">
                     Edit Details
-                </h1>
+                </p>
                 <div class="self-center mb-4">
                     <div class="flex gap-x-5 items-center max-[500px]:flex-col gap-y-5">
                         <div class="relative">

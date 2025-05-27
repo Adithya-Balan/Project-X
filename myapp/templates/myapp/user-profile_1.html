@@ -82,14 +82,14 @@
                     {% if section == 'overview' or section == '' %}
                     <div class="flex flex-col px-3 py-5 bg-white rounded-md md:px-5 gap-y-9">
                         <div class="flex flex-col text-justify gap-y-3">
-                            {% if userinfo_obj.user.first_name %}<h1 class="text-lg font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</h1>{% else %}<h1 class="text-xl font-bold">{{userinfo_obj.user.username}}</h1>{% endif %}                            <p class="text-justify">
+                            {% if userinfo_obj.user.first_name %}<p class="text-lg font-bold">{{userinfo_obj.user.first_name}} {{userinfo_obj.user.last_name}}</p>{% else %}<p class="text-xl font-bold">{{userinfo_obj.user.username}}</p>{% endif %}                            <p class="text-justify">
                                 {% if userinfo_obj.bio %}{{userinfo_obj.bio|linebreaks}}{% else %}Not Updated Yet...{% endif %}
                             </p>
                         </div>
                         
                         {% comment %} Links {% endcomment %}
                         <div class="flex flex-col gap-y-2">
-                            <h1 class="text-lg font-bold">Links</h1>
+                            <p class="text-lg font-bold">Links</p>
                             {% if link_available %}
                             <div class="flex flex-wrap gap-x-5 gap-y-2">
                                 {% for link, url in social_links.items %}
@@ -118,7 +118,7 @@
                             <div class="absolute right-0 top-5 cursor-pointer"><img src="{% static 'assets/edit-tool-pencil.svg' %}" alt=""
                                     class="h-7 w-7" onclick="openEditCurrentPosition()"></div>
                             {% endif %}
-                            <h1 class="text-lg mb-2 font-bold">Current Position</h1>
+                            <p class="text-lg mb-2 font-bold">Current Position</p>
                             {% if userinfo_obj.current_position.name%}
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
@@ -126,7 +126,7 @@
                                         class="rounded-lg lg:w-12 lg:h-12 w-10 h-10">
                                 </div>
                                 <div class="w-4/5">
-                                    <h1 class="text-lg font-semibold">{{userinfo_obj.current_position.name}}</h1>
+                                    <p class="text-lg font-semibold">{{userinfo_obj.current_position.name}}</p>
                                     <p class="text-[#686868]">{{userinfo_obj.current_position.role}}</p>
                                     {% if userinfo_obj.current_position.description %}
                                     <div class='mt-2 text-[#686868]'>{{userinfo_obj.current_position.description}}</div>
@@ -162,7 +162,7 @@
                                     class="h-7 w-7" onclick="openEditEducation()"></div>
                             {% endif %}
                             <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="text-lg font-bold">Education</h1>
+                                <p class="text-lg font-bold">Education</p>
                             </div>
                             <div class="flex items-start justify-start gap-x-5">
                                 <div class="">
@@ -171,7 +171,7 @@
                                 </div>
                                 <div class="w-4/5" id = 'edu'>
                                     {% if userinfo_obj.education.name %}
-                                        <h1 class="text-lg font-semibold">{{userinfo_obj.education.name}}</h1>
+                                        <p class="text-lg font-semibold">{{userinfo_obj.education.name}}</p>
 
                                         {% if userinfo_obj.education.degree != none %}
                                             <p class="text-[#686868]">{{userinfo_obj.education.degree}}, {{userinfo_obj.education.field_of_study}}</p>
@@ -206,7 +206,7 @@
                     
                         <div class="flex flex-col gap-y-5 pb-4">
                             <div class="flex flex-col text-justify gap-y-3">
-                                <h1 class="mt-5 text-lg font-bold pb-2">{ Experience }</h1>
+                                <p class="mt-5 text-lg font-bold pb-2">{ Experience }</p>
                             </div>
                     
                             {% if exp_obj %}
@@ -216,7 +216,7 @@
                                 <img src="{% static 'assets/work-exp.svg' %}" alt="" class="w-12 h-12">
                     
                                 <div class="w-full min-w-0">
-                                    <h1 class="text-xl font-bold">{{ exp.name }}</h1>
+                                    <p class="text-xl font-bold">{{ exp.name }}</p>
                     
                                     <p class="text-[#686868]">{{ exp.role }}</p>
                                     {% if exp.description %}<p class="text-[#686868] mt-2">{{ exp.description}}</p>{% endif %}
@@ -438,7 +438,7 @@
                 </div>
                 {% endif %}
                 <div class='flex flex-row gap-x-1 mx-auto items-center'>
-                    <h1 class="text-xl font-semibold text-center">Skills</h1><hr class="border-t border-gray-300">
+                    <p class="text-xl font-semibold text-center">Skills</p><hr class="border-t border-gray-300">
                     <img src='{% static "assets/coding-svg.svg" %}' class='h-6 w-6'>
                 </div><hr class="border-t border-gray-200">
                 <form method='POST' class="flex-col gap-y-3 p-3 hidden" id="addSkillContainer">
@@ -476,7 +476,7 @@
 
             {% comment %}Trending project section {% endcomment %}    
             <div class="flex flex-col pb-20 bg-white md:pb-4 gap-y-3 md:w-1/2 lg:w-full">
-                <h1 class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</h1>
+                <p class="text-lg bg-[#303034] font-light text-center text-white px-3 py-2 rounded-md">Projects You’ll Love</p>
                 
                 {% for project in suggested_project %}
                 <div class="flex flex-col gap-y-2 border border-[#6868682f] mx-2 p-2 rounded-md">

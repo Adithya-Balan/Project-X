@@ -145,7 +145,7 @@
                 <!-- Header -->
                 <div class="flex flex-row items-center justify-between w-full pb-4 border-b border-gray-100 mt-3 lg:mt-0">
                     <div class="flex items-center gap-x-3">
-                        <h1 class="text-xl font-semibold text-gray-800">Filters</h1>
+                        <p class="text-xl font-semibold text-gray-800">Filters</p>
                         <div class="p-1.5 rounded-md bg-green-50">
                             <img src="{% static 'assets/filter.svg' %}" alt="Filter Icon" class="w-5 h-5 text-green-600">
                         </div>
@@ -160,11 +160,11 @@
 
                 <!-- Type Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Type
                         <i class="fa-solid fa-laptop-code"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for type in types %}
                         <a href="?domain={{ request.GET.domain|default:'' }}&type={% if request.GET.type == type %}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% else %}{{ type }}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% endif %}" 
@@ -185,11 +185,11 @@
 
                 <!-- Level Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Level
                         <i class="fa fa-dashboard"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for level in levels %}
                         <a href="?domain={{ request.GET.domain|default:'' }}&type={{ request.GET.type|default:'' }}&skill={{ request.GET.skill|default:'' }}&level={% if request.GET.level == level %}&{% else %}{{ level }}{% endif %}" 
@@ -210,11 +210,11 @@
 
                 <!-- Domains Filter -->
                 <div class="space-y-3">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Domains
                         <i class="fa-solid fa-lines-leaning"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for domain in top_domains %}
                         <a href="?domain={% if request.GET.domain == domain.id|stringformat:'s' %}&type={{ request.GET.type|default:'' }}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% else %}{{ domain.id }}&type={{ request.GET.type|default:'' }}&skill={{ request.GET.skill|default:'' }}&level={{ request.GET.level|default:'' }}{% endif %}" 
@@ -235,11 +235,11 @@
 
                 <!-- Skills Filter -->
                 <div class="space-y-3 pb-6">
-                    <h2 class="text-base font-medium text-gray-700 flex items-center gap-2">
+                    <p class="text-base font-medium text-gray-700 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#00a63e]"></span>
                         Skills
                         <i class="fa-solid fa-code"></i>
-                    </h2>
+                    </p>
                     <div class="flex flex-wrap gap-2">
                         {% for skill in top_skill %}
                         <a href="?domain={{ request.GET.domain|default:'' }}&type={{ request.GET.type|default:'' }}&skill={% if request.GET.skill == skill.id|stringformat:'s' %}&level={{ request.GET.level|default:'' }}{% else %}{{ skill.id }}&level={{ request.GET.level|default:'' }}{% endif %}" 

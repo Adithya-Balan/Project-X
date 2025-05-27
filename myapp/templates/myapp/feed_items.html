@@ -51,9 +51,9 @@
         </div>
 
         <!-- Post Content -->
-        <p class="mt-3 text-[#686868]">
-            {{item.content|linebreaksbr}}
-        </p>
+        <div class="prose max-w-none mt-3 text-gray-800">
+            {{item.content|safe}}
+        </div>
         {% comment %} ORIGINAL = video | 1:1: SQUARE object-cover | 16: 9 = VIDEO object-cover{% endcomment %}
         <div class="mt-3 w-full {% if item.aspect == 'Original' or item.aspect == '16:9' %}aspect-video {% else %} aspect-square{% endif %} overflow-hidden">
             <img src="{{item.file.url}}" alt="Post" class="w-full h-full {% if item.aspect == 'Original' %}object-contain{% else %} object-cover{% endif %}">  
@@ -196,7 +196,7 @@
     {% if forloop.counter0|add:offset == 10 %}
     <!-- suggested profile section -->
     <div class="w-full mt-2">
-        <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 px-2">{% if suggested_peoples %}Suggested Profiles{% endif %}</h2>
+        <p class="text-lg md:text-xl font-semibold mb-3 md:mb-4 px-2">{% if suggested_peoples %}Suggested Profiles{% endif %}</p>
 
         <div class="flex space-x-3 md:space-x-4 overflow-x-auto scrollbar-hide p-2">
             <!-- Profile Cards with responsive sizing -->

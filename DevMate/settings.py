@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django_select2',
     'storages',
     'admin_honeypot',
+    'tinymce',
 ]
 
 MIDDLEWARE = [

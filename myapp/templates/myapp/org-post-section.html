@@ -46,9 +46,9 @@
             
 
             <!-- Post Content -->
-            <p class="mt-3 text-[#686868]">
-                {{post.content|linebreaksbr}}
-            </p>
+            <div class="prose max-w-none mt-3 text-gray-800">
+                {{post.content|safe}}
+            </div>
             {% comment %} ORIGINAL = video | 1:1: SQUARE object-cover | 16: 9 = VIDEO object-cover{% endcomment %}
             <!-- Post Image -->
             <div class="mt-3 w-full {% if post.aspect == 'Original' or post.aspect == '16:9' %}aspect-video {% else %} aspect-square{% endif %} overflow-hidden">
