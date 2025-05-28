@@ -11,7 +11,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <a href='{% url "user_profile" userinfo_obj.user.username %}'>
-                        <img src="{{ post.user.profile_image.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
+                        <img src="{{post.user.profile_image.url}}?v={{post.user.updated_at.timestamp}}" alt="User" class="w-10 h-10 rounded-lg object-cover">
                     </a>
                     <div>
                         <a href='{% url "user_profile" userinfo_obj.user.username %}' class="font-semibold">
@@ -83,7 +83,7 @@
                     {% for comment in post.comments.all %}
                     <!-- single comment -->
                     <div class="flex items-start space-x-2" id="postComment{{ comment.id }}" >
-                        <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
+                        <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}?v={{comment.user.updated_at.timestamp}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
                         <div class="bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between">
                             <div>
                                 <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>

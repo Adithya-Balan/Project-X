@@ -20,7 +20,7 @@
             <!-- Profile Picture Section -->
             <div class="flex flex-col sm:flex-row items-center gap-6 mb-8">
                 <div class="relative">
-                    <img src="{{userinfo_obj.profile_image.url}}" alt="Profile Picture" 
+                    <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="Profile Picture" 
                          class="w-24 h-24 rounded-lg object-cover shadow-md transition-transform duration-300 hover:scale-105">
                     <span class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                         <i class="fas fa-camera text-white text-xs"></i> <!-- FontAwesome camera icon -->

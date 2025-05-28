@@ -20,7 +20,7 @@
             <div class="bg-white p-5 rounded-lg w-full md:w-3/5 flex flex-col gap-y-5">
                 <div class="flex items-center gap-x-5">
                     <div>
-                        <img src="{{project.creator.profile_image.url}}" alt="" class="w-14 h-14 rounded-lg">
+                        <img src="{{project.creator.profile_image.url}}?v={{project.creator.updated_at.timestamp}}" alt="" class="w-14 h-14 rounded-lg">
                     </div>
                     <div class="flex flex-col gap-y-2">
                         <div><span>Issued by</span> <span>@{{project.creator.user.username}}</span></div>
@@ -88,7 +88,7 @@
                     {% endif %}
                     <div class="text-2xl font-extrabold self-start mt-6 underline">Connect with Creator</div>
                     <div class="flex flex-col gap-y-4 text-base">
-                        <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank"><img src='{{project.creator.profile_image.url}}' class='w-20 h-20 rounded-lg'></a>
+                        <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank"><img src='{{project.creator.profile_image.url}}?v={{project.creator.updated_at.timestamp}}' class='w-20 h-20 rounded-lg'></a>
                         <div class="flex justify-between items-center gap-x-5">
                             <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank" class=""><i class="fa-regular fa-user"></i> &nbsp;<span class='hover:underline'>{{project.creator.user.first_name}} {{project.creator.user.last_name}}</span></a>
                             
@@ -198,7 +198,7 @@
                         <!-- question -->
                         <div class="bg-[#0000002d] shadow-md w-[95%] md:w-3/4 px-3 py-2 rounded-md">
                             <div class="flex gap-x-3 items-center relative">
-                                <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                <img src="{{comment.user.profile_image.url}}?v={{comment.user.updated_at.timestamp}}" alt="" class="w-10 h-10 rounded-lg">
                                 <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
                                 <p class="text-[#686868] text-xs">{{comment.created_at|date:"M j, Y"}}</p>
                                 {% if comment.user == user.info %}
@@ -225,7 +225,7 @@
                                 {% for reply in comment.replies.all %}
                                 <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3 shadow-md relative" id='reply-{{reply.id}}'>
                                     <div class="flex gap-x-4 items-center">
-                                        <img src="{{reply.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                        <img src="{{reply.user.profile_image.url}}?v={{reply.user.updated_at.timestamp}}" alt="" class="w-10 h-10 rounded-lg">
                                         <p class="font-bold pr-10 pl-2">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
                                         {% if reply.user == user.info %}
                                         <button class="right-2 delete-reply-comment absolute" data-id="{{ reply.id }}" data-type = "project_reply">

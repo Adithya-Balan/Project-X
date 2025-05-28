@@ -107,7 +107,7 @@
                             <div class="bg-white w-full">
                                 <div class="flex gap-x-3 justify-between items-end w-full py-4 rounded-md">
                                     <div class="flex gap-x-4 items-start">
-                                        <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank'><img src="{{event_obj.organization.logo.url}}" class="w-14 h-14 rounded-md"></a>
+                                        <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank'><img src="{{event_obj.organization.logo.url}}?v={{event_obj.organization.updated_at.timestamp}}" class="w-14 h-14 rounded-md"></a>
                                         <div class="flex flex-col gap-y-1">
                                             <a href='{% url "organization_detail" event_obj.organization.id %}' target = '_blank' class="font-bold text-xl">{{event_obj.organization.name}}</a>
                                             <p class="text-[#575656]">{{event_obj.organization.industry.name}}</p>
@@ -196,7 +196,7 @@
                             <!-- question -->
                             <div class="bg-[#0000002d] w-[95%] md:w-3/4 px-3 py-2 rounded-md" >
                                 <div class="flex gap-x-3 items-center relative">
-                                    <img src="{{comment.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                    <img src="{{comment.user.profile_image.url}}?v={{comment.user.updated_at.timestamp}}" alt="" class="w-10 h-10 rounded-lg">
                                     <p class="font-bold">{{comment.user.user.first_name}} {{comment.user.user.last_name}}</p>
                                     <p class="text-[#686868] text-xs">{{comment.created_at|date:"M j, Y"}}</p>
                                     {% if comment.user == user.info %}
@@ -223,7 +223,7 @@
                                     {% for reply in comment.replies.all %}
                                     <div class="ml-auto max-w-[95%] md:max-w-[75%] bg-[#f6f6f6] px-3 py-2 rounded-md flex flex-col gap-y-3 relative" id='reply-{{reply.id}}'>
                                         <div class="flex gap-x-4 items-center">
-                                            <img src="{{reply.user.profile_image.url}}" alt="" class="w-10 h-10 rounded-lg">
+                                            <img src="{{reply.user.profile_image.url}}?v={{reply.user.updated_at.timestamp}}" alt="" class="w-10 h-10 rounded-lg">
                                             <p class="font-bold pr-10 pl-2">{{reply.user.user.first_name}} {{reply.user.user.last_name}}</p>
                                             {% if reply.user == user.info %}
                                             <button class="right-2 delete-event-reply absolute" data-id="{{ reply.id }}" data-type = "event_reply">

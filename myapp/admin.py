@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import organization, skill, userinfo, education, current_position, experience, follow, projects, Domain,  user_project, project_comment, project_reply, user_status, SavedItem, post, post_comments, event, Notification, Industry, CringeBadge
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 # Register your models here.
 admin.site.register(skill)
@@ -36,3 +38,8 @@ class projectsAdmin(admin.ModelAdmin):
     # Show UUID as read-only in the detail/edit page
     readonly_fields = ('uuid',)
     
+class CustomUserAdmin(UserAdmin):
+    ordering = ['-date_joined']
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)

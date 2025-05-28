@@ -119,7 +119,8 @@ class Postsignup_infoForm(forms.ModelForm):
 
 class OrganizationForm(forms.ModelForm):
     founded_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        required=False
     )
     class Meta:
         model = organization

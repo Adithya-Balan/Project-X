@@ -19,7 +19,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <a href='{% url "organization_detail" organization.id %}'>
-                    <img src="{{post.Organization.logo.url}}" alt="Organization" class="w-10 h-10 rounded-lg object-cover"></a>
+                    <img src="{{post.Organization.logo.url}}?v={{post.Organization.updated_at.timestamp}}" alt="Organization" class="w-10 h-10 rounded-lg object-cover"></a>
                     <div>
                         <a href='{% url "organization_detail" organization.id %}' class="font-semibold">{{post.Organization.name}}</a>
                         <p class="text-xs text-gray-500">{{ post.created_at|date:"F j, Y" }}</p>
@@ -89,7 +89,7 @@
                     {% for comment in post.comments.all %}
                     <!-- single comment -->
                     <div class="flex items-start space-x-2" id="postComment{{ comment.id }}" >
-                        <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
+                        <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}?v={{comment.user.updated_at.timestamp}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
                         <div class="bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between">
                             <div>
                                 <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>

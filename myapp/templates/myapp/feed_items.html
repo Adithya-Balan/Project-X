@@ -11,7 +11,7 @@
             <div class="flex items-center space-x-3">
                 {% if item.user %}
                 <a href='{% url "user_profile" item.user.user.username %}'>
-                    <img src="{{ item.user.profile_image.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
+                    <img src="{{ item.user.profile_image.url }}?v={{item.user.updated_at.timestamp}}" alt="User" class="w-10 h-10 rounded-lg object-cover">
                 </a>
                 <div>
                     <a href='{% url "user_profile" item.user.user.username %}' class="font-semibold">
@@ -21,7 +21,7 @@
                 </div>
                 {% elif item.Organization %}
                 <a href='{% url "organization_detail" item.Organization.id %}'>
-                    <img src="{{ item.Organization.logo.url }}" alt="User" class="w-10 h-10 rounded-lg object-cover">
+                    <img src="{{ item.Organization.logo.url }}?v={{item.Organization.updated_at.timestamp}}" alt="User" class="w-10 h-10 rounded-lg object-cover">
                 </a>
                 <div>
                     <a href='{% url "organization_detail" item.Organization.id %}' class="font-semibold">
@@ -93,7 +93,7 @@
                 {% for comment in item.comments.all %}
                 <!-- single comment -->
                 <div class="flex items-start space-x-2" id="postComment{{ comment.id }}" >
-                    <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
+                    <a href='{% url "user_profile" comment.user.user.username %}'><img src="{{comment.user.profile_image.url}}?v={{comment.user.updated_at.timestamp}}" alt="User" class="w-8 h-8 rounded-sm object-cover"></a>
                     <div class="bg-gray-50 p-2 rounded-lg w-full flex flex-row items-center justify-between">
                         <div>
                             <a href='{% url "user_profile" comment.user.user.username %}' class="text-sm font-semibold -mt-2">{{comment.user.user.username}}</a>
@@ -203,7 +203,7 @@
             {% for people in suggested_peoples %}
             <div class="w-36 md:w-48 bg-white border border-gray-300 p-2 md:p-4 rounded-lg flex flex-col gap-y-1 items-center text-center shrink-0 shadow-lg">
                 <a href='{% url "user_profile" people.user.username %}'>
-                    <img src="{{people.profile_image.url}}" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2 mx-auto">
+                    <img src="{{people.profile_image.url}}?v={{people.updated_at.timestamp}}" class="w-10 h-10 md:w-16 md:h-16 rounded-lg mb-1 md:mb-2 mx-auto">
                     <p class="text-xs font-semibold md:text-sm text-center">@{{people.user.username}}</p>
                     <p class='text-center text-gray-600'>{% if people.status %}{{ people.status }}{% else %}{{people.user.first_name}} {{people.user.last_name}}{% endif %}</p>
                     <p class="text-gray-500 text-xs md:text-sm mt-1">{{people.cringe_badge|default:"&nbsp;"}}</p>

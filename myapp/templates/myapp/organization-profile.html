@@ -186,7 +186,7 @@
                     <!-- single Orgainization -->
                     <div class="flex gap-x-3  justify-between items-center border border-gray-300 w-full px-3 py-4 rounded-md">
                         <div class="flex gap-x-4 items-start">
-                            <a href='{% url "organization_detail" org.id %}' class="flex-shrink-0"><img src="{{org.logo.url}}" class="h-12 rounded-md w-12"></a>
+                            <a href='{% url "organization_detail" org.id %}' class="flex-shrink-0"><img src="{{org.logo.url}}?v={{org.updated_at.timestamp}}" class="h-12 rounded-md w-12"></a>
                             <div class="flex flex-col gap-y-3">
                                 <a href='{% url "organization_detail" org.id %}' class="underline font-bold text-lg">{{org.name}}</a>
                                 <div class='-mt-1'>

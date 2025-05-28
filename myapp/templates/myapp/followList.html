@@ -39,7 +39,7 @@
                         <div class="bg-white px-3 py-3 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
                             <div class="flex gap-x-5 ">
                                 <div class="">
-                                    <div><a href="{% url 'user_profile' people.user.username %}"><img src="{{people.profile_image.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
+                                    <div><a href="{% url 'user_profile' people.user.username %}"><img src="{{people.profile_image.url}}?v={{people.updated_at.timestamp}}" class="rounded-lg w-14 h-14" alt=""></a></div>
                                 </div>
                                 <div class="flex flex-col gap-y-1 ">
                                     <a href="{% url 'user_profile' people.user.username %}" class="font-semibold cursor-pointer hover:underline transition text-base">{{people.user.first_name}} {{people.user.last_name}}</a>
@@ -69,7 +69,7 @@
                         <div class="bg-white px-3 py-2 rounded-md flex g items-center w-full flex-wrap gap-y-2 justify-between max-[470px]:flex-col max-[470px]:items-start">
                             <div class="flex gap-x-5 ">
                                 <div class="">
-                                    <div><a href="{% url 'organization_detail' org.id %}"><img src="{{org.logo.url}}" class="rounded-lg w-14 h-14" alt=""></a></div>
+                                    <div><a href="{% url 'organization_detail' org.id %}"><img src="{{org.logo.url}}?v={{org.updated_at.timestamp}}" class="rounded-lg w-14 h-14" alt=""></a></div>
                                 </div>
                                 <div class="flex flex-col gap-y-1 ">
                                     <a href="{% url 'organization_detail' org.id %}" class="font-semibold text-base cursor-pointer hover:underline transition">{{org.name}}</a>

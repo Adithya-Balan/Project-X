@@ -60,7 +60,7 @@
                             {% for dev in filter_user %}
                             <div class="flex gap-x-2 bg-white px-5 py-5 items-start justify-between gap-y-2 max-[450px]:flex-col rounded-lg shadow-md">
                                 <div class="flex gap-x-4 lg:gap-x-5 w-full">
-                                    <a href='{% url "user_profile" dev.user.username %}' class="w-14 h-14"><img src="{{dev.profile_image.url}}" alt="" class="rounded-lg"></a>
+                                    <a href='{% url "user_profile" dev.user.username %}' class="w-14 h-14"><img src="{{dev.profile_image.url}}?v={{dev.updated_at.timestamp}}" alt="" class="rounded-lg"></a>
                                     <div class="flex flex-col gap-y-1 w-full">
                                         <a href='{% url "user_profile" dev.user.username %}' class="font-semibold cursor-pointer text-lg hover:underline">{{dev.user.first_name}} {{dev.user.last_name}}</a>
                                         <p>@{{dev.user.username}}</p>
