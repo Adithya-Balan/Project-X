@@ -95,7 +95,7 @@ class education(models.Model):
     till_now = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"{self.id}-{self.name}"
+        return f"{self.id}-{self.user}"
     
 class current_position(models.Model):  #Auto create.
     user = models.OneToOneField(userinfo, on_delete=models.CASCADE, related_name='current_position')
@@ -108,7 +108,7 @@ class current_position(models.Model):  #Auto create.
     
     
     def __str__(self):
-        return f"{self.id}-{self.name}"
+        return f"{self.id}-{self.user}"
     
 class user_project(models.Model):
     user = models.ForeignKey(userinfo, related_name='projects', on_delete=models.CASCADE)

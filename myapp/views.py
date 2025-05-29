@@ -20,6 +20,7 @@ from itertools import groupby
 from .algorithms import get_explore_users, get_personalized_feed, top_skills_list
 from allauth.account.views import PasswordChangeView
 from django.contrib import messages
+from .utils import send_notification_email
 
 # Create your views here.
 class CustomPasswordChangeView(PasswordChangeView):
@@ -162,8 +163,9 @@ def load_more_feed(request):
 @login_required
 def notification_page(request):
     post_form = PostForm()
-    notifications = Notification.objects.filter(user=request.user.info, is_read=False).order_by('-created_at')
-    count = notifications.count()
+    base_notifications = Notification.objects.filter(user=request.user.info).order_by('-created_at')
+    unread_count = base_notifications.filter(is_read=False).count()
+    notifications = base_notifications[:70]
     # Group notifications by time
     today = localtime(now()).date()
     yesterday = today - timedelta(days=1)
@@ -187,15 +189,14 @@ def notification_page(request):
             grouped_notifications["This Week"].append(notification)
         else:
             grouped_notifications["Older"].append(notification)
-            
-    notifications.update(is_read=True)
-
+                  
+    # Mark unread notifications as read after viewing 
+    Notification.objects.filter(user=request.user.info, is_read=False).update(is_read=True)
     context = {
         "grouped_notifications": grouped_notifications,
         "post_form": post_form,
-        'notification_count': count
+        'notification_count': unread_count
     }
-    print(grouped_notifications)
     return render(request, 'myapp/notification.html', context)
 
 @login_required
@@ -376,7 +377,8 @@ def follow_user(request, otheruserinfo_id):
     user = request.user.info
     if user != otheruser:
         user.follow(otheruser)
-        Notification.objects.create(user=otheruser, sender=user, notification_type="follow")
+        notify = Notification.objects.create(user=otheruser, sender=user, notification_type="follow")
+        send_notification_email(otheruser, f'🧑‍💻 {user.user.username} {notify.get_notification_type_display()}!')
         return JsonResponse({"status": "followed", "message": "User followed successfully.", 'followers_count': otheruser.get_followers().count(), 'following_count': otheruser.get_following().count()})
     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
     
@@ -612,6 +614,7 @@ def follow_organization(request, organization_id):
         if user_info not in org.followers.all() and user_info != org.user.info:
             org.followers.add(user_info)
             Notification.objects.create(user=org.user.info, sender=user_info, notification_type='follow', organization=org)
+            send_notification_email(org.user.info, f'🧑‍💻 {user_info.user.username} Started Following {org.name}')
             return JsonResponse({'status': 'followed', 'action': 'follow', 'message': 'You are now following this organization.', 'followers_count': org.get_followers().count()})
         else:
             return JsonResponse({'status': 'error', 'message': 'You are already following this organization.'}, status=400)
@@ -856,12 +859,14 @@ def project_forum(request, id):
             parent_comment = get_object_or_404(project_comment, id = parent_comment_id)
             r = project_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
             if parent_comment.user != userinfo_obj:
-                Notification.objects.create(user=r.comment.user, sender=userinfo_obj, project_reply=r, notification_type='project_reply')
+                notify = Notification.objects.create(user=r.comment.user, sender=userinfo_obj, project_reply=r, notification_type='project_reply')
+                send_notification_email(r.comment.user, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} on \"{r.comment.project.title}\"!\n\n💬 {r.content[:50]}...')
             redirect_url = f"{reverse('project_detail', args=[project.id])}#reply-{r.id}"
         else:
             c = project_comment.objects.create(user=userinfo_obj, project= project,content = content)
             if project.creator != userinfo_obj:
-                Notification.objects.create(user= project.creator, sender=userinfo_obj, project_comment=c, notification_type = 'project_comment')
+                notify = Notification.objects.create(user= project.creator, sender=userinfo_obj, project_comment=c, notification_type = 'project_comment')
+                send_notification_email(project.creator, f"🧑‍💻 {userinfo_obj.user.username} just {notify.get_notification_type_display()} \"{c.project.title}\"!\n\n💬 {c.content[:50]}...")
             redirect_url = f"{reverse('project_detail', args=[project.id])}#comment-{c.id}"
 
     return redirect(redirect_url)
@@ -878,7 +883,8 @@ def join_project(request, id):
         project.members.add(userinfo_obj)
         joined = True
         if userinfo_obj != project.creator:
-            Notification.objects.create(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project')
+            notify = Notification.objects.create(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project')
+            send_notification_email(project.creator, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} \"{notify.project.title}\" 🚀')
     return JsonResponse({"joined": joined, "total_member": project.tot_member()})
 
 @login_required
@@ -1024,12 +1030,14 @@ def event_forum(request, id):
             parent_comment = get_object_or_404(event_comment, id = parent_comment_id)
             r = event_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
             if parent_comment.user != userinfo_obj:
-                Notification.objects.create(user=r.comment.user, sender=userinfo_obj, event_reply=r, notification_type='event_reply')
+                notify = Notification.objects.create(user=r.comment.user, sender=userinfo_obj, event_reply=r, notification_type='event_reply')
+                send_notification_email(r.comment.user, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} on Event \"{r.comment.event.title}\"!\n\n💬 {r.content[:50]}...')
             redirect_url = f"{reverse('event_detail', args=[Event.id])}#reply-{r.id}"
         else:
             c = event_comment.objects.create(user=userinfo_obj, event=Event ,content = content)
             if Event.organization.user != request.user:
-                Notification.objects.create(user=c.event.organization.user.info, sender=userinfo_obj, event_comment=c, notification_type='event_comment')
+                notify = Notification.objects.create(user=c.event.organization.user.info, sender=userinfo_obj, event_comment=c, notification_type='event_comment')
+                send_notification_email(c.event.organization.user.info, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} \"{c.event.title}\"!\n\n💬 {c.content[:50]}...')
             redirect_url = f"{reverse('event_detail', args=[Event.id])}#comment-{c.id}"
 
     return redirect(redirect_url)
@@ -1136,7 +1144,11 @@ def toggle_like(request, post_id):
         post_obj.likes.add(userinfo_obj)
         liked = True
         if userinfo_obj != post_owner and post_owner:
-            Notification.objects.create(user=post_owner, sender=userinfo_obj, notification_type="like", post=post_obj)
+            notify = Notification.objects.create(user=post_owner, sender=userinfo_obj, notification_type="like", post=post_obj)
+            if post_obj.user:
+                send_notification_email(post_owner, f'🧑‍💻 {userinfo_obj.user.username} Liked one of your Post 💚')
+            elif post_obj.Organization:
+                send_notification_email(post_owner, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} 💚 on {post_obj.Organization.name}!')
     return JsonResponse({'liked': liked, 'total_likes': post_obj.total_likes()}) 
 
 @login_required
@@ -1212,6 +1224,10 @@ def save_comment(request):
     profile_image_url = comment.user.profile_image.url
     if request.user.info != post_owner:
         Notification.objects.create(user=post_owner, sender=request.user.info, notification_type="comment", post_comment=comment)
+        if Post_obj.user:
+            send_notification_email(post_owner, f'🧑‍💻 {request.user.username} Commented on one of your post\n\n💬 {comment_text[:50]}...')
+        elif Post_obj.Organization:
+            send_notification_email(post_owner, f'🧑‍💻 {request.user.username} Commented on {Post_obj.Organization.name}\'s post\n\n💬 {comment_text[:50]}...')
     data = {
         'username': comment.user.user.username,
         'comment': comment.content,

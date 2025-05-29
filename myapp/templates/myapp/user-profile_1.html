@@ -39,7 +39,11 @@
                     <div class="flex-col flex items-center justify-between mt-14 md:mt-10  pb-5 bg-white rounded-md md:ml-auto w-full gap-y-2">
                         <div class="flex flex-col py-3 pt-5 gap-y-2 md:gap-y-4 md:mt-0 items-center px-3">
                             <div class="text-xl font-bold">{ {{userinfo_obj.user.username}} }</div>
+                            {% if userinfo_obj.cringe_badge %}
                             <div class="text-[#5a5858]">{{userinfo_obj.cringe_badge.emoji}} {{userinfo_obj.cringe_badge.name}}</div>
+                            {% else %}
+                            <div class="text-[#5a5858]">{{userinfo_obj.status.name}}</div>
+                            {% endif %}
                             {% if userinfo_obj.location %}<div class="text-[#686868]"><i class="fa-solid fa-location-dot"></i>&nbsp; {{userinfo_obj.location}}</div>{% endif %}
 
                             <div class="flex gap-x-2">
