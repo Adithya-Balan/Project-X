@@ -9,7 +9,7 @@ class CringeBadge(models.Model):
     def __str__(self):
         return f"{self.emoji} {self.name}"
 
-class skill(models.Model):
+class skill(models.Model): #Skills
     category_choices = [
     ('Programming Language', 'Programming Language'),
     ('Framework', 'Framework'),
