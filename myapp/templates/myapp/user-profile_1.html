@@ -369,7 +369,7 @@
                             <!-- start of 1st project -->
                             {% for project in user_created_project %}
                             <div class="relative flex flex-col px-5 pt-3 pb-2 bg-white rounded-xl gap-y-4 w-full border border-gray-300">
-                                <div class="flex items-center justify-between gap-x-5 py-2">
+                                <div class="flex items-center justify-between gap-x-5 py-2 mt-3">
                                     <div class="flex items-start w-full gap-x-1">
         
                                         <a href="{% url 'project_detail' project.id %}" class="w-1/6 md:w-[10%]"><img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md object-cover"></a>

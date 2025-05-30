@@ -10,9 +10,14 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 {% if item.user %}
-                <a href='{% url "user_profile" item.user.user.username %}'>
-                    <img src="{{ item.user.profile_image.url }}?v={{item.user.updated_at.timestamp}}" alt="User" class="w-10 h-10 rounded-lg object-cover">
-                </a>
+                <div class="relative inline-block">
+                    <a href='{% url "user_profile" item.user.user.username %}'>
+                        <img src="{{ item.user.profile_image.url }}?v={{item.user.updated_at.timestamp}}" alt="User" class="w-12 h-12 rounded-lg object-cover">    
+                        {% if item.user.last_seen|is_online %}
+                            <span class="absolute bottom-0 right-0 block w-3 h-3 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+                        {% endif %}
+                    </a>
+                </div>
                 <div>
                     <a href='{% url "user_profile" item.user.user.username %}' class="font-semibold">
                         {{ item.user.user.first_name }} {{ item.user.user.last_name }}

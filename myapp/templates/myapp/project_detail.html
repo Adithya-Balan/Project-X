@@ -88,7 +88,18 @@
                     {% endif %}
                     <div class="text-2xl font-extrabold self-start mt-6 underline">Connect with Creator</div>
                     <div class="flex flex-col gap-y-4 text-base">
-                        <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank"><img src='{{project.creator.profile_image.url}}?v={{project.creator.updated_at.timestamp}}' class='w-20 h-20 rounded-lg'></a>
+                        <div class="inline-block">
+                            <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank">
+                                <div class="relative w-20 h-20">
+                                    <img src="{{ project.creator.profile_image.url }}?v={{ project.creator.updated_at.timestamp }}"
+                                        class="w-20 h-20 rounded-lg object-cover">
+                                    
+                                    {% if project.creator.last_seen|is_online %}
+                                        <span class="absolute bottom-1 right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full" title="Active"></span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
                         <div class="flex justify-between items-center gap-x-5">
                             <a href="{% url 'user_profile' project.creator.user.username %}" target="_blank" class=""><i class="fa-regular fa-user"></i> &nbsp;<span class='hover:underline'>{{project.creator.user.first_name}} {{project.creator.user.last_name}}</span></a>
                             

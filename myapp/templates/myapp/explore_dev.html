@@ -60,7 +60,16 @@
                             {% for dev in filter_user %}
                             <div class="flex gap-x-2 bg-white px-5 py-5 items-start justify-between gap-y-2 max-[450px]:flex-col rounded-lg shadow-md">
                                 <div class="flex gap-x-4 lg:gap-x-5 w-full">
-                                    <a href='{% url "user_profile" dev.user.username %}' class="w-14 h-14"><img src="{{dev.profile_image.url}}?v={{dev.updated_at.timestamp}}" alt="" class="rounded-lg"></a>
+                                    {% comment %} <a href='{% url "user_profile" dev.user.username %}' class="h-14 w-14"><img src="{{dev.profile_image.url}}?v={{dev.updated_at.timestamp}}" alt="" class="rounded-lg"></a> {% endcomment %}
+                                    <div class="relative inline-block">
+                                        <a href='{% url "user_profile" dev.user.username %}'>
+                                            <img src="{{ dev.profile_image.url }}?v={{ dev.updated_at.timestamp }}" alt="" class="rounded-lg w-16 h-14 object-cover">
+                                        
+                                        {% if dev.last_seen|is_online %}
+                                            <span class="absolute bottom-5 right-0 block w-3 h-3 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+                                        {% endif %}
+                                        </a>
+                                    </div>
                                     <div class="flex flex-col gap-y-1 w-full">
                                         <a href='{% url "user_profile" dev.user.username %}' class="font-semibold cursor-pointer text-lg hover:underline">{{dev.user.first_name}} {{dev.user.last_name}}</a>
                                         <p>@{{dev.user.username}}</p>

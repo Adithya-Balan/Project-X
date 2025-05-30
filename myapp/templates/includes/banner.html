@@ -1,4 +1,5 @@
-{% load static %}    
+{% load static %}  
+{% load custom_filter %}  
 {% if userinfo_obj.get_availability_display == 'Available for collaboration' %}
     <!-- Banner 1 -->
     <div class="developer-banner flex flex-col items-center justify-center mx-auto h-60 md:h-96">
@@ -47,7 +48,11 @@
         <!-- profile pic inside banner -->
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
             <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
-                id="originalProfile">
+                id="originalProfile">   
+
+            {% if userinfo_obj.last_seen|is_online %}
+                <span class="absolute bottom-1 right-1 block w-4 h-4 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+            {% endif %}
         </div>
     </div>
 
@@ -100,6 +105,9 @@
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
             <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
+            {% if userinfo_obj.last_seen|is_online %}
+                <span class="absolute bottom-1 right-1 block w-4 h-4 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+            {% endif %}
         </div>
     </div>
 {% elif userinfo_obj.get_availability_display == 'Open to freelance collaboration' %}
@@ -152,6 +160,9 @@
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
             <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
+            {% if userinfo_obj.last_seen|is_online %}
+                <span class="absolute bottom-1 right-1 block w-4 h-4 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+            {% endif %}
         </div>
     </div>
 {% elif userinfo_obj.get_availability_display == 'Unavailable' %}
@@ -204,12 +215,18 @@
         <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-lg">
             <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()"
                 id="originalProfile">
+            {% if userinfo_obj.last_seen|is_online %}
+                <span class="absolute bottom-1 right-1 block w-4 h-4 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+            {% endif %}
         </div>
     </div>
 {% else %}
 <div class="relative w-full h-32 bg-black md:h-64 dot-white">
     <div class="absolute -bottom-16 md:-bottom-20 left-[calc(50%-4rem)] bg-black rounded-3xl">
-        <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-3xl w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()" id="originalProfile">
+        <img src="{{userinfo_obj.profile_image.url}}?v={{userinfo_obj.updated_at.timestamp}}" alt="" class="rounded-lg w-32 h-32 md:w-40 md:h-40" onclick="viewProfile()" id="originalProfile">
+        {% if userinfo_obj.last_seen|is_online %}
+                <span class="absolute bottom-1 right-1 block w-4 h-4 bg-green-500 border-2 border-white rounded-full" title='Active'></span>
+        {% endif %}
     </div>      
 </div>
 {% endif %}

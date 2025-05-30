@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from .filter import skill, Domain, user_status, CringeBadge
 from phonenumber_field.modelfields import PhoneNumberField
+from django.utils import timezone
 
 class userinfo(models.Model):
     GENDER_CHOICES = [
@@ -45,6 +46,7 @@ class userinfo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     needs_profile_completion = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
         return self.user.username 
