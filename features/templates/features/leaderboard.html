@@ -17,7 +17,7 @@
         <!-- Main Heading -->
         <div class="flex flex-col items-center justify-center mb-4">
           <span class="text-yellow-400 text-5xl mb-2">💻</span>
-          <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-sm">
+          <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-white drop-shadow-sm">
             This Week's <span class="text-yellow-400">Trending Developers</span>
           </h2>
           <p class="text-sm sm:text-base text-gray-400 mt-2">
@@ -52,8 +52,8 @@
       
       {% if top_2 %}
       <!-- 🥈 Second -->
-      <div class="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl p-5 flex flex-col items-center shadow-md">
-        <div class="text-2xl mb-2">🥈</div>
+      <div class="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl p-4 flex flex-col items-center shadow-md">
+        <div class="text-4xl mb-4">🥈</div>
         <a href="{% url 'user_profile' top_2.user.user.username %}">
           <img src="{{top_2.user.profile_image.url}}?v={{top_2.user.updated_at.timestamp}}" class="w-20 h-20 rounded-full border-4 border-gray-300 shadow-lg mb-2" />
         </a>
@@ -67,8 +67,8 @@
 
       {% if top_1 %}
       <!-- 🥇 First -->
-      <div class="bg-gradient-to-b from-yellow-500 to-yellow-600 text-black rounded-xl p-5 flex flex-col items-center shadow-xl scale-105 z-10">
-        <div class="text-2xl mb-2">🥇</div>
+      <div class="bg-gradient-to-b from-yellow-500 to-yellow-600 text-black rounded-xl p-5 flex flex-col items-center shadow-xl scale-105 lg:scale-110 z-10">
+        <div class="text-4xl mb-4">🥇</div>
         <a href="{% url 'user_profile' top_1.user.user.username %}">
           <img src="{{top_1.user.profile_image.url}}?v={{top_1.user.updated_at.timestamp}}" class="w-24 h-24 rounded-full border-4 border-yellow-300 shadow-lg mb-2" />
         </a>
@@ -82,8 +82,8 @@
 
       {% if top_3 %}
       <!-- 🥉 Third -->
-      <div class="bg-gradient-to-b from-amber-700 to-amber-800 rounded-xl p-5 flex flex-col items-center shadow-md">
-        <div class="text-2xl mb-2">🥉</div>
+      <div class="bg-gradient-to-b from-amber-700 to-amber-800 rounded-xl p-4 flex flex-col items-center shadow-md">
+        <div class="text-4xl mb-4">🥉</div>
         <a href="{% url 'user_profile' top_3.user.user.username %}">
           <img src="{{top_3.user.profile_image.url}}?v={{top_3.user.updated_at.timestamp}}" class="w-20 h-20 rounded-full border-4 border-amber-400 shadow-lg mb-2" />
         </a>
@@ -102,7 +102,7 @@
       <div class="bg-slate-800 px-5 py-4 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between shadow-md">
         <div class="flex items-center gap-4 min-w-0">
           <div class="text-gray-400 font-bold text-base">#{{ forloop.counter|add:3 }}</div>
-          <img src="{{leaderboard_obj.user.profile_image.url}}?v={{leaderboard_obj.user.updated_at.timestamp}}" class="w-14 h-14 rounded-full border border-slate-600" />
+          <a href="{% url 'user_profile' leaderboard_obj.user.user.username %}"><img src="{{leaderboard_obj.user.profile_image.url}}?v={{leaderboard_obj.user.updated_at.timestamp}}" class="w-14 h-14 rounded-full border border-slate-600" /></a>
           <a href="{% url 'user_profile' leaderboard_obj.user.user.username %}" class="font-medium truncate hover:underline">{{ leaderboard_obj.user.user.username }}</a>
         </div>
         <div class="mt-2 sm:mt-0 text-right">
@@ -113,9 +113,5 @@
       {% endfor %}
     </div>
   </div>
-
-   {% include "includes/create-post.html" %}
-  <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-
 </body>
 {% endblock %}
