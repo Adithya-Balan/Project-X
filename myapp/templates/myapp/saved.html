@@ -67,8 +67,7 @@
                                     <div class='break-words'>{{project.description|truncatewords:30}}...</div>
                                     <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
                                         <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
-                                            <span><a href='{% url "user_profile" project.creator.user.username %}' class='hover:underline'>{{project.creator.user.username}}</a></span> <span class="hidden md:block">●</span> <span>{{project.tot_member}}
-                                                Joined</span>
+                                            <a href='{% url "project_joined_members" project.id %}'>{{project.tot_member}} Users</a>
                                         </div>
                                         <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
                                     </div>
@@ -154,8 +153,8 @@
                         </div>
 
                         <!-- Post Content -->
-                        <p class="mt-3 text-[#686868]">
-                            {{post.content|linebreaksbr}}
+                        <p class="prose max-w-none mt-3 text-gray-800">
+                            {{post.content|safe}}
                         </p>
 
                         <!-- Post Image -->

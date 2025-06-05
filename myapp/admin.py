@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import organization, skill, userinfo, education, current_position, experience, follow, projects, Domain,  user_project, project_comment, project_reply, user_status, SavedItem, post, post_comments, event, Notification, Industry, CringeBadge
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from features.models import TrendingLeaderboard
 
 # Register your models here.
 admin.site.register(skill)
@@ -22,6 +23,7 @@ admin.site.register(post_comments)
 admin.site.register(Notification)
 admin.site.register(Industry)
 admin.site.register(CringeBadge)
+admin.site.register(TrendingLeaderboard)
 
 @admin.register(userinfo)
 class userinfoAdmin(admin.ModelAdmin):

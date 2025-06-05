@@ -26,12 +26,16 @@
                             <div id="exploreTitle" class="cursor-pointer">{% if section == "joined-projects" %}Joined Projects{% else %}Upcoming Events{% endif %}</div>
                             <img src="{% static 'assets/down.svg' %}" alt="" class="w-5 h-5">
                         </div>
-                        <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded"
-                            id="allAgenda">
-                            <a href="{% url 'calendar_page' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer text-white">
-                                Upcoming Events</a>
-                            <a href="?section=joined-projects"
-                                class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer text-white">Joined Projects
+                        <div class="hidden flex-col gap-y-2 bg-[#1a1a1acc] px-4 py-3 absolute top-12 left-0 z-10 backdrop-blur-md rounded-xl shadow-lg" id="allAgenda">
+                            <a href="{% url 'calendar_page' %}" 
+                            class="flex items-center gap-3 text-sm text-white hover:bg-[#2e2e2e] px-4 py-2 rounded-md transition-all cursor-pointer">
+                                <i class="fa-solid fa-calendar-days text-base"></i>
+                                <span>Upcoming Events</span>
+                            </a>
+                            <a href="?section=joined-projects" 
+                            class="flex items-center gap-3 text-sm text-white hover:bg-[#2e2e2e] px-4 py-2 rounded-md transition-all cursor-pointer">
+                                <i class="fa-solid fa-users-viewfinder text-base"></i>
+                                <span>Joined Projects</span>
                             </a>
                         </div>
                     </div>
@@ -46,7 +50,7 @@
                         <!-- Event Card 1 -->       
                         {% for project in joined_projects %}
                         <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full">
-                            <div class="flex items-center justify-between gap-x-5">
+                            <div class="flex items-center justify-between gap-x-5 mt-3">
                                 <div class="flex justify-start items-start w-full md:gap-x-5 gap-x-2">
                                     <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
                                     <div class="w-5/6 md:w-[90%]">
@@ -54,8 +58,7 @@
                                         <div>{{project.description|truncatewords:25}}</div>
                                         <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
                                             <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
-                                                <span>{{project.creator.user.username}}</span> <span class="hidden md:block">&#9679;</span>
-                                                <span>{{project.tot_member}} Users</span>
+                                                <a href='{% url "project_joined_members" project.id %}'>{{project.tot_member}} Users</a>
                                             </div>
                                             <p class="self-end">{{project.created_at|date:"M j, Y"}}</p>
                                         </div>

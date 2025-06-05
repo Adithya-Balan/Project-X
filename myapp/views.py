@@ -20,7 +20,7 @@ from itertools import groupby
 from .algorithms import get_explore_users, get_personalized_feed, top_skills_list
 from allauth.account.views import PasswordChangeView
 from django.contrib import messages
-from .utils import send_notification_email
+from .utils import send_notification_email, verified_user_ids
 
 # Create your views here.
 class CustomPasswordChangeView(PasswordChangeView):
@@ -903,7 +903,7 @@ def explore_dev(request):
     if skill_filter:
         filter_conditions["skills__id"] = skill_filter
     
-    filter_dev = userinfo.objects.filter(**filter_conditions).exclude(user=request.user)
+    filter_dev = userinfo.objects.filter(**filter_conditions).exclude(user=request.user).filter(user__in=verified_user_ids).select_related('user')
 
     if query:
         filter_dev = filter_dev.filter(

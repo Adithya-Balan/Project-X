@@ -29,11 +29,27 @@
                         <div id="exploreTitle" class="text-lg">Events</div>
                         <img src="{% static 'assets/down.svg' %}" alt="" class="w-7 h-7">
                     </div>
-                    <div class="hidden flex-col gap-y-1 bg-[#00000033] px-5 py-2 absolute top-12 left-0 z-10 backdrop-blur rounded" id="allExplore">
-                        <a href="{% url 'explore_dev' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Developers</a>
-                        <a href="{% url 'explore-project' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Projects</a>
-                        <a href="{% url 'explore_events' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Events</a>
-                        <a href="{% url 'explore_organization' %}" class="hover:scale-110 transition-all hover:font-bold px-3 py-1 cursor-pointer">Organizations</a>
+                    <div class="hidden flex-col gap-y-2 bg-[#1a1a1acc] px-4 py-3 absolute top-12 left-0 z-10 backdrop-blur-md rounded-xl shadow-lg" id="allExplore">
+                        <a href="{% url 'explore_dev' %}" 
+                        class="flex items-center gap-3 text-sm text-white hover:bg-[#2e2e2e] px-4 py-2 rounded-md transition-all cursor-pointer">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Developers</span>
+                        </a>
+                        <a href="{% url 'explore-project' %}" 
+                        class="flex items-center gap-3 text-sm text-white hover:bg-[#2e2e2e] px-4 py-2 rounded-md transition-all cursor-pointer">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <span>Projects</span>
+                        </a>
+                        <a href="{% url 'explore_events' %}" 
+                        class="flex items-center gap-3 text-sm text-white hover:bg-[#2e2e2e] px-4 py-2 rounded-md transition-all cursor-pointer">
+                            <i class="fa-solid fa-calendar text-white"></i>
+                            <span>Events</span>
+                        </a>
+                        <a href="{% url 'explore_organization' %}" 
+                        class="flex items-center gap-3 text-sm text-white hover:bg-[#2e2e2e] px-4 py-2 rounded-md transition-all cursor-pointer">
+                            <i class="fa-solid fa-building"></i>
+                            <span>Organizations</span>
+                        </a>
                     </div>
                 </div>
             </div>

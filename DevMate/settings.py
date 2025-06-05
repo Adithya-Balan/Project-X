@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 import environ
@@ -53,15 +53,37 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
-    'myapp',
     "phonenumber_field",
     'django_select2',
     'storages',
     'admin_honeypot',
     'tinymce',
+    'corsheaders',  # For CORS
+    'rest_framework',  # For DRF
+    'rest_framework_simplejwt',
+    
+    'myapp',
+    'features',
+    'api',    
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,6 +96,9 @@ MIDDLEWARE = [
     "myapp.middleware.UpdateLastSeenMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS').split(",")
+CORS_ALLOW_CREDENTIALS = True
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default backend
@@ -245,3 +270,20 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'devmate.teams@gmail.com'  #Replace with your Gmail
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
