@@ -27,7 +27,7 @@ phonenumbers==8.13.54
 pillow==11.1.0
 psycopg2-binary==2.9.10
 pycparser==2.22
-PyJWT==2.10.1
+PyJWT==2.9.0
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 python-ipware==3.0.0
