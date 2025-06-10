@@ -38,5 +38,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path("tinymce/", include('tinymce.urls')),
     path("feature/", include('features.urls')),
+    path("collab-project/", include('collaboration_project.urls')),
+    path("events/", include('events.urls')),
     path('', include('myapp.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

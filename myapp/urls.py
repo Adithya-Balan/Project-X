@@ -30,7 +30,6 @@ urlpatterns = [
     
     path("project/<int:id>/", views.project_detail, name="project_detail"),
     path("project/<int:id>/members/", views.project_joined_members, name="project_joined_members"),
-    path("project/<int:id>/forum/", views.project_forum, name="project_forum"),
     path("join-project/<int:id>/", views.join_project, name="join_project"),
     path("project-form/<uuid:uuid>/", views.project_form_edit, name="project_form"), #For Existing Project
     path('project-form/', views.project_form, name='project_form_new'),   # For creating new project
@@ -42,9 +41,7 @@ urlpatterns = [
     path('organization/<int:organization_id>/unfollow/', views.unfollow_organization, name='unfollow_organization'),
     path("event-form/<int:id>/", views.org_event_form, name="org_event_form"),
     path("event-form-edit/<int:org_id>/<int:event_id>/", views.event_form_edit, name="event_form_edit"),
-    
     path("event/<int:id>/", views.event_detail, name = 'event_detail'),
-    path("event/<int:id>/forum/", views.event_forum, name="event_forum"),
     
     path("toggle_project_save/<int:project_id>/", views.toggle_project_save, name="toggle_project_save"),
     path("toggle_event_save/<int:eventId>/", views.toggle_event_save, name="toggle_event_save"),

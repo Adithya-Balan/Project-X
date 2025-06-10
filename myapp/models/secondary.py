@@ -55,6 +55,10 @@ class project_comment(models.Model):
     content = models.TextField()
     project = models.ForeignKey(projects, related_name="forum", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(userinfo, related_name='liked_project_comment', blank=True)
+    
+    def total_likes(self):
+        return self.likes.count()
     
     def __str__(self):
         return f"{self.id} Comment by {self.user.user.username} on {self.project.title}"
@@ -64,6 +68,10 @@ class project_reply(models.Model):
     comment = models.ForeignKey(project_comment, related_name='replies', on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(userinfo, related_name='liked_project_reply', blank=True)
+    
+    def total_likes(self):
+        return self.likes.count()
     
     def __str__(self):
         return f"{self.id} Reply by {self.user.user.username} to {self.comment.user.user.username}'s comment"
@@ -189,6 +197,10 @@ class event_comment(models.Model):
     content = models.TextField()
     event = models.ForeignKey(event, related_name="forum", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(userinfo, related_name='liked_event_comment', blank=True)
+    
+    def total_likes(self):
+        return self.likes.count()
     
     def __str__(self):
          return f"{self.id} Comment by {self.user.user.username} on {self.event.title}"
@@ -199,6 +211,10 @@ class event_reply(models.Model):
     comment = models.ForeignKey(event_comment, related_name='replies', on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(userinfo, related_name='liked_event_reply', blank=True)
+    
+    def total_likes(self):
+        return self.likes.count()
     
     def __str__(self):
         return f"Reply by {self.user.user.username} to {self.comment.user.user.username}'s comment"
@@ -232,6 +248,8 @@ class Notification(models.Model):
         ('project_reply', 'Replied to your Comment'),
         ('event_comment', 'Commented on your Event'),
         ('event_reply', 'Replied to your Comment'),
+        ('project_comment_like', '❤️ your comment on Project'),
+        ('event_comment_like', '❤️ your comment on Event'),
     )
     user = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="notifications")
     sender = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="sent_notifications")

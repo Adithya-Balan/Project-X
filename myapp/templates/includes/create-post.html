@@ -38,8 +38,14 @@
                             onclick="resizePost(1); setAspectRatio('16:9')">16:9</div>
                     </div>
                 {{post_form.content}}
+                <input type="hidden" name="action" id="postActionInput" value="">
             </div>
-            <button type="submit" name="action" value="" id='postSubmitButton' class="self-center bg-[#6feb85] text-black px-3 py-2 lg:mb-7 mt-2 cursor-pointer rounded-lg">Post</button>
+            <button type="submit" id="postSubmitButton"
+                class="self-center bg-[#6feb85] hover:bg-[#5edb73] text-black px-4 py-2 mt-2 lg:mb-7 rounded-lg font-medium shadow-sm hover:shadow-md flex items-center gap-2 transition duration-200 cursor-pointer">
+                <i class="fa-solid fa-feather-pointed text-sm"></i>
+                Post
+            </button>
+
         </div>
     </form>
 </div>

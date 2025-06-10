@@ -272,11 +272,11 @@ uploadPost.addEventListener('change', (event) => {
     }
 })
 
-// opening create post div function
+// opening create post div function for org and user
 const openPost = (type = 'user', value = 'user-post') => {
     const entireSection = document.getElementById('entireSection')
     const createPost = document.getElementById('createPost')
-    const actionInput = document.getElementById('postSubmitButton')
+    const actionInput = document.getElementById('postActionInput')
     if (actionInput) {
         actionInput.value = value;
     }
@@ -294,6 +294,14 @@ const closePost = () => {
     createPost.classList.remove('flex')
 }
 
+//Disable submit btn for post, when loading
+$(document).ready(function () {
+    $('#createPost form').on('submit', function () {
+        const submitBtn = $('#postSubmitButton');
+        submitBtn.prop("disabled", true);
+        submitBtn.html(`<i class="fa-solid fa-spinner fa-spin mr-2"></i> ${submitBtn.val() || 'Posting...'}`);
+    });
+});
 
 
 //Toggle for follow or unfollow users

@@ -114,7 +114,7 @@
                                 {% endif %}
                             {% endif %}
 
-                            {% if notification.notification_type == 'project_comment' %}
+                            {% if notification.notification_type == 'project_comment' or notification.notification_type == 'project_comment_like' %}
                                 <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}?v={{notification.sender.updated_at.timestamp}}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="User"></a>
                                 <a href='{% url "project_detail" notification.project_comment.project.id %}#comment-{{notification.project_comment.id}}' class="flex-1">
                                     <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}} <span class='text-green-600'>{{notification.project_comment.project.title}}</span></p>
@@ -128,7 +128,7 @@
                                 <a href="{% url 'user_profile' notification.sender.user.username %}">
                                     <img src="{{ notification.sender.profile_image.url }}?v={{notification.sender.updated_at.timestamp}}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User">
                                 </a>
-                                <a href='{% url "project_detail" notification.project_reply.comment.project.id %}#reply-{{notification.project_reply.id}}' class="flex-1">
+                                <a href='{% url "project_detail" notification.project_reply.comment.project.id %}#comment-{{notification.project_reply.comment.id}}' class="flex-1">
                                     <p class="text-sm font-semibold text-gray-900">{{ notification.sender.user.username }} replied to your comment on <span class="text-green-600 font-medium hover:underline">{{ notification.project_reply.comment.project.title }}</span></p>
                                     <p class="text-gray-700">💬 "{{ notification.project_reply.content|truncatechars:30 }}"</p>
                                     <p class="text-xs mt-2 text-gray-500">{{ notification.created_at|date:"M j, Y" }}</p>
@@ -136,7 +136,7 @@
                             {% endif %}
 
                             {% comment %} Event Reply {% endcomment %}
-                            {% if notification.notification_type == 'event_comment' %}
+                            {% if notification.notification_type == 'event_comment' or notification.notification_type == 'event_comment_like' %}
                                 <a href='{% url "user_profile" notification.sender.user.username %}'><img src="{{ notification.sender.profile_image.url }}?v={{notification.sender.updated_at.timestamp}}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="User"></a>
                                 <a href='{% url "event_detail" notification.event_comment.event.id %}#comment-{{notification.event_comment.id}}' class="flex-1">
                                     <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}} <span class='text-green-600'>{{notification.event_comment.event.title}}</span></p>
@@ -150,7 +150,7 @@
                                 <a href="{% url 'user_profile' notification.sender.user.username %}">
                                     <img src="{{ notification.sender.profile_image.url }}?v={{notification.sender.updated_at.timestamp}}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover" alt="User">
                                 </a>
-                                <a href='{% url "event_detail" notification.event_reply.comment.event.id %}#reply-{{notification.event_reply.id}}' class="flex-1">
+                                <a href='{% url "event_detail" notification.event_reply.comment.event.id %}#comment-{{notification.event_reply.comment.id}}' class="flex-1">
                                     <p class="text-sm font-semibold text-gray-900">{{ notification.sender.user.username }} replied to your comment on <span class="text-green-600 font-medium hover:underline">{{ notification.event_reply.comment.event.title }}</span></p>
                                     <p class="text-gray-700 mt-1">💬 "{{ notification.event_reply.content|truncatechars:30 }}"</p>
                                     <div class="flex items-center justify-between text-xs text-gray-500 mt-2">

@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     
     'myapp',
     'features',
+    'collaboration_project',
+    'events',
     'api',    
 ]
 

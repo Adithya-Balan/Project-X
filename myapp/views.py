@@ -1,4 +1,4 @@
-import base64
+import base64, time
 from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.utils.timezone import now, localtime
@@ -647,7 +647,6 @@ def org_event_form(request,id):
         if request.method == 'POST':
             form = EventForm(request.POST, request.FILES)
             if form.is_valid():
-                print(True, 2)
                 event_obj = form.save(commit=False)
                 event_obj.organization = organization_obj
                 event_obj.save()
@@ -841,36 +840,7 @@ def project_joined_members(request, id):
         'joined_members': page_obj,
     }
     return render(request, 'myapp/project-member-list.html', context)
-@login_required
-def project_forum(request, id):
-    project = get_object_or_404(projects, id=id)
-    userinfo_obj = get_object_or_404(userinfo, user=request.user)
-    
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        
-        if not content:  # Checks if content is empty or None
-            redirect_url = f"{reverse('project_detail', args=[project.id])}?comment_error=Invalid-Comment#commentsection"
-            return redirect(redirect_url)
-        
-        parent_comment_id = request.POST.get("parent_comment_id")
-        
-        if parent_comment_id:
-            parent_comment = get_object_or_404(project_comment, id = parent_comment_id)
-            r = project_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
-            if parent_comment.user != userinfo_obj:
-                notify = Notification.objects.create(user=r.comment.user, sender=userinfo_obj, project_reply=r, notification_type='project_reply')
-                send_notification_email(r.comment.user, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} on \"{r.comment.project.title}\"!\n\n💬 {r.content[:50]}...')
-            redirect_url = f"{reverse('project_detail', args=[project.id])}#reply-{r.id}"
-        else:
-            c = project_comment.objects.create(user=userinfo_obj, project= project,content = content)
-            if project.creator != userinfo_obj:
-                notify = Notification.objects.create(user= project.creator, sender=userinfo_obj, project_comment=c, notification_type = 'project_comment')
-                send_notification_email(project.creator, f"🧑‍💻 {userinfo_obj.user.username} just {notify.get_notification_type_display()} \"{c.project.title}\"!\n\n💬 {c.content[:50]}...")
-            redirect_url = f"{reverse('project_detail', args=[project.id])}#comment-{c.id}"
 
-    return redirect(redirect_url)
-                
 @login_required
 def join_project(request, id):
     project = get_object_or_404(projects, id=id)
@@ -1005,42 +975,13 @@ def explore_events(request):
 def event_detail(request, id):
     event_obj = get_object_or_404(event, pk=id)
     post_form = PostForm()
-    comments = event_obj.forum.all()[::-1]
+    comments = event_obj.forum.all().order_by('-created_at') 
     context = {
         'event_obj': event_obj,
         'post_form' : post_form,
         'comments': comments,
     }
     return render(request, 'myapp/event_detail.html', context)
-
-@login_required
-def event_forum(request, id):
-    Event = get_object_or_404(event, id = id)
-    userinfo_obj = get_object_or_404(userinfo, user=request.user)
-    
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        if not content:  # Checks if content is empty or None
-            redirect_url = f"{reverse('event_detail', args=[Event.id])}?comment_error=Invalid-Comment#commentsection"
-            return redirect(redirect_url)
-        
-        parent_comment_id = request.POST.get("parent_comment_id")
-        
-        if parent_comment_id:
-            parent_comment = get_object_or_404(event_comment, id = parent_comment_id)
-            r = event_reply.objects.create(user=userinfo_obj, comment = parent_comment, content=content)
-            if parent_comment.user != userinfo_obj:
-                notify = Notification.objects.create(user=r.comment.user, sender=userinfo_obj, event_reply=r, notification_type='event_reply')
-                send_notification_email(r.comment.user, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} on Event \"{r.comment.event.title}\"!\n\n💬 {r.content[:50]}...')
-            redirect_url = f"{reverse('event_detail', args=[Event.id])}#reply-{r.id}"
-        else:
-            c = event_comment.objects.create(user=userinfo_obj, event=Event ,content = content)
-            if Event.organization.user != request.user:
-                notify = Notification.objects.create(user=c.event.organization.user.info, sender=userinfo_obj, event_comment=c, notification_type='event_comment')
-                send_notification_email(c.event.organization.user.info, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} \"{c.event.title}\"!\n\n💬 {c.content[:50]}...')
-            redirect_url = f"{reverse('event_detail', args=[Event.id])}#comment-{c.id}"
-
-    return redirect(redirect_url)
 
 @login_required
 def saved_page(request):
