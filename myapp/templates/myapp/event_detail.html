@@ -188,9 +188,9 @@
                 <div class="flex flex-col gap-y-2 bg-white rounded-lg" id='commentBox'>
                     <div class="text-xl bg-black text-white p-2 rounded-lg text-center mb-4"> <span class="text-white" id='total_comments'>{{event_obj.tot_comments}}</span> Comments</div>
 
-                    {% if comments %}
-                        <!-- single comment -->
                     <div id="commentList" class="flex flex-col gap-y-2 px-3 mt-2">
+                        {% if comments %}
+                        <!-- single comment -->
                         {% for comment in comments %}    
                         <div id='comment-{{comment.id}}'>
                             <!-- question -->
@@ -309,13 +309,13 @@
                             </div>
                         </div>
                         {% endfor %}
+                        {% else %}
+                        <div class='flex flex-col gap-y-8 px-3' id='noCommentSVG'>
+                            <img src = "{% static 'assets/comment.svg' %}" class='h-1/2 w-1/2 mx-auto'>
+                            <p class='text-center text-lg mt-2 text-gray-600 pb-5'>No comments Yet...</p>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <div class='flex flex-col gap-y-8 px-3'>
-                        <img src = "{% static 'assets/comment.svg' %}" class='h-1/2 w-1/2 mx-auto'>
-                        <p class='text-center text-lg mt-2 text-gray-600 pb-5'>No comments Yet...</p>
-                    </div>
-                    {% endif %}
 
                 </div>
             </div>
@@ -324,5 +324,8 @@
     {% include "includes/create-post.html" %}
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'scripts/event.js' %}"></script>
+    <script>
+        const commentSvgUrl = "{% static 'assets/comment.svg' %}";
+    </script>
 </body>
 {% endblock  %}

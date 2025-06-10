@@ -44,6 +44,7 @@ $(document).ready(function () {
             if (response.success) {
                 // Add comment to top
                 $('#commentList').prepend(response.comment_html);
+                $('#noCommentSVG').hide();
 
                 // Clear textarea
                 $('#commentTextArea').val('');
@@ -176,11 +177,14 @@ $(document).ready(function () {
                         $('#total_comments').text(response.comment_count);
                         if (response.comment_count === 0) {
                             $('#commentBox').html(`
-                            <div class="text-xl bg-black text-white p-2 rounded-lg text-center"> <span class="text-white"  id='total_comments'>${response.comment_count}</span> Comments</div>
-                            <div class="flex flex-col gap-y-8 px-3">
-                                <img src="{% static 'assets/comment.svg' %}" class="h-1/2 w-1/2 mx-auto">
-                                <p class="text-center text-lg mt-2 text-gray-600 pb-5">No comments Yet...</p>
-                            </div>`);
+                            <div class="text-xl bg-black text-white p-2 rounded-lg text-center mb-4"> <span class="text-white" id='total_comments'>${response.comment_count}</span> Comments</div>
+                            <div id="commentList" class="flex flex-col gap-y-2 px-3 mt-2">
+                                <div class="flex flex-col gap-y-8 px-3" id='noCommentSVG'>
+                                    <img src="${commentSvgUrl}" class="h-1/2 w-1/2 mx-auto">
+                                    <p class="text-center text-lg mt-2 text-gray-600 pb-5">No comments Yet...</p>
+                                </div>
+                            </div>
+                        `);
                         }
                 } else {
                     alert("Error deleting comment.");
