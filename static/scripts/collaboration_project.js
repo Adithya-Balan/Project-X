@@ -16,7 +16,7 @@ function getCSRFToken() {
 //For Joining in projects
 function joinProject(projectId){
     $.ajax({
-        url: `/join-project/${projectId}/`,
+        url: `/collab-project/join-project/${projectId}/`,
         type: "POST",
         headers: {"X-CSRFToken":  getCSRFToken() },
         success: function(data){

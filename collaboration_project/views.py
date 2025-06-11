@@ -1,12 +1,137 @@
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from myapp.models import project_comment, project_reply, projects, userinfo, Notification
+from myapp.models import project_comment, project_reply, projects, userinfo, Notification, SavedItem
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 from myapp.utils import send_notification_email
+from myapp.forms import PostForm
+from .forms import ProjectForm
+from django.core.paginator import Paginator, PageNotAnInteger
 
+@login_required
+def project_detail(request, id):
+    project = projects.objects.get(id = id)
+    userinfo_obj = project.creator
+    link_available = False
+    all_comment = request.GET.get('all_comment')
+    social_links = { 
+        'github': userinfo_obj.github if userinfo_obj.github else None,
+        'linkedin': userinfo_obj.linkedin if userinfo_obj.linkedin else None,
+        'stack-overflow': userinfo_obj.stackoverflow if userinfo_obj.stackoverflow else None,
+    }
+    if social_links.get('github') or social_links.get('linkedin') or social_links.get('stackoverflow'):
+            link_available = True
+            
+    comments = project.forum.all()
+    if not all_comment:
+        comments = comments.order_by('-created_at')
+        
+    post_form = PostForm()
+    context = {
+        'project': project,
+        'skill_needed': project.skill_needed.all(),
+        'link_available': link_available,
+        'social_link': social_links,
+        'comments': comments,
+        'post_form': post_form,
+    }
+    return render(request, 'collaboration_project/project_detail.html', context)
+
+
+@login_required
+def project_joined_members(request, id):
+    project = get_object_or_404(projects, id = id)
+    members =  project.members.all()
+    post_form = PostForm()
+    
+    p = Paginator(members, 25)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.page(page_number)
+    except PageNotAnInteger:
+        page_obj = p.page(1)
+    context = {
+        'project_obj': project,
+        'post_form': post_form,
+        'joined_members': page_obj,
+    }
+    return render(request, 'collaboration_project/project-member-list.html', context)
+
+@login_required
+def join_project(request, id):
+    project = get_object_or_404(projects, id=id)
+    userinfo_obj = get_object_or_404(userinfo, user=request.user)
+    if userinfo_obj in project.members.all():
+        project.members.remove(userinfo_obj)
+        joined = False
+        Notification.objects.filter(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project').delete()
+    else:
+        project.members.add(userinfo_obj)
+        joined = True
+        if userinfo_obj != project.creator:
+            notify = Notification.objects.create(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project')
+            send_notification_email(project.creator, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} \"{notify.project.title}\" 🚀')
+    return JsonResponse({"joined": joined, "total_member": project.tot_member()})
+
+@login_required
+def project_form(request):
+    post_form = PostForm()
+    form = ProjectForm()
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            print(True)
+            project = form.save(commit=False)
+            project.creator = request.user.info
+            project.save()
+            form.save_m2m()
+            return redirect(f"{reverse('project_detail', args=[project.id])}")
+            
+    context = {
+        'post_form': post_form,
+        'form': form,
+        'is_edit': False,
+    }
+    return render(request, 'collaboration_project/project-form.html', context)
+
+@login_required
+def project_form_edit(request, uuid):
+    post_form = PostForm()
+    project_obj = get_object_or_404(projects, uuid = uuid)
+    if project_obj.creator == request.user.info:
+        form = ProjectForm(instance=project_obj)
+        if request.method == "POST":
+            form = ProjectForm(request.POST, request.FILES, instance=project_obj)
+            if form.is_valid():
+                project = form.save()
+                return redirect(f"{reverse('project_detail', args=[project.id])}")
+        context = {
+            'post_form': post_form,
+            'form': form,
+            'is_edit': True,
+            'project_obj': project_obj,
+        }
+        return render(request, 'collaboration_project/project-form.html', context)
+    else:
+        return redirect("/")
+    
+@login_required
+def toggle_project_save(request, project_id):
+    project_obj = get_object_or_404(projects, id=project_id)
+    saved_items_obj = SavedItem.objects.get(user=request.user.info)
+    
+    if project_obj in saved_items_obj.project.all():
+        saved_items_obj.project.remove(project_obj)
+        saved = False
+    else:
+        saved_items_obj.project.add(project_obj)
+        saved = True
+        
+    return JsonResponse({
+        'saved': saved,
+    })
 
 @login_required
 def toggle_like_project_comment(request, comment_id):
@@ -105,5 +230,14 @@ def save_project_comment(request, project_id):
     
     except projects.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Project not found.'})
+    
+@login_required
+def delete_project(request, uuid):
+    project_obj = get_object_or_404(projects, uuid = uuid)
+    reverse_url = f"{reverse('user_profile', args=[request.user.username])}?section=projects"
+    if project_obj.creator == request.user.info:
+        project_obj.delete()
+        return redirect(reverse_url) 
+    return redirect('/')
     
 

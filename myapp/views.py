@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EventForm, ProjectForm, EditOrgForm, Postsignup_infoForm
+from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EditOrgForm, Postsignup_infoForm
 from django.contrib.auth.models import User
 from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification, Industry, follow
 from django.contrib.auth.decorators import login_required
@@ -636,54 +636,6 @@ def unfollow_organization(request, organization_id):
             return JsonResponse({'status': 'error', 'message': 'You are not following this organization.'}, status=400)
     except org.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Organization not found.'}, status=404)
-    
-@login_required
-def org_event_form(request,id):
-    organization_obj = get_object_or_404(organization, id = id)
-    createdByUser = True if organization_obj.user == request.user else False
-    post_form = PostForm()
-    if createdByUser:
-        form = EventForm()
-        if request.method == 'POST':
-            form = EventForm(request.POST, request.FILES)
-            if form.is_valid():
-                event_obj = form.save(commit=False)
-                event_obj.organization = organization_obj
-                event_obj.save()
-                return redirect('event_detail', event_obj.id)
-    else:
-        return redirect('/')
-    context = {
-        'event_form': form,
-        'is_edit': False,
-        'post_form': post_form,
-    }
-    return render(request, 'myapp/org-event-form.html', context)
-
-@login_required
-def event_form_edit(request, org_id, event_id):
-    organization_obj = get_object_or_404(organization, id = org_id)
-    event_obj = get_object_or_404(event, id = event_id)
-    createdByUser = True if organization_obj.user == request.user else False
-    post_form = PostForm()
-    if createdByUser:
-        form = EventForm(instance=event_obj)
-        print(event_obj.__dict__)
-        if request.method == 'POST':
-            form = EventForm(request.POST, request.FILES, instance=event_obj)
-            print(form)
-            if form.is_valid():
-                form.save()
-                return redirect('event_detail', event_obj.id)
-    else:
-        return redirect('/')
-    context = {
-        'event_form': form,
-        'is_edit': True,
-        'post_form': post_form,
-        'event_obj': event_obj,
-    }
-    return render(request, 'myapp/org-event-form.html', context)
 
 #explore page:
 @login_required
@@ -750,112 +702,6 @@ def explore_project(request):
     }
     # print(request.GET)
     return render(request,"myapp/explore-projects.html", context)
-
-@login_required
-def project_form(request):
-    post_form = PostForm()
-    form = ProjectForm()
-    if request.method == 'POST':
-        form = ProjectForm(request.POST, request.FILES)
-        if form.is_valid():
-            print(True)
-            project = form.save(commit=False)
-            project.creator = request.user.info
-            project.save()
-            form.save_m2m()
-            return redirect(f"{reverse('project_detail', args=[project.id])}")
-            
-    context = {
-        'post_form': post_form,
-        'form': form,
-        'is_edit': False,
-    }
-    return render(request, 'myapp/project-form.html', context)
-
-@login_required
-def project_form_edit(request, uuid):
-    post_form = PostForm()
-    project_obj = get_object_or_404(projects, uuid = uuid)
-    if project_obj.creator == request.user.info:
-        form = ProjectForm(instance=project_obj)
-        if request.method == "POST":
-            form = ProjectForm(request.POST, request.FILES, instance=project_obj)
-            if form.is_valid():
-                project = form.save()
-                return redirect(f"{reverse('project_detail', args=[project.id])}")
-        context = {
-            'post_form': post_form,
-            'form': form,
-            'is_edit': True,
-            'project_obj': project_obj,
-        }
-        return render(request, 'myapp/project-form.html', context)
-    else:
-        return redirect("/")
-
-@login_required
-def project_detail(request, id):
-    project = projects.objects.get(id = id)
-    userinfo_obj = project.creator
-    link_available = False
-    all_comment = request.GET.get('all_comment')
-    social_links = { 
-        'github': userinfo_obj.github if userinfo_obj.github else None,
-        'linkedin': userinfo_obj.linkedin if userinfo_obj.linkedin else None,
-        'stack-overflow': userinfo_obj.stackoverflow if userinfo_obj.stackoverflow else None,
-    }
-    if social_links.get('github') or social_links.get('linkedin') or social_links.get('stackoverflow'):
-            link_available = True
-            
-    comments = project.forum.all()
-    if not all_comment:
-        comments = comments.order_by('-created_at')
-        
-    post_form = PostForm()
-    context = {
-        'project': project,
-        'skill_needed': project.skill_needed.all(),
-        'link_available': link_available,
-        'social_link': social_links,
-        'comments': comments,
-        'post_form': post_form,
-    }
-    return render(request, 'myapp/project_detail.html', context)
-
-@login_required
-def project_joined_members(request, id):
-    project = get_object_or_404(projects, id = id)
-    members =  project.members.all()
-    post_form = PostForm()
-    
-    p = Paginator(members, 25)
-    page_number = request.GET.get('page')
-    try:
-        page_obj = p.page(page_number)
-    except PageNotAnInteger:
-        page_obj = p.page(1)
-    context = {
-        'project_obj': project,
-        'post_form': post_form,
-        'joined_members': page_obj,
-    }
-    return render(request, 'myapp/project-member-list.html', context)
-
-@login_required
-def join_project(request, id):
-    project = get_object_or_404(projects, id=id)
-    userinfo_obj = get_object_or_404(userinfo, user=request.user)
-    if userinfo_obj in project.members.all():
-        project.members.remove(userinfo_obj)
-        joined = False
-        Notification.objects.filter(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project').delete()
-    else:
-        project.members.add(userinfo_obj)
-        joined = True
-        if userinfo_obj != project.creator:
-            notify = Notification.objects.create(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project')
-            send_notification_email(project.creator, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} \"{notify.project.title}\" 🚀')
-    return JsonResponse({"joined": joined, "total_member": project.tot_member()})
 
 @login_required
 def explore_dev(request):
@@ -972,18 +818,6 @@ def explore_events(request):
     return render(request, 'myapp/explore-events.html', context)
 
 @login_required
-def event_detail(request, id):
-    event_obj = get_object_or_404(event, pk=id)
-    post_form = PostForm()
-    comments = event_obj.forum.all().order_by('-created_at') 
-    context = {
-        'event_obj': event_obj,
-        'post_form' : post_form,
-        'comments': comments,
-    }
-    return render(request, 'myapp/event_detail.html', context)
-
-@login_required
 def saved_page(request):
     saved_item  = request.user.info.saved_items
     saved_post = saved_item.posts.all()
@@ -1037,37 +871,6 @@ def settings_page(request):
     return render(request, 'myapp/account_setting.html', context)
 
 @login_required
-def toggle_project_save(request, project_id):
-    project_obj = get_object_or_404(projects, id=project_id)
-    saved_items_obj = SavedItem.objects.get(user=request.user.info)
-    
-    if project_obj in saved_items_obj.project.all():
-        saved_items_obj.project.remove(project_obj)
-        saved = False
-    else:
-        saved_items_obj.project.add(project_obj)
-        saved = True
-        
-    return JsonResponse({
-        'saved': saved,
-    })
-    
-@login_required
-# Toggle saving events
-def toggle_event_save(request, eventId):
-    event_obj = get_object_or_404(event, id = eventId)
-    saved_items_obj = SavedItem.objects.get(user=request.user.info)
-    if event_obj in saved_items_obj.events.all():
-        saved_items_obj.events.remove(event_obj)
-        saved = False
-    else:
-        saved_items_obj.events.add(event_obj)
-        saved = True
-    return JsonResponse({
-        'saved': saved,
-    })
-    
-@login_required
 def toggle_like(request, post_id):
     post_obj = get_object_or_404(post, id = post_id)
     userinfo_obj = request.user.info
@@ -1118,24 +921,6 @@ def save_post(request):
             return redirect(f'{redirect_url}?section=posts')
         else:
             return HttpResponseRedirect('/')
-        
-@login_required
-def delete_project(request, uuid):
-    project_obj = get_object_or_404(projects, uuid = uuid)
-    reverse_url = f"{reverse('user_profile', args=[request.user.username])}?section=projects"
-    if project_obj.creator == request.user.info:
-        project_obj.delete()
-        return redirect(reverse_url) 
-    return redirect('/')
-
-@login_required
-def delete_event(request,uuid):
-    event_obj = get_object_or_404(event, uuid = uuid)
-    reverse_url = f"{reverse('organization_detail', args=[event_obj.organization.id])}?section=events"
-    if event_obj.organization.user == request.user:
-        event_obj.delete()
-        return redirect(reverse_url) 
-    return redirect('/')
         
 @login_required
 def delete_post(request, post_id):

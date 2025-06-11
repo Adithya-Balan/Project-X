@@ -3,7 +3,6 @@
 {% load custom_filter %}
 
 
-{% block html_class %}class="scroll-smooth scroll-pt-[50vh]"{% endblock %}
 {% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
@@ -237,7 +236,7 @@
                                     </button>
 
                                     <!-- Hide/Show replies (UI only) -->
-                                    <button class="text-gray-600 font-semibold hover:text-black transition text-sm"
+                                    <button class="text-gray-600 font-semibold hover:text-black transition text-xs lg:text-sm"
                                             onclick="toggleReplies({{ comment.id }}, this, {{ comment.replies.count }})">
                                         <i class="fa-solid fa-chevron-down text-xs"></i> Show Replies (<span id="show_reply_count_{{ comment.id }}">{{ comment.replies.count }}</span>)
                                     </button>

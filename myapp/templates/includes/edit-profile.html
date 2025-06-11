@@ -346,7 +346,7 @@
 
 {% comment %} Edit or Add User work {% endcomment %}
 <div class="hidden fixed items-center justify-center top-20 bottom-12 left-0 right-0" id="editProject">
-<form method = 'POST' enctype="multipart/form-data" class="relative flex flex-col gap-y-3 h-full overflow-y-scroll py-10 bg-white w-full lg:w-2/5 px-5 border">
+<form method = 'POST' enctype="multipart/form-data" class="relative flex flex-col gap-y-3 overflow-y-scroll py-10 bg-white w-full lg:w-2/5 px-5 border">
     {% csrf_token %}
         <div class="cursor-pointer absolute top-5 right-5" onclick="closeEditProject()"><i
                 class="text-3xl fa-solid fa-circle-xmark"></i></div>

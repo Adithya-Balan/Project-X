@@ -1,12 +1,88 @@
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from myapp.models import event_comment, event_reply, event, userinfo, Notification
+from myapp.models import event_comment, event_reply, event, userinfo, Notification, organization, SavedItem
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 from myapp.utils import send_notification_email
+from myapp.forms import PostForm
+from .forms import EventForm
 
+@login_required
+def event_detail(request, id):
+    event_obj = get_object_or_404(event, pk=id)
+    post_form = PostForm()
+    comments = event_obj.forum.all().order_by('-created_at') 
+    context = {
+        'event_obj': event_obj,
+        'post_form' : post_form,
+        'comments': comments,
+    }
+    return render(request, 'events/event_detail.html', context)
+
+@login_required
+def org_event_form(request,id):
+    organization_obj = get_object_or_404(organization, id = id)
+    createdByUser = True if organization_obj.user == request.user else False
+    post_form = PostForm()
+    if createdByUser:
+        form = EventForm()
+        if request.method == 'POST':
+            form = EventForm(request.POST, request.FILES)
+            if form.is_valid():
+                event_obj = form.save(commit=False)
+                event_obj.organization = organization_obj
+                event_obj.save()
+                return redirect('event_detail', event_obj.id)
+    else:
+        return redirect('/')
+    context = {
+        'event_form': form,
+        'is_edit': False,
+        'post_form': post_form,
+    }
+    return render(request, 'events/org-event-form.html', context)
+
+@login_required
+def event_form_edit(request, org_id, event_id):
+    organization_obj = get_object_or_404(organization, id = org_id)
+    event_obj = get_object_or_404(event, id = event_id)
+    createdByUser = True if organization_obj.user == request.user else False
+    post_form = PostForm()
+    if createdByUser:
+        form = EventForm(instance=event_obj)
+        if request.method == 'POST':
+            form = EventForm(request.POST, request.FILES, instance=event_obj)
+            print(form)
+            if form.is_valid():
+                form.save()
+                return redirect('event_detail', event_obj.id)
+    else:
+        return redirect('/')
+    context = {
+        'event_form': form,
+        'is_edit': True,
+        'post_form': post_form,
+        'event_obj': event_obj,
+    }
+    return render(request, 'events/org-event-form.html', context)
+
+@login_required
+# Toggle saving events
+def toggle_event_save(request, eventId):
+    event_obj = get_object_or_404(event, id = eventId)
+    saved_items_obj = SavedItem.objects.get(user=request.user.info)
+    if event_obj in saved_items_obj.events.all():
+        saved_items_obj.events.remove(event_obj)
+        saved = False
+    else:
+        saved_items_obj.events.add(event_obj)
+        saved = True
+    return JsonResponse({
+        'saved': saved,
+    })
+    
 @login_required
 def toggle_like_comment(request, comment_id):
     comment_obj = get_object_or_404(event_comment, id = comment_id)
@@ -106,3 +182,11 @@ def save_event_reply(request):
 
     return JsonResponse({'success': True, 'reply_html': rendered_reply, 'total_comments': comment.event.tot_comments(), 'show_replies_count': comment.replies.count()})
 
+@login_required
+def delete_event(request,uuid):
+    event_obj = get_object_or_404(event, uuid = uuid)
+    reverse_url = f"{reverse('organization_detail', args=[event_obj.organization.id])}?section=events"
+    if event_obj.organization.user == request.user:
+        event_obj.delete()
+        return redirect(reverse_url) 
+    return redirect('/')

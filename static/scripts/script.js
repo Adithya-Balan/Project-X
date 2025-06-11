@@ -548,7 +548,7 @@ $(document).ready(function() {
         let container = $(this);
         let projectId = container.data("project-id");
         let bookmarkIcon = container.find("i");
-        let actionUrl = `/toggle_project_save/${projectId}/`; 
+        let actionUrl = `/collab-project/toggle_project_save/${projectId}/`; 
 
         $.ajax({
             url: actionUrl,
@@ -575,7 +575,7 @@ $(document).ready(function() {
         let container = $(this);
         let eventId = container.data("event-id");
         let bookmarkIcon = container.find("i");
-        let actionUrl = `/toggle_event_save/${eventId}/`; 
+        let actionUrl = `/events/toggle_event_save/${eventId}/`; 
 
         $.ajax({
             url: actionUrl,
