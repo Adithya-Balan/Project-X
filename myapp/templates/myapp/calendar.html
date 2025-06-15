@@ -46,7 +46,7 @@
 
                 {% if joined_projects %}
                 <div class="flex flex-col md:flex-row gap-4">
-                    <div class="flex flex-col gap-6 md:w-5/6 p-5 md:p-0">
+                    <div class="flex flex-col gap-6 md:w-5/6">
                         <!-- Event Card 1 -->       
                         {% for project in joined_projects %}
                         <div class="relative flex flex-col px-5 py-3 bg-white rounded-lg gap-y-4 w-full">
@@ -55,7 +55,7 @@
                                     <img src="{{project.image.url}}" alt="" class="w-12 h-12 rounded-md shrink-0 object-cover">
                                     <div class="w-5/6 md:w-[90%]">
                                         <a href="{% url 'project_detail' project.id %}" class="font-bold text-[18px] cursor-pointer hover:underline">{{project.title}}</a>
-                                        <div>{{project.description|truncatewords:25}}</div>
+                                        <div class='mt-2'>{{project.description|truncatewords:25}}</div>
                                         <div class="text-[#686868] flex justify-between mt-5 gap-x-1">
                                             <div class="flex items-start gap-x-1 flex-col md:flex-row md:items-center">
                                                 <a href='{% url "project_joined_members" project.id %}'>{{project.tot_member}} Users</a>
@@ -112,7 +112,7 @@
                     <div class="bg-black text-white py-4 px-6 rounded-lg font-bold text-center md:static sticky top-20 z-[1] max-[w-100] shadow-lg">
                         {{ event_date|date:"M d Y" }}
                     </div>
-                    <div class="flex flex-col gap-6 md:w-5/6 p-5 md:p-0">
+                    <div class="flex flex-col gap-6 md:w-5/6 ">
 
                         {% for event in events %}
                         <div class="relative flex flex-col md:flex-row w-full gap-5 bg-white p-3 pb-5 rounded-2xl shadow-sm">

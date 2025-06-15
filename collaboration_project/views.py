@@ -308,12 +308,12 @@ def handle_project_request_creator(request, project_id, user_id):
     if action == "accept":
         project_obj.requested_users.remove(userinfo_obj)
         project_obj.members.add(userinfo_obj)
-        Notification.objects.create(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='accept_member_project')
+        Notification.objects.get_or_create(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='accept_member_project')
         
     elif action == "reject":
         project_obj.requested_users.remove(userinfo_obj)
         project_obj.rejected_users.add(userinfo_obj)
-        Notification.objects.create(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='reject_member_project')
+        Notification.objects.get_or_create(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='reject_member_project')
         
     else:
         return JsonResponse({"error": "Invalid action"}, status=400)
