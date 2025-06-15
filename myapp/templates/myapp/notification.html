@@ -6,7 +6,7 @@
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %}
 
 {% block content %}
-<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
    
     <!--navbar -->
     {% include "includes/navbar.html" %}
@@ -85,8 +85,23 @@
                                     <p class="font-medium text-black">{{ notification.sender.user.username }} {{notification.get_notification_type_display}} <a href='{% url "project_detail" notification.project.id %}'class='text-green-600 hover:underline'>{{notification.project.title}}</a></p>
                                     <p class="text-xs mt-1 text-gray-500">{{ notification.created_at|date:"M j, Y" }}</p>
                                     <a href="{% url 'project_joined_members' notification.project.id %}" class="inline-block">
-                                        <div class="bg-[#00a63e] mt-2 w-fit text-white px-2 text-xs py-1 rounded">View Members</div>
+                                        <div class="bg-[#00a63e] mt-2 w-fit text-white px-2 text-xs py-1 rounded">Manage Members</div>
                                     </a>
+                                </div>
+                            {% endif %}
+
+                            {% if notification.notification_type == 'accept_member_project' or notification.notification_type == 'reject_member_project' %}
+                                <a href='{% url "project_detail" notification.project.id %}'><img src="{{ notification.project.image.url }}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover " alt="Project">
+                                <div class="flex-1">
+                                    <p class="font-medium text-black">{{notification.get_notification_type_display}} <span class='text-green-600 hover:underline'>{{notification.project.title}}</span></p>
+                                    <p class="text-xs mt-1 text-gray-500">{{ notification.created_at|date:"M j, Y" }}</p></a>
+                                    
+                                    {% if notification.notification_type == 'accept_member_project' %}
+                                    <a href="{% url 'project_joined_members' notification.project.id %}" class="inline-block">
+                                        <div class="bg-[#00a63e] mt-2 w-fit text-white px-2 text-xs py-1 rounded">See your Team</div>
+                                    </a>
+                                    {% endif %}
+                                        
                                 </div>
                             {% endif %}
 

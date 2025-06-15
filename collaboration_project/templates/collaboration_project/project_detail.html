@@ -7,7 +7,7 @@
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
 {% block content %}
-<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
@@ -28,11 +28,14 @@
                     <div class="bookmarkBtnProject cursor-pointer bookmark-container-project text-[#4a5565]  ml-auto" data-project-id = "{{ project.id }}">
                         <i class="text-xl fa-solid fa-bookmark {% if project in user.info.saved_items.project.all %}text-[#6feb85]{% endif %}"></i>
                     </div>
+                    <button onclick='copyCurrentURL()' class='cursor-pointer'>
+                        <i class="fa fa-share-alt text-[#4a5565] text-2xl hover:text-black"aria-hidden="true"></i>
+                    </button>
                 </div>
                 <div class="flex flex-col gap-y-5">
                     <div class="flex flex-col gap-y-2">
                         <div class='flex gap-x-4 items-center'>
-                            <div class="font-bold text-3xl">{{project.title}}</div>
+                            <div class="font-bold text-xl sm:text-3xl">{{ project.title }}</div>
                             {% if project.creator == request.user.info %}
                             <a href='{% url "project_form" project.uuid %}'>
                                 <img src='{% static "assets/pencil.svg" %}' class='h-5 w-5'>
@@ -40,7 +43,7 @@
                             {% endif %}
                         </div>
                         
-                        <div class="flex gap-x-3"> 
+                        <div class="flex gap-x-3 items-center mt-2"> 
                             {% if project.url %}
                             <a href='{{project.url}}' target='_blank'><i class="text-2xl cursor-pointer fa-solid fa-globe"></i></a>
                             {% endif %}
@@ -124,31 +127,87 @@
                         {%endif%}
                     </div>
 
-                    <a href='{% url "project_joined_members" project.id %}' class='text-base'><span class="font-bold" id='membercount'>{{project.tot_member}}</span> <span>Members</span></a>
+                    <a href="{% url 'project_joined_members' project.id %}" class="inline-flex items-center gap-2 font-medium text-black transition duration-200">
+                        <i class="fa-solid fa-users"></i>
+                        
+                        <!-- Joined members count -->
+                        <span id="membercount" class="text-base font-semibold text-black">{{ project.tot_member }}</span>
+                        <span class='hover:underline'>Joined</span>
 
-                    <div class="flex gap-x-2 bg-[#6feb8627] px-3 py-2">
-                        <div class="w-1 bg-[#6feb85]"></div>
+                        <!-- Pending requests (only for project creator) -->
                         {% if project.creator == request.user.info %}
-                        <div><span class="font-bold">Note:</span> See who joined and connect with those you like.</div>
+                            <span class="ml-2 text-xs text-orange-600 font-semibold hover:underline transition">
+                                {{ project.requested_users.count }} pending
+                            </span>
                         {% else %}
-                        <div><span class="font-bold">Note:</span> Join the project — the creator will contact you if interested.</div>
+                        <span class="ml-2 text-xs text-green-700 font-medium hover:underline transition">View</span>
+                        {% endif %}
+                    </a>
+
+                
+                    {% comment %} status  {% endcomment %}
+                    {% if request.user.info in project.members.all or request.user.info in project.requested_users.all  %}
+                        <div class="flex items-center gap-2 bg-gradient-to-r from-green-100 via-white to-green-100 border border-green-300 px-4 py-2 rounded-md text-sm font-medium text-black w-fit" id='show_status'>
+                            <i class="fa-regular fa-clock text-base"></i>
+                            <span class="text-black">Status:</span>
+                            
+                            {% if request.user.info in project.members.all %}
+                                <span class="text-green-700 font-semibold tracking-wide">Joined</span>
+                            {% elif request.user.info in project.requested_users.all %}
+                                <span class="text-green-700 font-semibold tracking-wide">Pending</span>
+                            {% endif %}
+                        </div>
+                    {% elif request.user.info in project.rejected_users.all %}
+                        <div class="flex items-center gap-3 bg-[#fff1f2] border border-[#fda4af] px-4 py-2.5 rounded-xl shadow-sm w-fit animate-fade-in">
+                            <i class="fa-solid fa-circle-exclamation text-[#f43f5e] text-lg sm:text-xl"></i>
+                            <div class="flex flex-col leading-tight">
+                                <span class="text-sm sm:text-base font-medium text-[#b91c1c]">Request declined</span>
+                                <span class="text-xs sm:text-sm text-[#7f1d1d]">No worries! Try again after enhancing your skills ✨</span>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="flex gap-x-3 items-start bg-[#fffaf3] px-4 py-3 mt-3 rounded-md border-l-4 border-[#fbbf24]" id='join_help_text_div' >
+                        <i class="fa-solid fa-circle-info text-[#f59e0b] mt-1"></i>
+                        {% if project.creator == request.user.info %}
+                            <div class="text-sm text-black">
+                                <span class="font-semibold">Note:</span> See who joined and connect with those you like.
+                            </div>
+                        {% else %}    
+                            {% if request.user.info in project.members.all %}
+                                <div class="text-sm text-black">
+                                    <span class="font-semibold"></span> <span id='join_help_text_div'>You're part of the team now 🚀 — Work together and make something great.</span>
+                                </div>
+                            {% else %}
+                                <div class="text-sm text-black">
+                                    <span class="font-semibold"></span> <span id='join_help_text_div'>The creator will review and accept your request if interested.</span>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     </div>
 
                     <div class="flex items-center justify-center gap-x-5">
+
                         {% if project.creator == request.user.info %}
-                        <a href='{% url "project_joined_members" project.id %}' class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110">View Members
-                        </a>
-                        {% else %}
-                        <button id="joinProjectBtn"  class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110" onclick="joinProject({{ project.id }})">
+                            <a href='{% url "project_joined_members" project.id %}' class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110">Manage Members</a>
+                        {% else %} 
+                            
                             {% if request.user.info in project.members.all %}
-                               Leave
+                                <button id="joinProjectBtn" class="px-4 py-2 bg-rose-700 text-white rounded-full transition hover:scale-110 cursor-pointer" onclick="leaveProjectMembers({{ project.id }}); clickSound()">
+                                    Leave Team
+                                </button>
+                            {% elif request.user.info in project.requested_users.all %}
+                                <button id="joinProjectBtn"  class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110 cursor-pointer" onclick="toggleJoinRequest({{ project.id }}); clickSound()">
+                                    Cancel Request
+                                </button>
                             {% else %}
-                                Join
-                            {% endif %}  
-                        </button>
+                                <button id="joinProjectBtn"  class="px-4 py-2 bg-black text-white border border-black rounded-full transition hover:scale-110 cursor-pointer" onclick="toggleJoinRequest({{ project.id }}); clickSound()" >
+                                    Request to Join
+                                </button>
+                            {% endif %}
+
                         {% endif %}
-                        
+
                     </div>
                 </div>
 

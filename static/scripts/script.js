@@ -13,6 +13,18 @@ function getCSRFToken() {
     return cookieValue;
 }
 
+function copyCurrentURL() {
+    const currentURL = window.location.href;
+    navigator.clipboard.writeText(currentURL)
+        .then(() => {
+            alert("🔗 Link copied successfully!");
+        })
+        .catch(err => {
+            console.error("Failed to copy: ", err);
+            alert("❌ Could not copy the link.");
+        });
+}
+
 // Post option navbar Menu
 document.addEventListener('DOMContentLoaded', () => {
     const popupTrigger = document.getElementById('popupTrigger');
@@ -306,7 +318,7 @@ $(document).ready(function () {
 
 //Toggle for follow or unfollow users
 $(document).ready(function () {
-    $(".follow-btn").click(function (){
+    $(document).on('click', '.follow-btn', function() {
         let btn = $(this);
         let userId = btn.data("user-id");
         let actionUrl;
@@ -327,6 +339,7 @@ $(document).ready(function () {
                     btn.find(".btn-text").text("<Unfollow/>");
                     btn.removeClass("bg-[#6feb85]");
                     btn.addClass("bg-[#464646] text-white")
+                    document.getElementById("clickSound").play();
                 } 
                 else if (response.status === "unfollowed") {
                     btn.find(".btn-text").text("<Follow/>");

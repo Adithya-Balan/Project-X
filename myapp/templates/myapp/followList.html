@@ -7,7 +7,7 @@
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
 
 {% block content %}
-<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
@@ -109,14 +109,14 @@
 
                 {% comment %} pagination {% endcomment %}
                 {% if user_list %}
-                <div class="flex justify-center mt-6">
-                    <div class="flex items-center space-x-4">
+                <div class="flex justify-center mb-6 lg:mb-12">
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
                         {% if user_list.has_previous %}
                         <a href="?list={{request.GET.list}}&page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">&laquo; First</a>
                         <a href="?list={{request.GET.list}}&page={{user_list.previous_page_number}}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">Previous</a>
                         {% endif %}
 
-                        <span class="text-black">
+                        <span class="text-black font-medium">
                             <span class="font-semibold">Page {{ user_list.number }}</span> of {{ user_list.paginator.num_pages }}
                         </span>
 

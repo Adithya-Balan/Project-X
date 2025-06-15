@@ -12,7 +12,7 @@
 
 
 {% block content %}
-<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
     
@@ -61,7 +61,7 @@
                     
                     <div class="flex items-center gap-x-4 w-fit justify-center max-[450px]:w-full">
                         <form method="GET" action="{% url 'explore-project' %}" class="flex gap-x-3 items-center">
-                            <input type="text"  name="q" value="{{ query }}" class="w-70 outline-none border border-black rounded-full border- bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
+                            <input type="text"  name="q" value="{{ query }}" class="w-70 outline-none border border-black rounded-full bg-[#f6f6f6] text-[16px] px-4 py-1 text-black placeholder:text-xs" placeholder="Search projects by name, skill, domain, level...">
                                 <button type="submit"><img src="{% static 'assets/search.svg' %}" alt="" class="w-6 h-6"></button>
                         </form>
                         <div class="lg:hidden flex" onclick="openFilter()">

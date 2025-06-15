@@ -13,19 +13,133 @@ function getCSRFToken() {
     return cookieValue;
 }
 
+function clickSound() {
+      const sound = document.getElementById("clickSound");
+      sound.currentTime = 0;
+      sound.play();
+}
+
 //For Joining in projects
-function joinProject(projectId){
+function toggleJoinRequest(projectId){
     $.ajax({
-        url: `/collab-project/join-project/${projectId}/`,
+        url: `/collab-project/request-project-join/${projectId}/`,
         type: "POST",
         headers: {"X-CSRFToken":  getCSRFToken() },
         success: function(data){
             let btn = $("#joinProjectBtn");
-            let membercount = $("#membercount");
+            btn.text(data.requested ? "Cancel Request" : "Request to Join")
+            
+            btn.addClass("scale-110");
+            setTimeout(() => btn.removeClass("scale-110"), 200);
 
-            btn.text(data.joined ? "Leave": "Join");
-            membercount.text(`${data.total_member} `)
+            const helpDiv = $("#join_help_text_div");
 
+            if(data.requested){
+                // Apply success styles
+                helpDiv
+                    .removeClass("bg-[#fffaf3] border-[#fbbf24] bg-[#fef2f2] border-[#f87171]")
+                    .addClass("bg-[#f0fdf4] border-[#22c55e]");
+
+                helpDiv.find("i")
+                    .removeClass("text-[#f59e0b] text-[#dc2626]")
+                    .addClass("text-[#16a34a]");
+
+                helpDiv.find("#join_help_text_div").html(
+                    "Request sent successfully 🎉. Updation takes a few seconds."
+                );
+
+            } else {
+                // Apply cancelled styles
+                helpDiv
+                    .removeClass("bg-[#fffaf3] border-[#fbbf24] bg-[#f0fdf4] border-[#22c55e]")
+                    .addClass("bg-[#fef2f2] border-[#f87171]");
+
+                helpDiv.find("i")
+                    .removeClass("text-[#f59e0b] text-[#16a34a]")
+                    .addClass("text-[#dc2626]");
+
+                helpDiv.find("#join_help_text_div").html(
+                    "Request cancelled. You can re-apply anytime!"
+                );
+                $("#show_status").hide();
+            }
+        },
+        error: function(error) {
+            console.error("Error:", error);
+        }
+    });
+}
+
+//For Creator accepting and rejecting request
+function accept_or_reject_request(projectId, userId, action){
+    $.ajax({
+        url: `/collab-project/accept-or-reject-request/${projectId}/${userId}/`,
+        type: "POST",
+        data: { action: action },
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        },
+        success: function(data) {
+            document.getElementById("clickSound").play();
+            let userDiv = $(`#user_id_${userId}`);
+            userDiv.next('hr').remove();  // remove <hr> after the div
+            userDiv.fadeOut(300, () => {
+                userDiv.remove();
+
+                // If no pending users left, show the message above the removed div
+                if (data.pending_count === 0) {
+                     const messageDiv = $(`
+                        <div class="text-sm text-gray-600 bg-green-50 border border-green-200 rounded-md px-4 py-3 mt-2 mb-2">
+                                <i class="fa-solid fa-circle-check text-green-600 mr-2"></i>
+                                All requests reviewed — nothing left to check!
+                            </div>
+                        `);
+                        $('#parent_user_div').prepend(messageDiv);
+                     }
+            });
+
+            $('#accepted_count').text(data.accepted_count);
+            $('#pending_count').text(data.pending_count);
+            $('#rejected_count').text(data.rejected_count);
+        },
+        error: function(err) {
+            console.error("Failed:", err);
+        }
+    });
+}
+
+
+//Leave Project Team
+function leaveProjectMembers(projectId){
+    $.ajax({
+        url: `/collab-project/leave-project-members/${projectId}/`,
+        type: "POST",
+        headers: {"X-CSRFToken":  getCSRFToken() },
+        success: function(data){
+            let btn = $("#joinProjectBtn");
+            if (data.removed) {
+                btn.prop("disabled", true);
+                btn.text("Left Project!");
+                btn.removeClass("bg-rose-700").addClass("bg-green-600");
+                if (data.total_member !== undefined) {
+                    $("#membercount").text(`${data.total_member}`);
+                }
+                $("#show_status").hide();
+                const helpDiv = $("#join_help_text_div");
+                helpDiv
+                    .removeClass("bg-[#fffaf3] border-[#fbbf24] bg-[#fef2f2] border-[#f87171]")
+                    .addClass("bg-[#f0fdf4] border-[#22c55e]");
+
+                helpDiv.find("i")
+                    .removeClass("text-[#f59e0b] text-[#dc2626]")
+                    .addClass("text-[#16a34a]");
+
+                helpDiv.find("#join_help_text_div").html(
+                    "You’ve left the project 👋. Request again later if you're still interested."
+                );
+            } else if (data.error) {
+                alert(data.error); // optional: show user-friendly message
+            }
             btn.addClass("scale-110");
             setTimeout(() => btn.removeClass("scale-110"), 200);
         },
@@ -245,6 +359,42 @@ $(document).ready(function () {
             error: function () {
                 alert("Something went wrong!");
             }
+        });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const loadBtn = document.getElementById("loadMoreBtn");
+    if (!loadBtn) return;
+
+    loadBtn.addEventListener("click", function () {
+        const originalText = this.innerHTML;
+        this.disabled = true;
+        this.innerHTML = `<span class="loader inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span> Loading...`;
+
+        const lastId = this.dataset.lastId;
+        const url = new URL(window.location.href);
+        url.searchParams.set('last_id', lastId);
+
+        fetch(url, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("parent_user_div").insertAdjacentHTML("beforeend", data.html);
+            if (data.has_more) {
+                this.dataset.lastId = data.last_id;
+                this.innerHTML = originalText;
+                this.disabled = false;
+            } else {
+                this.remove(); // No more users to load
+            }
+        }).catch(() => {
+            this.innerHTML = "Load More";
+            this.disabled = false;
+            alert("Something went wrong. Please try again.");
         });
     });
 });

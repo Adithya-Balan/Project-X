@@ -26,6 +26,8 @@ class projects(models.Model):
     type = models.CharField(max_length=50, blank=True, null= True, choices=TYPES)
     creator = models.ForeignKey(userinfo, related_name='created_projects', on_delete=models.CASCADE)
     members = models.ManyToManyField(userinfo , related_name='joined_projects', blank=True)
+    requested_users = models.ManyToManyField(userinfo, related_name='requested_projects', blank=True)
+    rejected_users = models.ManyToManyField(userinfo, related_name='rejected_projects', blank=True)
     file = models.FileField(upload_to='project/files', blank=True, null=True)
     video = models.FileField(upload_to="project/videos", blank=True, null=True)
     url = models.URLField(blank=True, null=True)
@@ -243,7 +245,12 @@ class Notification(models.Model):
         ('like', 'Liked your post'),
         ('comment', 'Commented on your post'),
         ('follow', 'Started following you'),
-        ('Join_Project', 'Joined On Your Project'),
+        
+        # Project joining
+        ('Join_Project', 'Requested to Join Your Project'),
+        ('accept_member_project', 'Congratulations! 🎉. You’ve been accepted to join'),
+        ('reject_member_project', 'We’re sorry 😔, your join request has been rejected for'),
+        
         ('project_comment', 'Commented on Your project'),
         ('project_reply', 'Replied to your Comment'),
         ('event_comment', 'Commented on your Event'),
@@ -253,7 +260,7 @@ class Notification(models.Model):
     )
     user = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="notifications")
     sender = models.ForeignKey(userinfo, on_delete=models.CASCADE, related_name="sent_notifications")
-    notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=50)
+    notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=60)
     post = models.ForeignKey(post, on_delete=models.CASCADE, null=True, blank=True)
     post_comment = models.ForeignKey(post_comments, on_delete=models.CASCADE, null=True, blank=True) 
     

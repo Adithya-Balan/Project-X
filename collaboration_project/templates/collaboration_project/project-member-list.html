@@ -11,7 +11,7 @@
 
 {% block content %}
         
-<body class="text-[15px] h-full bg-[#f6f6f6] overflow-x-hidden">
+<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
@@ -25,73 +25,111 @@
         <div class="relative flex mt-24 lg:mt-24 md:w-full px-2 flex-[5] w-full justify-center items-start max-[1300px]:flex-col-reverse max-[1300px]:item-center gap-5 max-[1300px]:items-center">
         
             <div class="flex flex-col w-full md:w-[500px]">
-                {% if joined_members %}
-                <div class="flex flex-col gap-y-3 mt-4 p-2 bg-white rounded-md">
-                    {% for member in joined_members %}        
-                    <div class="px-3 py-2 rounded-md flex w-full items-center gap-x-4 gap-y-2 justify-between min-[360px]:flex-row max-[320px]:items-start">
-                        <div class="flex gap-x-4 items-center">
-                            <div class="shrink-0">
-                                <a href='{% url "user_profile" member.user.username %}'>
-                                    <img src="{{ member.profile_image.url }}?v={{member.updated_at.timestamp}}" class="rounded-lg w-14 h-14 shrink-0" alt="">
-                                </a>
-                            </div>
-                            <div class="flex flex-col w-[75%] gap-y-1">
-                                <a href='{% url "user_profile" member.user.username %}' class="font-bold cursor-pointer hover:underline transition">
-                                    {{ member.user.first_name }} {{ member.user.last_name }}
-                                </a>
-                                <p class="text-[#686868]">@{{ member.user.username }}</p>
-                            </div>
-                        </div>
-                        <div class="shrink-0">
-                            
-                            {% if user.info == member%}
-                            <a href='{% url "user_profile" user.username %}' class="bg-green-100 px-3 py-1 rounded-md text-green-600 font-semibold border border-green-500 transition-all hover:bg-green-200">View</a>
-                            {% elif user.info|is_following:member %}
-                            <a href="javascript:void(0);" class="follow-btn bg-[#464646] text-white px-3 py-2 w-[110px] text-center rounded-md hover:scale-105 transition" data-user-id="{{ member.id }}">
-                                <span class="btn-text">&lt;Unfollow/&gt;</span>
-                            </a>
-                            {% else %}
-                            <a href="javascript:void(0);" class="follow-btn bg-[#6feb85] text-black px-3 py-2 w-[120px] text-center rounded-md hover:scale-105 transition" data-user-id="{{ member.id }}">   
-                                <span class="btn-text">&lt;Follow/&gt;</span>
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if not forloop.last %}
-                        <hr class="border-t border-gray-300">
-                    {% endif %}                
-                    {% endfor %}
-                </div>
-                {% comment %} pagination {% endcomment %}
-                <div class="flex justify-center mb-20 lg:mb-12 mt-10">
-                    <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm">
-                        {% if joined_members.has_previous %}
-                            <a href="?page=1" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
-                                &laquo; First
-                            </a>
-                            <a href="?page={{ joined_members.previous_page_number }}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
-                                Previous
-                            </a>
-                        {% endif %}
                 
-                        <span class="text-black font-medium">
-                            Page <span class="font-semibold">{{ joined_members.number }}</span> of {{ joined_members.paginator.num_pages }}
+                {% comment %} Accept, Reject, Joined UI bar {% endcomment %}
+                {% if request.user.info == project_obj.creator %}
+                <div class="w-full overflow-x-auto mb-4">
+                    <div class="inline-flex items-center gap-2 sm:gap-4 bg-white rounded-xl px-2 py-3 whitespace-nowrap">
+
+                        <!-- Pending -->
+                        <a href="?status=pending"
+                        class="flex items-center gap-2 px-4 py-1.5 rounded-md
+                                {% if status == 'pending' or status == None %}
+                                    bg-black text-white
+                                {% else %}
+                                    bg-gradient-to-r from-yellow-300 to-yellow-50 text-yellow-800
+                                {% endif %}
+                                text-[11px] font-medium shadow transition-all duration-200 hover:scale-[1.02]">
+                        <i class="fa-regular fa-clock {% if status == 'pending' or status == None  %}text-white{% else %}text-[#1a1a1a]{% endif %} text-sm"></i>
+                        <span>Pending</span>
+                        <span id='pending_count' class="{% if status == 'pending' %}bg-white text-black{% else %}bg-white text-black{% endif %} text-[11px] font-semibold px-2 py-0.5 rounded-full" >
+                            {{ project_obj.requested_users.count }}
                         </span>
-                
-                        {% if joined_members.has_next %}
-                            <a href="?page={{ joined_members.next_page_number }}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
-                                Next
-                            </a>
-                            <a href="?page={{ joined_members.paginator.num_pages }}" class="px-2 py-1 border border-black text-black rounded-md hover:bg-black hover:text-white transition duration-200">
-                                Last &raquo;
-                            </a>
-                        {% endif %}
+                        </a>
+
+                        <!-- Accepted -->
+                        <a href="?status=members"
+                        class="flex items-center gap-2 px-4 py-1.5 rounded-md
+                                {% if status == 'members' %}
+                                    bg-black text-white
+                                {% else %}
+                                    bg-gradient-to-r from-[#d6f5df] to-[#f5fff9] text-[#14532d]
+                                {% endif %}
+                                text-[11px] font-medium hover:scale-[1.02] transition-all duration-200">
+                        <i class="fa-regular fa-circle-check {% if status == 'members' %}text-white{% else %}text-[#17863a]{% endif %} text-sm"></i>
+                        <span>Accepted</span>
+                        <span id='accepted_count' class="{% if status == 'members' %}bg-white text-black{% else %}bg-[#d6f5e1] text-[#14532d]{% endif %} text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                            {{ project_obj.members.count }}
+                        </span>
+                        </a>
+
+                        <!-- Rejected -->
+                        <a href="?status=rejected"
+                        class="flex items-center gap-2 px-4 py-1.5 rounded-md
+                                {% if status == 'rejected' %}
+                                    bg-black text-white
+                                {% else %}
+                                    bg-gradient-to-r from-[#fbe6e6] to-[#fefcfc] text-[#7f1d1d]
+                                {% endif %}
+                                text-[11px] font-medium hover:scale-[1.02] transition-all duration-200">
+                        <i class="fa-regular fa-circle-xmark {% if status == 'rejected' %}text-white{% else %}text-[#d93025]{% endif %} text-sm"></i>
+                        <span>Rejected</span>
+                        <span id='rejected_count' class="{% if status == 'rejected' %}bg-white text-black{% else %}bg-[#f9d6d4] text-[#7f1d1d]{% endif %} text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                            {{ project_obj.rejected_users.count }}
+                        </span>
+                        </a>
+
                     </div>
                 </div>
                 {% else %}
-                <div class='flex flex-col gap-y-4 items-center lg:mt-10'>
-                    <img src='{% static "assets/people-undraw.svg" %}' class='h-1/2 w-1/2'>
-                    <p class='text-gray-700'>No Users Joined Yet.</p>
+                    <div class="flex flex-wrap items-center gap-6 bg-white border border-gray-100 rounded-2xl shadow-sm px-6 py-4 w-fit max-w-full mb-4">
+
+                        <!-- Members Count -->
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-xl bg-green-50 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-users text-green-600 text-lg"></i>
+                            </div>
+                            <div class="flex flex-col">
+                            <span class="text-xs text-gray-500">Team Members</span>
+                            <span class="text-base font-semibold text-gray-800">{{ project_obj.members.count }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="w-px h-10 bg-gray-200 hidden sm:block"></div>
+
+                        <!-- Acceptance Rate -->
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-xl bg-yellow-50 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-chart-line text-yellow-500 text-lg"></i>
+                            </div>
+                            <div class="flex flex-col">
+                            <span class="text-xs text-gray-500">Acceptance Rate</span>
+                            <span class="text-base font-semibold text-gray-800">{{acceptance_rate}} %</span>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endif %}
+
+                {% if joined_members %}
+                <div class="flex flex-col gap-y-3 mt-4 p-2 bg-white rounded-md {% if has_more %}mb-10{% else %}mb-22{% endif %} lg:mb-12" id='parent_user_div'>
+                    {% include "collaboration_project/member_card.html" %}
+                </div>
+                {% comment %} pagination {% endcomment %}
+                {% if has_more %}
+                    <div class="text-center mb-22 lg:mb-12 cursor-pointer">
+                        <button id="loadMoreBtn"
+                                data-last-id="{{ last_id }}"
+                                class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-black transition">
+                            Load More
+                        </button>
+                    </div>
+                {% endif %}
+                {% else %}
+                <div class='flex flex-col gap-y-4 items-center mt-10'>
+                   <img src="{% static 'assets/people-undraw.svg' %}" class="w-1/3 h-1/3 lg:w-1/2 lg:h-1/2" />
+                    <p class='text-gray-700'>No Users in this List.</p>
                 </div>
                 {% endif %}
             </div>
@@ -160,7 +198,7 @@
 
     <!-- create post -->
     {% include "includes/create-post.html" %}
+    <script src="{% static 'scripts/collaboration_project.js' %}"></script>
 
-    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
 </body>
 {% endblock  %}

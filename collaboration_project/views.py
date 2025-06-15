@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
@@ -8,7 +8,6 @@ from django.views.decorators.http import require_POST
 from myapp.utils import send_notification_email
 from myapp.forms import PostForm
 from .forms import ProjectForm
-from django.core.paginator import Paginator, PageNotAnInteger
 
 @login_required
 def project_detail(request, id):
@@ -43,37 +42,51 @@ def project_detail(request, id):
 @login_required
 def project_joined_members(request, id):
     project = get_object_or_404(projects, id = id)
-    members =  project.members.all()
     post_form = PostForm()
     
-    p = Paginator(members, 25)
-    page_number = request.GET.get('page')
-    try:
-        page_obj = p.page(page_number)
-    except PageNotAnInteger:
-        page_obj = p.page(1)
+    user_list = project.members.all()
+    accepted_users_count = user_list.count()
+    pending_requests_count = project.requested_users.count()
+    rejected_users_count = project.rejected_users.count()
+    acceptance_rate = round((accepted_users_count / (accepted_users_count + pending_requests_count + rejected_users_count)) * 100, 1) if (accepted_users_count + pending_requests_count) > 0 else 0
+    status = request.GET.get('status', "pending")
+    
+    if project.creator == request.user.info:
+        if status == "rejected":
+            user_list = project.rejected_users.all()
+        elif status == "members":
+            user_list =  project.members.all()
+        else:
+            user_list = project.requested_users.all()
+    
+    # Cursor-based: get users after a given last_id
+    last_id = request.GET.get("last_id")
+    LIMIT = 20
+
+    if last_id:
+        user_list = user_list.filter(id__lt=last_id)
+
+    user_list = user_list.order_by("-id")[:LIMIT]
+    has_more = user_list.count() > LIMIT - 1  
+
+        
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        html = render_to_string("collaboration_project/member_card.html", {"joined_members": user_list, "project_obj": project, "status": status, "request": request})
+        return JsonResponse({
+            "html": html,
+            "has_more": has_more,
+            "last_id": user_list[LIMIT - 1].id if has_more else None
+        })
     context = {
         'project_obj': project,
         'post_form': post_form,
-        'joined_members': page_obj,
+        'joined_members': user_list,
+        'acceptance_rate': acceptance_rate,
+        'status': status,
+        "has_more": has_more,
+        "last_id": user_list[LIMIT - 1].id if has_more else None
     }
     return render(request, 'collaboration_project/project-member-list.html', context)
-
-@login_required
-def join_project(request, id):
-    project = get_object_or_404(projects, id=id)
-    userinfo_obj = get_object_or_404(userinfo, user=request.user)
-    if userinfo_obj in project.members.all():
-        project.members.remove(userinfo_obj)
-        joined = False
-        Notification.objects.filter(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project').delete()
-    else:
-        project.members.add(userinfo_obj)
-        joined = True
-        if userinfo_obj != project.creator:
-            notify = Notification.objects.create(user=project.creator, sender=userinfo_obj, project=project, notification_type='Join_Project')
-            send_notification_email(project.creator, f'🧑‍💻 {userinfo_obj.user.username} {notify.get_notification_type_display()} \"{notify.project.title}\" 🚀')
-    return JsonResponse({"joined": joined, "total_member": project.tot_member()})
 
 @login_required
 def project_form(request):
@@ -239,5 +252,70 @@ def delete_project(request, uuid):
         project_obj.delete()
         return redirect(reverse_url) 
     return redirect('/')
-    
 
+# toggle_project_request
+@login_required
+def toggle_project_request(request, project_id):
+    project_obj = get_object_or_404(projects, id=project_id)
+    userinfo_obj = get_object_or_404(userinfo, user= request.user)
+    
+    if userinfo_obj in project_obj.requested_users.all():
+        project_obj.requested_users.remove(userinfo_obj)
+        requested = False
+        Notification.objects.filter(user=project_obj.creator, sender=userinfo_obj, project=project_obj, notification_type='Join_Project').delete()
+    else:
+        project_obj.requested_users.add(userinfo_obj)
+        project_obj.members.remove(userinfo_obj)
+        project_obj.rejected_users.remove(userinfo_obj) # remove from rejected list if resending.
+        requested = True
+        Notification.objects.filter(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='accept_member_project').delete()
+        Notification.objects.filter(user=project_obj.creator, sender=userinfo_obj, project=project_obj, notification_type='Join_Project').delete()
+        Notification.objects.filter(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='reject_member_project').delete()
+        if userinfo_obj != project_obj.creator:
+            Notification.objects.create(user=project_obj.creator, sender=userinfo_obj, project=project_obj, notification_type='Join_Project')
+        
+    return JsonResponse({"requested": requested})
+
+@login_required
+def leave_project_members(request, project_id):
+    project_obj = get_object_or_404(projects, id=project_id)
+    userinfo_obj = get_object_or_404(userinfo, user= request.user)
+    
+    if project_obj.creator == userinfo_obj:
+        return JsonResponse({"removed": False, "error": "Creator cannot leave their own project."})
+    
+    if project_obj.members.filter(id=userinfo_obj.id).exists():
+        project_obj.members.remove(userinfo_obj)
+        Notification.objects.filter(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='accept_member_project').delete()
+        Notification.objects.filter(user=project_obj.creator, sender=userinfo_obj, project=project_obj, notification_type='Join_Project').delete()
+        Notification.objects.filter(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='reject_member_project').delete()
+        
+        return JsonResponse({"removed": True, "total_member": project_obj.tot_member()})
+    
+    return JsonResponse({"removed": False, "error": "Cannot leave the project."})
+
+#  Accept/Reject View
+@require_POST
+@login_required
+def handle_project_request_creator(request, project_id, user_id):
+    action = request.POST.get('action')
+    project_obj = get_object_or_404(projects, id=project_id)
+    userinfo_obj = get_object_or_404(userinfo, id=user_id) #Request userinfo_obj
+    
+    if request.user.info != project_obj.creator:
+        return HttpResponseForbidden("You are not authorized to perform this action.")
+    
+    if action == "accept":
+        project_obj.requested_users.remove(userinfo_obj)
+        project_obj.members.add(userinfo_obj)
+        Notification.objects.create(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='accept_member_project')
+        
+    elif action == "reject":
+        project_obj.requested_users.remove(userinfo_obj)
+        project_obj.rejected_users.add(userinfo_obj)
+        Notification.objects.create(user=userinfo_obj, sender=project_obj.creator, project=project_obj, notification_type='reject_member_project')
+        
+    else:
+        return JsonResponse({"error": "Invalid action"}, status=400)
+        
+    return JsonResponse({"status": action, "user_id": user_id, 'pending_count': project_obj.requested_users.count(), 'accepted_count': project_obj.members.count(), 'rejected_count': project_obj.rejected_users.count()})
