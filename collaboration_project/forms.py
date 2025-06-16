@@ -15,7 +15,7 @@ class ProjectForm(forms.ModelForm):
     )
     class Meta:
         model = projects
-        exclude = ['creator', 'members', 'created_at']
+        exclude = ['creator', 'members', 'created_at', 'requested_users', 'rejected_users']
         labels = {
             'title': 'Project Name',
             'description': 'Description',
