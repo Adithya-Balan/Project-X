@@ -14,3 +14,6 @@ def leaderboard_page(request):
         'remaining_7': remaining_7,
     }
     return render(request, 'features/leaderboard.html', context)
+
+def feed_page(request):
+    return render(request, 'features/feed.html',context)
