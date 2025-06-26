@@ -626,5 +626,37 @@ $(document).ready(function() {
 });
 
 
+// For toasting
+function toast(message = "Something happened!", type = "default", duration = 3000) {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+
+    // Type-based color classes
+    let color = "bg-gray-800 text-white";
+    if (type === "success") color = "bg-green-600 text-white";
+    if (type === "error") color = "bg-red-600 text-white";
+    if (type === "warn") color = "bg-yellow-400 text-black";
+
+    // Apply base Tailwind styling and custom entry class
+    toast.className = `
+        px-4 py-2 rounded-md shadow-lg font-mono text-sm
+        ${color} toast-animate-in
+    `;
+
+    toast.innerText = message;
+    container.appendChild(toast);
+
+    // Add exit animation before removal
+    setTimeout(() => {
+        toast.classList.remove("toast-animate-in");
+        toast.classList.add("toast-animate-out");
+    }, duration);
+
+    setTimeout(() => {
+        toast.remove();
+    }, duration + 600);
+}
 
 //Filters, popup for mobile, comments reply for project, dp view for profile, add posts

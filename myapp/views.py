@@ -10,6 +10,7 @@ from django.contrib.auth import login,logout,authenticate
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from .forms import RegistrationForm, EditProfileForm,OrganizationForm, EditEducationForm, EditExperienceForm, PostForm, UserProjectForm, EditSkillForm, EditCurrentPositionForm, EditOrgForm, Postsignup_infoForm
+from mindlogs.forms import MindLogForm
 from django.contrib.auth.models import User
 from .models import userinfo, projects, Domain, skill, project_comment, project_reply, user_status, organization, SavedItem, education, post, post_comments, user_project, event, current_position, event_comment, event_reply, experience, Notification, Industry, follow
 from django.contrib.auth.decorators import login_required
@@ -21,6 +22,7 @@ from .algorithms import get_explore_users, get_personalized_feed, top_skills_lis
 from allauth.account.views import PasswordChangeView
 from django.contrib import messages
 from .utils import send_notification_email, verified_user_ids
+from mindlogs.utils import get_24h_mindlog_stats
 
 # Create your views here.
 class CustomPasswordChangeView(PasswordChangeView):
@@ -132,11 +134,15 @@ def index(request):
     followed_orgs = followed_orgs.distinct() 
     tot_upcoming_events = event.objects.filter(organization__in=followed_orgs, start_date__gte=timezone.now()).count()
     post_form = PostForm()
+    logform = MindLogForm()
+    mindlog_obj = get_24h_mindlog_stats()
     context = {
         'active_home': "px-5 py-1 -ml-5 text-lg text-black font-semibold bg-[#0000002a] rounded-xl w-[calc(100%+1.25rem)]",
         'post_form': post_form,
+        'logform': logform,
         'feed_items': feed_page,
         'tot_upcoming_events': tot_upcoming_events,
+        'mindlog_obj': mindlog_obj,
         'type': type,
     }
     return render(request, 'myapp/index.html', context) 

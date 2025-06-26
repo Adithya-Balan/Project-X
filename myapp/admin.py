@@ -3,10 +3,10 @@ from .models import organization, skill, userinfo, education, current_position, 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from features.models import TrendingLeaderboard
+from mindlogs.models import MindLog
 
 # Register your models here.
 admin.site.register(skill)
-# admin.site.register(userinfo)
 admin.site.register(organization)
 admin.site.register(education)
 admin.site.register(current_position)
@@ -36,9 +36,13 @@ class projectsAdmin(admin.ModelAdmin):
     readonly_fields = ('uuid',)
     
 @admin.register(event)
-class projectsAdmin(admin.ModelAdmin):
+class eventAdmin(admin.ModelAdmin):
     # Show UUID as read-only in the detail/edit page
     readonly_fields = ('uuid',)
+    
+@admin.register(MindLog)
+class MindLogAdmin(admin.ModelAdmin):
+    readonly_fields = ('sig',)
     
 class CustomUserAdmin(UserAdmin):
     ordering = ['-date_joined']
