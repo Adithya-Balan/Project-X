@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<body class="bg-[#0f172a] text-white min-h-screen ">
+<body class="bg-[#030712] text-white min-h-screen ">
 
   <div id='entireSection' class='px-4 pb-20'>
     <!-- Formula Info Box -->
@@ -99,7 +99,7 @@
     <!-- Remaining Users -->
     <div class="max-w-4xl mx-auto px-6 space-y-3">
       {% for leaderboard_obj in remaining_7 %}
-      <div class="bg-slate-800 px-5 py-4 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between shadow-md">
+      <div class="bg-[#101828] px-5 py-4 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between shadow-md">
         <div class="flex items-center gap-4 min-w-0">
           <div class="text-gray-400 font-bold text-base">#{{ forloop.counter|add:3 }}</div>
           <a href="{% url 'user_profile' leaderboard_obj.user.user.username %}"><img src="{{leaderboard_obj.user.profile_image.url}}?v={{leaderboard_obj.user.updated_at.timestamp}}" class="w-14 h-14 rounded-full border border-slate-600" /></a>

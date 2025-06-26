@@ -18,8 +18,59 @@
         <!-- post events section -->
         <div class="w-full md:w-3/5 flex justify-center mx-auto">
             <div class="mt-24 md:mt-24 flex flex-col gap-y-6 w-full max-w-[36rem] mb-20 px-4 md:px-0">
+
+                <!-- Terminal Log UI -->
+                <form method = "POST" action="{% url 'save_mindlog' %}" id="log-section" class="space-y-6">
+                    {% csrf_token %}
+                    <p class="text-center text-gray-500 text-sm">Logging your brain is a habit. Start today. 🚀</p>
+
+                    <div class="bg-gray-950 rounded-xl shadow-xl border border-gray-800 overflow-hidden">
+
+                        <!-- Log Input -->
+                        <div class="px-6 py-6 flex items-center gap-3">
+                        <span class="text-green-400 text-base sm:text-lg">&gt;_</span>
+                        {{logform.content}}
+                        </div>
+
+                        <!-- Color Picker -->
+                        <div class="px-6 pb-4">
+                        <div class="flex items-center gap-2 font-mono text-xs text-gray-300 mb-2">
+                            Select log vibe →
+                        </div>
+                        <div id="colorPicker" class="flex gap-3 flex-wrap">
+                            <div class="h-4 w-4 rounded-full bg-green-400 cursor-pointer border-2 hover:ring-2 ring-green-500" data-color="green"></div>
+                            <div class="h-4 w-4 rounded-full bg-blue-400 cursor-pointer border-2 hover:ring-2 ring-blue-500" data-color="blue"></div>
+                            <div class="h-4 w-4 rounded-full bg-yellow-300 cursor-pointer border-2 hover:ring-2 ring-yellow-400" data-color="yellow"></div>
+                            <div class="h-4 w-4 rounded-full bg-purple-500 cursor-pointer border-2 hover:ring-2 ring-purple-500" data-color="purple"></div>
+                            <div class="h-4 w-4 rounded-full bg-pink-400 cursor-pointer border-2 hover:ring-2 ring-pink-400" data-color="pink"></div>
+                            <div class="h-4 w-4 rounded-full bg-red-500 cursor-pointer border-2 hover:ring-2 ring-red-500" data-color="red"></div>
+                        </div>
+                        {{logform.neuro_color}}
+                        </div>
+
+                        <!-- Latency -->
+                        <div class='w-full pb-4 px-6 mx-auto'>
+                        <label for="latencyRange" class="block text-xs text-gray-300 font-mono mt-4">~$ latency (ms)</label>
+                        {{logform.latency}}
+                        <output id="latencyValue" class="text-sm text-green-400 font-mono mt-1">180ms</output>
+                        </div>
+
+                        <!-- Commit Button -->
+                        <div class="bg-gray-800 px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-t border-gray-700">
+                        <div class="text-gray-400 text-xs sm:text-sm font-mono mb-2 sm:mb-0">
+                            Press <kbd class="px-1 py-0.5 bg-gray-700 rounded">Enter</kbd> or click to log your thoughts
+                        </div>
+                        <button type='submit' class="w-full sm:w-auto cursor-pointer bg-[#00a63e] hover:bg-green-600 text-white font-semibold text-sm px-6 py-2 rounded-md shadow-sm font-mono">
+                            > commit
+                        </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="mt-4 border-t border-gray-400 text-center"></div>
+
                 <!-- Filter tabs - now scrollable on mobile -->
-                <div class="flex gap-x-3 overflow-x-auto scrollbar-hide px-2">
+                <div class="flex gap-x-3 overflow-x-auto scrollbar-hide px-2 mt-2">
                     <a href='?feed=all'
                         class="px-3 py-1 rounded hover:scale-105 transition-all cursor-pointer shrink-0 {% if type == 'all' or type == '' or type == none %}bg-[#6feb85] text-black{% else %}text-white bg-black hover:bg-[#6feb85] hover:text-black{% endif %}">
                         All
@@ -51,7 +102,7 @@
         </div>
 
         <div class='flex flex-col gap-y-2'>
-            <div class="mt-28 self-start max-[850px]:hidden block w-64 lg:w-80  min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
+            <div class="mt-28 self-start max-[800px]:hidden block w-64 xl:w-80 lg:w-60  min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
                 <div class="flex flex-col items-center">
                     <img src="{{user.info.profile_image.url}}?v={{user.info.updated_at.timestamp}}" class="w-24 h-24 bg-gray-200 rounded-lg object-cover" alt="Profile Picture">
                     <p class="mt-4 text-xl font-semibold text-black">{{user.username}}</p>
@@ -63,8 +114,8 @@
                 </div>
             </div>
 
-            <div class="self-start max-[850px]:hidden block w-64 lg:w-80  min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
-                <div class="flex flex-col items-start gap-y-2 lg:ml-12">
+            <div class="self-start max-[800px]:hidden block w-64 xl:w-80 lg:w-60  min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
+                <div class="flex flex-col gap-y-2 items-start [@media(min-width:1280px)]:items-start [@media(min-width:1280px)]:ml-12">
                     <div class='flex flex-row items-center gap-x-2'>
                         <img src='{% static "assets/eye.svg" %}' class='h-7 w-7'>
                         <p class="text-sm  text-black">Profile Views: {{user.info.profile_views}}</p>
@@ -83,12 +134,50 @@
                     <a href="{% url 'calendar_page' %}" class="inline-block px-4 py-2 text-sm font-medium text-white bg-[#00a63e] rounded-lg hover:bg-green-700 transition-all duration-200">View</a>
                 </div>
             </div>
+
+            <div class="self-start max-[800px]:hidden block w-64 xl:w-80 lg:w-60 min-w-40 bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow ml-auto mr-4">
+                <p class='mx-auto text-center mb-2 text-sm font-semibold text-gray-700 tracking-wide uppercase'>In last 24h</p><div class="mt-2 border-t border-gray-300 pt-4 text-center"></div>
+                <div class="flex flex-col gap-y-4 items-start [@media(min-width:1280px)]:items-start [@media(min-width:1280px)]:ml-12">
+
+                    <!-- Logs Fired -->
+                    <div class='flex flex-row items-center gap-x-2'>
+                    <i class="fa-solid fa-terminal text-lg"></i>
+                    <p class="text-sm text-black">Logs Fired: {{ mindlog_obj.logs_fired }}</p>
+                    </div>
+
+                    <!-- Avg Latency -->
+                    <div class='flex flex-row items-center gap-x-2'>
+                    <i class="fa-solid fa-clock text-lg"></i>
+                    <p class="text-sm text-black">Avg Latency: {{ mindlog_obj.mean_latency }}ms</p>
+                    </div>
+
+                    <!-- Logs/Min -->
+                    <div class='flex flex-row items-center gap-x-2'>
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                    <p class="text-sm text-black">Logs/Min: {{ mindlog_obj.logs_per_min }}</p>
+                    </div>
+
+                    <!-- Clones Today -->
+                    <div class='flex flex-row items-center gap-x-2'>
+                    <i class="fa-solid fa-clone text-lg"></i>
+                    <p class="text-sm text-black">Cloned Today: {{ mindlog_obj.clones_today }}</p>
+                    </div>
+
+                </div>
+
+                <!-- CTA Button -->
+                <div class="mt-6 border-t border-gray-300 pt-4 text-center">
+                    <a href="{% url 'explore_logs_page' %}" class="inline-block px-4 py-2 text-sm font-medium text-white bg-[#00a63e] rounded-lg hover:bg-green-700 transition-all duration-200">
+                    View Logs
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 
     {% include "includes/create-post.html" %}
-    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-
+    <script src="{% static 'scripts/mindlogs.js' %}"></script>
 </body>
 
 <script>

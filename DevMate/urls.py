@@ -20,11 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from myapp.views import CustomPasswordChangeView, logout_view
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include('api.urls')),
     
     path('admin/', include('admin_honeypot.urls')),
@@ -40,5 +37,6 @@ urlpatterns = [
     path("feature/", include('features.urls')),
     path("collab-project/", include('collaboration_project.urls')),
     path("events/", include('events.urls')),
+    path("logs/", include("mindlogs.urls")),
     path('', include('myapp.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
