@@ -19,7 +19,7 @@ class skill(models.Model): #Skills
     ('Version Control', 'Version Control'),
     ('DevOps', 'DevOps'),
     ('UI/UX Design', 'UI/UX Design'),
-    ('Machine Learning', 'Machine Learning'),
+    ('Machine Learnfulling', 'Machine Learning'),
     ('Web Development', 'Web Development')
 ]   
     name = models.CharField(max_length=100, unique=True)
