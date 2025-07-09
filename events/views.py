@@ -9,7 +9,6 @@ from myapp.utils import send_notification_email
 from myapp.forms import PostForm
 from .forms import EventForm
 
-@login_required
 def event_detail(request, id):
     event_obj = get_object_or_404(event, pk=id)
     post_form = PostForm()
@@ -147,7 +146,7 @@ def save_event_comment(request, event_id):
         return JsonResponse({'success': True, 'comment_html': comment_html, 'total': total_comments})
     
     except event.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Project not found.'})
+        return JsonResponse({'success': False, 'error': 'Event not found.'})
     
 
 @login_required
