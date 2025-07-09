@@ -52,7 +52,7 @@ $(document).ready(function () {
                 // Update total comments
                 $('#total_comments').text(response.total);
             } else {
-                alert(response.error || 'Something went wrong');
+                alert(response.error || 'Please log in to continue.');
             }
         });
     });
@@ -82,7 +82,7 @@ $(document).ready(function () {
                     $('#total_comments').text(response.total_comments);
                     $(`#show_reply_count_${commentId}`).text(response.show_replies_count);
                 } else {
-                    alert(response.error || "Something went wrong!");
+                    alert(response.error || "Please log in to continue.");
                 }
             },
             error: function () {
