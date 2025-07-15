@@ -6,19 +6,20 @@
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 {% block meta %}{{event_form.media}}{% endblock  %}
 {% endblock %} 
-    
 
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden{% endblock %}
+    
 {% block content %}
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
+
     <!-- navbar -->
     {% include "includes/navbar.html" %}   
 
     <!-- main section -->
-    <div class="mt-24 w-full pb-14 lg:pb-4" id='entireSection'>
-        <div class="flex justify-center flex-col items-center w-[90%] md:w-1/2 lg:w-[40%] bg-white lg:p-14 p-3 pt-10  mx-auto">
-            <p class='text-2xl lg:text-3xl -mt-3 font-bold text-gray-900 tracking-tight'>Create Event 📅</p>
+    <div class="mt-24 w-full pb-18 lg:pb-4" id='entireSection'>
+        <div class="flex justify-center flex-col items-center w-[90%] md:w-1/2 lg:w-2/5 bg-white lg:p-10 px-4 py-8 pt-10  mx-auto rounded-2xl">
+            <p class='text-2xl lg:text-3xl -mt-3 pt-2 font-bold text-gray-900 tracking-tight'>Create Event 📅</p>
             <div class="w-full">
-                <form method='post' id='eventForm' enctype="multipart/form-data" class="flex flex-col mt-5 gap-y-3 w-full">
+                <form method='post' id='eventForm' enctype="multipart/form-data" class="flex flex-col mt-5 gap-y-3 w-full ">
                     {% csrf_token %}
                     <div class="flex flex-col gap-y-3">
                         <label for="eventName">{{event_form.title.label}}</label>
@@ -178,6 +179,5 @@
         });
     });
     </script>
-</body>
-    
+
 {% endblock  %}

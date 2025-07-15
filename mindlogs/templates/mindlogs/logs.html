@@ -4,12 +4,9 @@
 {% load neuro_tags %}
 
 {% block title %}DevMate{% endblock %}
-{% block style %}
-<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}" />
-{% endblock %}
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}" />{% endblock %}
 
 {% block content %}
-<body>
 
   <div class="bg-gray-950 px-4 py-12 min-h-screen font-mono text-white">
 
@@ -98,5 +95,5 @@
   <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] space-y-2"></div>
   <div id="user-data" data-username="{{ user.username }}"></div>
   <script src="{% static 'scripts/mindlogs.js' %}"></script>
-<body>
+  
 {% endblock %}

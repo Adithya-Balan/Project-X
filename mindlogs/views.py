@@ -79,12 +79,17 @@ def personal_logbook(request, username):
     today = timezone.now().date()
     streak = 0
     seen_days = set(log.timestamp.date() for log in logs)
+    missed_day = False
 
     for i in range(0, 365):
         day = today - timedelta(days=i)
         if day in seen_days:
             streak += 1
+        elif day == today:
+            # Allow current day to not break streak
+            continue
         else:
+            missed_day = True
             break
 
     # Clone Impact
@@ -182,6 +187,18 @@ def delete_log(request, sig):
     log.delete()
     return JsonResponse({'success': True})
 
+@login_required
+def toggle_log_like(request, sig):
+    log_obj = get_object_or_404(MindLog, sig=sig)
+    userinfo_obj = request.user.info
+    log_owner = log_obj.user
+    if userinfo_obj in log_obj.likes.all():
+        log_obj.likes.remove(userinfo_obj)
+        liked = False
+    else:
+        log_obj.likes.add(userinfo_obj)
+        liked = True
+    return JsonResponse({'liked': liked, 'total_likes': log_obj.total_likes()}) 
 
 def mindbook(request):
     return render(request, "mindlogs/mindbook.html")

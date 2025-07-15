@@ -2,9 +2,10 @@
 {% load static %}
 {% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+{% block body_class %}bg-gray-100 text-gray-900 min-h-screen flex flex-col mb-10{% endblock %}
 
 {% block content %}
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col mb-10">
+
     {% include "includes/navbar.html" %}
 
 <div id='entireSection' class="container mx-auto p-4 sm:p-6 mt-14 flex-1">
@@ -112,7 +113,7 @@
     </div>
 </div>
     {% include "includes/create-post.html" %}
-<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
+    
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function createPieChart(canvasId, data) {
@@ -165,5 +166,5 @@
         confirmBox.classList.toggle("hidden");
     }
 </script>
-</body>
+
 {% endblock %}

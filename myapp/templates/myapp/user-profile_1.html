@@ -16,12 +16,12 @@
     integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock %} 
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden{% endblock %}
 
 {% block content %} 
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
+
     <!-- navbar -->
     {% include "includes/navbar.html" %}
-
 
     <!-- main section -->
     <div id = 'entireSection' class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start justify-between">
@@ -590,5 +590,4 @@
     }
     </script>
 
-</body>
 {% endblock %}

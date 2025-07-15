@@ -28,6 +28,7 @@ class MindLog(models.Model):
 
     # Reactions
     clone_count = models.PositiveIntegerField(default=0)
+    likes = models.ManyToManyField(userinfo, related_name="liked_logs", blank=True)
     
     def is_clone(self):
         return self.original_log is not None
@@ -40,8 +41,10 @@ class MindLog(models.Model):
             self.neuro_color = "green"  # ensure original logs get default
 
         super().save(*args, **kwargs)
+        
+    def total_likes(self):
+        return self.likes.count()
 
-    
     def __str__(self):
         return f"{self.user.user.username} ▸ {self.sig}"
     
