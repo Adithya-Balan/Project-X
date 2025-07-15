@@ -3,16 +3,13 @@
 {% load custom_filter %}
 
 {% block title %}DevMate{% endblock %} 
-{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
-{% endblock %} 
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %}
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden entireSection{% endblock %}
 
 {% block content %}
-    
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden entireSection">
+
     <!-- navbar --><!-- z-20 -->
     {% include "includes/navbar.html" %}
-    <!-- z-20 -->
-    
 
     <!-- main section -->
     <div id="entireSection" class="lg:w-full lg:flex-row lg:flex lg:gap-x-1 md:flex md:flex-col md:justify-start md:items-start justify-between">
@@ -277,9 +274,6 @@
 
     {% include "includes/create-post.html" %}
 
-    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'scripts/saved.js' %}"></script>
 
-</body>
-    
 {% endblock  %}

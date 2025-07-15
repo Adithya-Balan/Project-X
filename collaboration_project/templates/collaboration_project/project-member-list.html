@@ -2,20 +2,17 @@
 {% load static %}
 {% load custom_filter %}
 
-
 {% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 <link rel="stylesheet" href="{% static 'styles/banner.css' %}"/>
 {% endblock %} 
 
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden{% endblock %}
 
 {% block content %}
         
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
     <!-- navbar -->
     {% include "includes/navbar.html" %}
-
-    
 
     <!-- main section -->
     <div id="entireSection" class="w-full lg:flex-row lg:flex lg:gap-x-5 md:flex flex flex-col md:justify-start md:items-start">
@@ -200,5 +197,4 @@
     {% include "includes/create-post.html" %}
     <script src="{% static 'scripts/collaboration_project.js' %}"></script>
 
-</body>
 {% endblock  %}

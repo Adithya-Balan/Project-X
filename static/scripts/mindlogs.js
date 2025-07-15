@@ -188,6 +188,36 @@ $(document).ready(function () {
   });
 });
 
+// For toggle like.
+$(document).ready(function() {
+    $(document).on('click', '.log-like-container', function() {
+        let container = $(this);
+        let logSig = container.data("log-sig");
+        let heartIcon = container.find("i");
+        let likeCountSpan = container.find("span");
+        let actionUrl = `/logs/toggle_log_like/${logSig}/`; 
+        
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            headers: { "X-CSRFToken": getCSRFToken() },
+            success: function(response) {
+                // Update the heart icon's style based on like status
+                if (response.liked) {
+                    heartIcon.addClass("text-[#6feb85]");
+                } else {
+                    heartIcon.removeClass("text-[#6feb85]");
+                }
+                // Update the like count in the span
+                likeCountSpan.text(response.total_likes);
+            },
+            error: function(xhr) {
+                console.error("Error toggling like:", xhr.responseText);
+            }
+        });
+    });
+});
+
 // for loading more logs
 document.addEventListener("DOMContentLoaded", function () {
     const loadBtn = document.getElementById("logs-load-more-btn");

@@ -5,16 +5,14 @@
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />{% endblock %}
-
+{% block body_class %}flex items-center justify-center min-h-screen bg-gray-100{% endblock %}
 
 {% block content %} 
 
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div
-        class="w-full mx-auto flex flex-col md:flex-col lg:flex-row max-[1300px]:flex-col items-center justify-center gap-8 px-4 md:px-2">
+    <div class="w-full mx-auto flex flex-col md:flex-col lg:flex-row max-[1300px]:flex-col items-center justify-center gap-8 px-4 md:px-2">
         <img src="{% static 'assets/skills.jpeg' %}" alt="" class="h-72 hidden md:block">
-        <div class="bg-white p-8 rounded-lg shadow-lg lg:w-[50%] md:w-[60%] w-full">
-            <p class="text-2xl font-bold text-center mb-6 text-gray-800">Select your Skills</p>
+        <div class="bg-white p-8 pb-4 rounded-lg shadow-lg lg:w-[50%] md:w-[60%] w-full">
+            <p class="text-2xl font-bold text-center mb-8 text-gray-800">Select your Skills</p>
     
             {% comment %} <form action="#" method="POST" class="space-y-6">
     
@@ -35,13 +33,21 @@
     
             </form> {% endcomment %}
 
-            <form method='POST' class="space-y-6">
+            <form method='POST' class="space-y-4">
                 {% csrf_token %}
-            {{form.skills}}
-            <button type="submit"
-                class="w-full bg-black text-white  mt-4 p-3 rounded-lg hover:bg-gray-800 transition duration-300 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-                <i class="fas fa-arrow-right mr-2"></i>Next
-            </button>
+                {{form.skills}}
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
+                    <!-- Skip Button -->
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-white text-gray-700 border border-gray-400 px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-300">
+                        Skip 
+                    </button>
+                    <!-- Next Button -->
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition duration-300 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
+                        <i class="fas fa-arrow-right mr-2"></i>Next
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -57,6 +63,5 @@
 
         });
     </script>
-</body>
 
 {% endblock %}

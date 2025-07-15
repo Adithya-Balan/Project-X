@@ -4,10 +4,10 @@
 {% block title %}Tell more about yourself...{% endblock  %}
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %}
-
+{% block body_class %}flex items-center justify-center min-h-screen bg-gray-100{% endblock %}
 
 {% block content %}
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
+
     <div class="w-full mx-auto flex max-[1300px]:flex-col items-center justify-center gap-8 px-4 md:px-2">
         <img src="{% static 'assets/emoji.svg' %}" alt="" class="w-full md:mt-0 md:h-72 md:w-auto md:block hidden">
         <div class="bg-white p-8 rounded-lg shadow-lg w-full md:w-4/5 lg:w-[700px]">
@@ -41,13 +41,20 @@
                     {{ form.cringe_badge }}
                 </div>            
                 <!-- Submit Button -->
-                <button type="submit"
-                    class="w-full bg-black text-white p-3 rounded-lg hover:bg-gray-800 transition duration-300 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-                    <i class="fas fa-arrow-right mr-2"></i>Next
-                </button>
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-8">
+                    <!-- Skip Button -->
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-white text-gray-700 border border-gray-400 px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 transition duration-300">
+                        Skip 
+                    </button>
+                    <!-- Next Button -->
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition duration-300 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
+                        <i class="fas fa-arrow-right mr-2"></i>Next
+                    </button>
+                </div>
             </form>
         </div>
     </div>
-</body>
 
 {% endblock %}

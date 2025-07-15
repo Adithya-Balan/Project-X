@@ -10,10 +10,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css" integrity="sha512-087vysR/jM0N5cp13Vlp+ZF9wx6tKbvJLwPO8Iit6J7R+n7uIMMjg37dEgexOshDmDITHYY5useeSmfD1MYiQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock  %}
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden{% endblock %}
 
 {% block content %}
 
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
     <!-- navbar --><!-- z-20 -->
     {% include "includes/navbar.html" %}
     
@@ -454,7 +454,6 @@
 
 
     {% include "includes/create-post.html" %}
-    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'scripts/organization_profile.js' %}"></script>
     {% if open_editOrg_flag %}
     <script>
@@ -464,5 +463,5 @@
         });
     </script>
     {% endif %}
-</body>
+
 {% endblock %}

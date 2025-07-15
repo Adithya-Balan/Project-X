@@ -5,13 +5,10 @@
 {% block title %}DevMate{% endblock %} 
 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
-{% block script %}
-{% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-<script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-{% endblock %} 
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden{% endblock %}
 
 {% block content %}
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
+
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
@@ -126,7 +123,5 @@
     </div>
 
     {% include "includes/create-post.html" %}
-    <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
-</body>
 
 {% endblock  %}

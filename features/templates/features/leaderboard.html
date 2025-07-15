@@ -2,12 +2,10 @@
 {% load static %}
 
 {% block title %}DevMate{% endblock %}
-{% block style %}
-<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}" />
-{% endblock %}
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}" />{% endblock %}
+{% block body_class %}bg-[#030712] text-white min-h-screen{% endblock %}
 
 {% block content %}
-<body class="bg-[#030712] text-white min-h-screen ">
 
   <div id='entireSection' class='px-4 pb-20'>
     <!-- Formula Info Box -->
@@ -44,8 +42,6 @@
 
       </div>
     </div>
-
-
 
     <!-- Top 3 Podium -->
     <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 px-6">
@@ -113,5 +109,5 @@
       {% endfor %}
     </div>
   </div>
-</body>
+
 {% endblock %}

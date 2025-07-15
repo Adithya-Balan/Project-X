@@ -2,12 +2,12 @@
 {% load static %}
 {% load custom_filter %}
 
-
 {% block title %}DevMate{% endblock %} 
 {% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock %} 
+{% block body_class %}text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden{% endblock %}
 
 {% block content %}
-<body class="text-[15px] h-full bg-[#f4f2ee] overflow-x-hidden">
+
     <!-- navbar -->
     {% include "includes/navbar.html" %}
 
@@ -394,9 +394,9 @@
 
     {% include "includes/create-post.html" %}
     <script>
-    const commentSvgUrl = "{% static 'assets/comment.svg' %}";
+        const commentSvgUrl = "{% static 'assets/comment.svg' %}";
     </script>
     <script src="{% static 'scripts/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'scripts/collaboration_project.js' %}"></script>
-</body>
+
 {% endblock  %}
