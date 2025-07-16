@@ -659,4 +659,37 @@ function toast(message = "Something happened!", type = "default", duration = 300
     }, duration + 600);
 }
 
+//for reward + emoji drop
+function triggerDevmateReward(message, emojis) {
+    const defaultEmojis = ["🎉", "✨", "🔥", "🚀", "🏆", "🥳"];
+    if (!emojis || emojis.length === 0) {
+        emojis = defaultEmojis;
+    }
+
+    const banner = document.getElementById('devmate-reward-banner');
+    const messageSpan = document.getElementById('devmate-reward-message');
+    const emojiContainer = document.getElementById('emoji-drop-container');
+
+    messageSpan.textContent = message;
+    banner.classList.remove('hidden');
+    banner.classList.add('devmate-reward-anim-show');
+
+    // Drop Emojis
+    for (let i = 0; i < 60; i++) {
+        const emoji = document.createElement('div');
+        emoji.classList.add('emoji-drop');
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.animationDuration = (2 + Math.random()) + "s";
+        emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        emojiContainer.appendChild(emoji);
+
+        setTimeout(() => emoji.remove(), 4000);
+    }
+
+    // Auto-hide banner
+    setTimeout(() => {
+        banner.classList.remove('devmate-reward-anim-show');
+        setTimeout(() => banner.classList.add('hidden'), 500);
+    }, 6000);
+}
 //Filters, popup for mobile, comments reply for project, dp view for profile, add posts

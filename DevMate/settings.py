@@ -122,6 +122,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.tz', 
+                
+                'DevMate.context_processors.reward_message_processor',
             ],
         },
     },

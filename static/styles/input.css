@@ -86,3 +86,56 @@
 .toast-animate-out {
   animation: toast-out 0.4s ease-in forwards;
 }
+
+.devmate-reward-anim {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.devmate-reward-anim-show {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+/* Emoji Drop Animation */
+.emoji-drop {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: emojiFall 3s linear forwards;
+    user-select: none;
+}
+
+@keyframes emojiFall {
+  0% {
+      transform: translateY(-10vh) rotate(0deg);
+      opacity: 1;
+  }
+  80% {
+      opacity: 1;
+  }
+  100% {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+  }
+}
+
+#heatmap-tooltip {
+    font-family: monospace;
+    font-weight: 600;
+    font-size: 12px;
+    color: #fcfcfc; /* light green text */
+    background: linear-gradient(135deg, #0f172a, #0d1117);
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    padding: 8px 12px;
+
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 50;
+
+    transition: opacity 0.15s ease, transform 0.1s ease;
+    transform: translateY(-4px);
+
+    backdrop-filter: blur(4px);
+}

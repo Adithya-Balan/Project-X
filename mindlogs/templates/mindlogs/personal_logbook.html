@@ -4,6 +4,7 @@
 {% load tz %}
 
 {% block title %}{{ userinfo_obj.user.username }} ▸ Mind Logbook{% endblock %}
+{% block style %}<link rel="stylesheet" href="{% static 'styles/user_profile_page.css' %}"/>{% endblock  %}
 {% block body_class %}bg-gray-950 min-h-screen py-14 pb-8 px-4 text-white{% endblock %}
 
 {% block content %}
@@ -86,6 +87,99 @@
         </div>
         </div>
 
+        <!-- Container -->
+        <div class="bg-[#0d1117] mt-4 lg:mt-0 rounded-xl shadow-lg w-full relative pb-4">
+
+            <!-- Sticky Header -->
+            <div class="sticky top-0 z-30 bg-[#0d1117] px-4 py-3 border-b border-[#161b22] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-md">
+
+                <!-- Left Section -->
+                <div class="flex items-center gap-3 text-white text-sm font-semibold tracking-tight">
+                    <span class="text-green-500 text-2xl">{{ log_year_count }}</span> 
+                    <span class="opacity-70">Logs in</span> 
+                    <span class="text-green-400">{{ year }}</span>
+                </div>
+
+                <!-- Right Section -->
+                <div class="flex flex-wrap items-center text-xs gap-4 text-gray-400">
+
+                    <div class="whitespace-nowrap text-gray-500">
+                        Active Days: 
+                        <span class="text-white font-bold">{{ log_map|length }}</span>
+                    </div>
+
+                    <div class="whitespace-nowrap text-gray-500">
+                        Max Streak: 
+                        <span class="text-white font-bold">{{ max_streak }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-1 whitespace-nowrap">
+                        <span class="hidden sm:inline">Year:</span>
+                        <select onchange="location.href='?year=' + this.value"
+                                class="bg-[#161b22] text-white px-2 py-1 rounded border border-[#30363d] hover:border-green-400 focus:ring-green-500 focus:outline-none transition">
+                            {% for y in years_available %}
+                                <option value="{{ y.year }}" {% if y.year == year %}selected{% endif %}>
+                                    {{ y.year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Tooltip -->
+            <div id="heatmap-tooltip"
+                class="fixed bg-[#161b22] text-white text-xs px-3 py-1 rounded shadow-lg pointer-events-none hidden"
+                style="white-space:nowrap; z-index:50; border:1px solid #2a2f35;">
+            </div>
+
+            <!-- Scrollable Heatmap -->
+            <div id="heatmap-container" class="overflow-x-auto px-4 py-4 mr-4">
+
+                <div class="flex gap-4 min-w-[900px] mr-2">
+
+                    {% for month_name, weeks in contribution_months %}
+                        <div class="flex flex-col items-center">
+
+                            <!-- Month Label -->
+                            <div class="text-[12px] text-gray-500 font-medium mb-2">{{ month_name }}</div>
+
+                            <!-- Weeks of this Month -->
+                            <div class="flex gap-[4px] ">  <!-- Added more right margin for breathing -->
+                                {% for week in weeks %}
+                                    <div class="flex flex-col gap-[4px]">
+                                        {% for day in week %}
+                                            <div class="w-3 h-3 rounded-sm transition duration-200 ease-out cursor-pointer"
+                                                data-tooltip="{{ day.count }} log{{ day.count|pluralize }} on {{ day.date }}"
+                                                style="
+                                                    background-color: 
+                                                        {% if day.count > 0 %}
+                                                            {% if day.count <= 2 %} #016620
+                                                            {% elif day.count <= 5 %} #109932
+                                                            {% elif day.count <= 10 %} #7fe18b 
+                                                            {% else %} #6ee7b7
+                                                            {% endif %}
+                                                        {% else %}
+                                                            #161b22
+                                                        {% endif %}
+                                                "
+                                                onmouseover="showTooltip(event)"
+                                                onmousemove="moveTooltip(event)"
+                                                onmouseout="hideTooltip()">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
         <!-- Terminal Subtitle -->
         <div class="text-center space-y-2">
         {% comment %} <h2 class="text-2xl sm:text-3xl font-semibold text-green-300">~/{{ user.username }}.mind.logs</h2> {% endcomment %}
@@ -140,17 +234,6 @@
         {% endif %}
         
 
-        {% comment %} success msg and scripts {% endcomment %}
-        {% if messages %}
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-            {% for message in messages %}
-                toast("{{ message|escapejs }}", "success");
-            {% endfor %}
-            });
-        </script>
-        {% endif %}
-        <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] space-y-2"></div>
         <div id="user-data" data-username="{{ user.username }}"></div>
     </div>
     
@@ -173,6 +256,29 @@
         statsPanel.classList.remove("max-h-[500px]", "opacity-100", "pointer-events-auto");
         }
     });
+    </script>
+
+    <script>
+        const tooltip = document.getElementById('heatmap-tooltip');
+
+        function showTooltip(event) {
+            const text = event.target.getAttribute('data-tooltip');
+            tooltip.textContent = text;
+            tooltip.style.display = 'block';
+        }
+
+        function moveTooltip(event) {
+            const offsetX = 8;   // Slightly right of pointer
+            const offsetY = 16;  // Slightly above pointer
+
+            tooltip.style.left = (event.pageX + offsetX) + 'px';
+            tooltip.style.top = (event.pageY - offsetY) + 'px';
+        }
+
+        function hideTooltip() {
+            tooltip.style.display = 'none';
+        }
+
     </script>
 
 {% endblock %}
