@@ -170,7 +170,7 @@ $(document).ready(function () {
           logCard.fadeOut(400, function () {
             $(this).remove();
           });
-          toast("Log deleted successfully!", "success")
+          toast("Log deleted successfully!", "error");
         } else {
           alert("Failed to delete the log.");
         }

@@ -4,7 +4,6 @@ from django.db.models import Avg
 from .models import MindLog
 import math
 
-
 def get_24h_mindlog_stats():
     now = timezone.now()
     last_24h = now - timedelta(hours=24)
@@ -19,5 +18,23 @@ def get_24h_mindlog_stats():
         "clones_today": logs_qs.filter(original_log__isnull=False).count(),
     }
     return stats
+
+def streak_calculation(logs):
+    today = timezone.now().date()
+    streak = 0
+    seen_days = set(log.timestamp.date() for log in logs)
+    missed_day = False
+
+    for i in range(0, 365):
+        day = today - timedelta(days=i)
+        if day in seen_days:
+            streak += 1
+        elif day == today:
+            # Allow current day to not break streak
+            continue
+        else:
+            missed_day = True
+            break
+    return streak
 
 

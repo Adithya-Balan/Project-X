@@ -30,6 +30,37 @@
     <body class="{% block body_class %}body{% endblock %}">
         {% block content %}{% endblock  %}
         
+        <!-- Reward messages -->
+        <div id="devmate-reward-banner" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-700 text-white px-6 py-3 rounded-lg shadow-lg devmate-reward-anim transition duration-500 ease-in-out text-center text-sm font-semibold tracking-wide">
+            <span id="devmate-reward-message"></span>
+        </div>
+
+        <div id="emoji-drop-container" class="pointer-events-none fixed inset-0 z-40"></div>
+
+        {% if reward_message %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    triggerDevmateReward(
+                        "{{ reward_message|escapejs }}",
+                        {{ reward_emojis|default:"null"|safe }}
+                    );
+                });
+            </script>
+        {% endif %}
+
+        <!-- bottom help messages -->
+        {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+            {% for message in messages %}
+                toast("{{ message|escapejs }}", "success");
+            {% endfor %}
+            });
+        </script>
+        {% endif %}
+        
+        <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] space-y-2"></div>
         <audio id="clickSound" src="{% static 'sounds/clickSound.mpeg' %}" preload="auto"></audio>
+
     </body>
 </html>
