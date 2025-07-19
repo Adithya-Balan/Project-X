@@ -14,10 +14,18 @@
             <div class="bg-gray-800 border border-gray-700 text-green-300 text-[11px] sm:text-xs font-mono px-2 py-0.5 rounded-md shadow-md tracking-tight animate-pulse">
                 latency ▸ <span class="font-semibold">{{log.latency}}ms</span>
             </div>
-            <button type="button" class="log-like-container flex items-center space-x-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-1 rounded-md font-mono shadow-sm transition cursor-pointer mt-4 mb-2" data-log-sig="{{ log.sig }}">
-                <i class="fa fa-heart text-base {% if user.info in log.likes.all %}text-[#6feb85]{% endif %}"></i>
-                <span class='log-like-count'>{{ log.total_likes }}</span>
-            </button>
+
+            <div class='flex gap-x-2'>
+                <button type="button" class="log-like-container flex items-center space-x-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-1 rounded-md font-mono shadow-sm transition cursor-pointer mt-4 mb-2" data-log-sig="{{ log.sig }}">
+                    <i class="fa fa-heart text-base {% if user.info in log.likes.all %}text-[#6feb85]{% endif %}"></i>
+                    <span class='log-like-count'>{{ log.total_likes }}</span>
+                </button>
+
+                <div class="flex items-center space-x-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-1 rounded-md font-mono shadow-sm transition mt-4 mb-2">
+                    <i class="fa fa-eye text-base"></i>
+                    <span>{{ log.total_views }}</span>
+                </div>
+            </div>
         </div>
 
         <!-- Top Meta -->
@@ -45,6 +53,48 @@
         <p class="mt-4 text-gray-100 text-[15px] leading-relaxed">
         ~$ {{log.content}}
         </p>
+
+        {% if log.snap_shot %}
+        <div class="mt-4 flex justify-center">
+            <div class="relative group max-w-[180px] transform rotate-[-3deg] group-hover:rotate-0 transition duration-300 ease-in-out scale-95 group-hover:scale-100">
+
+                <!-- Polaroid Frame -->
+                <div class="bg-white rounded-md shadow-xl pb-4 pt-2 px-2 flex flex-col items-center border border-gray-300">
+                    <a href='{{log.snap_shot.url}}' target='_blank'><img src="{{ log.snap_shot.url }}" alt="Snapshot"
+                        class="w-full rounded-sm object-cover aspect-square shadow-md border border-gray-200"></a>
+
+                    <p class="text-center text-[10px] sm:text-xs font-mono text-gray-500 mt-2 tracking-tight">
+                        Snapshot Logged
+                    </p>
+                </div>
+
+                <!-- Soft Overlay -->
+                <div class="absolute inset-0 bg-black opacity-5 rounded-md pointer-events-none"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if log.code_snippet %}
+        <div class="mt-4 relative group">
+
+            <!-- Copy Button -->
+            <button onclick="copySnippet('{{ log.sig }}')" 
+                    class="absolute top-2 right-2 bg-gray-800 hover:bg-green-600 text-green-300 hover:text-white font-mono text-[11px] px-2 py-1 rounded shadow-sm border border-gray-700 transition-all duration-200 ease-in-out cursor-pointer"
+                    id="copy-btn-{{ log.sig }}">
+                ⧉ Copy
+            </button>
+
+            <!-- Code Block -->
+            <div class="bg-[#0d1117] border border-gray-800 rounded-xl shadow-inner overflow-x-auto max-w-full px-4 pt-6 font-mono text-[13px] leading-relaxed" style="max-height: 320px; min-height: 100px; overflow-y: auto;">
+
+                <pre class="whitespace-pre-wrap break-words font-mono text-green-300 text-sm leading-snug">
+                    <p id="code-snippet-{{ log.sig }}" class="language-none">{{ log.code_snippet|escape }}</p>
+                </pre>
+
+            </div>
+
+        </div>
+        {% endif %}
 
         <!-- Footer -->
         <div class="mt-5 flex justify-between items-center text-xs text-gray-500">
@@ -121,6 +171,48 @@
         ~$ {{log.content}}
         </p>
 
+        {% if log.original_log.snap_shot %}
+        <div class="mt-4 flex justify-center">
+            <div class="relative group max-w-[180px] transform rotate-[-3deg] group-hover:rotate-0 transition duration-300 ease-in-out scale-95 group-hover:scale-100">
+
+                <!-- Polaroid Frame -->
+                <div class="bg-white rounded-md shadow-xl pb-4 pt-2 px-2 flex flex-col items-center border border-gray-300">
+                    <a href='{{log.original_log.snap_shot.url}}' target='_blank'><img src="{{ log.original_log.snap_shot.url }}" alt="Snapshot"
+                        class="w-full rounded-sm object-cover aspect-square shadow-md border border-gray-200"></a>
+
+                    <p class="text-center text-[10px] sm:text-xs font-mono text-gray-500 mt-2 tracking-tight">
+                        Snapshot Logged
+                    </p>
+                </div>
+
+                <!-- Soft Overlay -->
+                <div class="absolute inset-0 bg-black opacity-5 rounded-md pointer-events-none"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if log.original_log.code_snippet %}
+        <div class="mt-4 relative group">
+
+            <!-- Copy Button -->
+            <button onclick="copySnippet('{{ log.sig }}')" 
+                    class="absolute top-2 right-2 bg-gray-800 hover:bg-green-600 text-green-300 hover:text-white font-mono text-[11px] px-2 py-1 rounded shadow-sm border border-gray-700 transition-all duration-200 ease-in-out cursor-pointer"
+                    id="copy-btn-{{ log.sig }}">
+                ⧉ Copy
+            </button>
+
+            <!-- Code Block -->
+            <div class="bg-[#0d1117] border border-gray-800 rounded-xl shadow-inner overflow-x-auto max-w-full px-4 pt-6 font-mono text-[13px] leading-relaxed" style="max-height: 320px; min-height: 100px; overflow-y: auto;">
+
+                <pre class="whitespace-pre-wrap break-words font-mono text-green-300 text-sm leading-snug">
+                    <p id="code-snippet-{{ log.sig }}" class="language-none">{{ log.original_log.code_snippet|escape }}</p>
+                </pre>
+
+            </div>
+
+        </div>
+        {% endif %}
+
         <!-- Footer Meta -->
         <div class="mt-5 flex justify-between items-center text-xs text-gray-500">
         <div class="font-mono text-[10px]">ping ▸ {{log.sig}}</div>
@@ -159,10 +251,18 @@
         {% endif %}
         </div>
 
-        <button type="button" class="log-like-container flex items-center space-x-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-1 rounded-md font-mono shadow-sm transition cursor-pointer mt-2" data-log-sig="{{ log.sig }}">
-            <i class="fa fa-heart text-base {% if user.info in log.likes.all %}text-[#6feb85]{% endif %}"></i>
-            <span class='log-like-count'>{{ log.total_likes }}</span>
-        </button>
+        <div class='flex gap-x-2'>
+            <button type="button" class="log-like-container flex items-center space-x-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-1 rounded-md font-mono shadow-sm transition cursor-pointer mt-4 mb-2" data-log-sig="{{ log.sig }}">
+                <i class="fa fa-heart text-base {% if user.info in log.likes.all %}text-[#6feb85]{% endif %}"></i>
+                <span class='log-like-count'>{{ log.total_likes }}</span>
+            </button>
+
+            <div class="flex items-center space-x-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-1 rounded-md font-mono shadow-sm transition mt-4 mb-2">
+                <i class="fa fa-eye text-base"></i>
+                <span>{{ log.total_views }}</span>
+            </div>
+        </div>
+
     </div>
 
     {% endif %}
