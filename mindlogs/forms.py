@@ -15,7 +15,7 @@ class MindLogForm(forms.ModelForm):
 
     class Meta:
         model = MindLog
-        fields = ['content', 'neuro_color', 'latency']
+        fields = ['content', 'neuro_color', 'latency', 'snap_shot']
         widgets = {
             'content': forms.TextInput(attrs={
                 'placeholder': "What are you working on today?",
@@ -29,5 +29,11 @@ class MindLogForm(forms.ModelForm):
             'neuro_color': forms.HiddenInput(attrs={
                 'id': 'selectedColor',
                 'name': 'selected_color'
+            }),
+            'snap_shot': forms.ClearableFileInput(attrs={
+                'id': 'snapshotInput',
+                'accept': 'image/*',
+                'onchange': 'handle_log_ImageUpload(event)',
+                'class': 'hidden',
             }),
         }

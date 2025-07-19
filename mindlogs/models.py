@@ -1,6 +1,7 @@
 from django.db import models
 from myapp.models import userinfo
 from django.utils.crypto import get_random_string
+from django.db.models import F
 
 BASE62_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -18,7 +19,10 @@ class MindLog(models.Model):
     content = models.TextField(max_length=280)
     neuro_color = models.CharField(max_length=20, default='green', null=True, blank=True) 
     latency = models.PositiveIntegerField(default=180)
+    snap_shot = models.ImageField(upload_to='log_snap_shot', blank=True, null=True)
+    code_snippet = models.TextField(max_length=1000, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    total_views = models.PositiveIntegerField(default=0) 
     
     # Unique signature
     sig = models.CharField(max_length=20, unique=True, default=generate_unique_signature)
@@ -44,6 +48,9 @@ class MindLog(models.Model):
         
     def total_likes(self):
         return self.likes.count()
+    
+    def increment_view_count(self):
+        MindLog.objects.filter(pk=self.pk).update(total_views=F('total_views') + 1)
 
     def __str__(self):
         return f"{self.user.user.username} ▸ {self.sig}"

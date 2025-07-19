@@ -289,6 +289,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+//for log entry (code snippet and image)
+function handle_log_ImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function remove_log_Image() {
+    document.getElementById('snapshotInput').value = "";
+    document.getElementById('imagePreviewContainer').classList.add('hidden');
+}
+
+function toggleCodeSnippet() {
+    const container = document.getElementById('codeSnippetContainer');
+    container.classList.toggle('hidden');
+}
+  
 
 
 

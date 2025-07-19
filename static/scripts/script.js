@@ -25,6 +25,14 @@ function copyCurrentURL() {
         });
 }
 
+function copySnippet(sig) {
+    const codeElement = document.getElementById(`code-snippet-${sig}`);
+    const text = codeElement.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Snippet copied!');
+    });
+}
+
 // Post option navbar Menu
 document.addEventListener('DOMContentLoaded', () => {
     const popupTrigger = document.getElementById('popupTrigger');

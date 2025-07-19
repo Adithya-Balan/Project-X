@@ -62,6 +62,9 @@ def explore_logs_page(request):
     
     paginator = Paginator(logs_qs, 20)  # 20 logs per page
     page_obj = paginator.page(1)
+    
+    for log in page_obj.object_list:
+        log.increment_view_count()
    
     context = {
         "mindlog_obj": mindlog_obj,
@@ -81,6 +84,9 @@ def load_more_logs(request):
         logs_page = paginator.page(page)
     except:
         return JsonResponse({"logs_html": "", "has_next": False})
+    
+    for log in logs_page.object_list:
+        log.increment_view_count()
 
     html = render_to_string("partials/log_cards.html", {"logs_qs": logs_page.object_list, "user": request.user}, request=request )
     return JsonResponse({
@@ -152,6 +158,10 @@ def personal_logbook(request, username):
     
     paginator = Paginator(logs, 20)  # 20 logs per page
     page_obj = paginator.page(1)
+    
+    # for increasing views
+    for log in page_obj.object_list:
+        log.increment_view_count()
 
     context = {
         "mindlogs": page_obj.object_list,
@@ -186,6 +196,10 @@ def load_more_personal_logs(request, username):
         logs_page = paginator.page(page)
     except:
         return JsonResponse({"logs_html": "", "has_next": False})
+    
+    # for increasing view count
+    for log in logs_page.object_list:
+        log.increment_view_count()
 
     html = render_to_string("partials/personal_log_cards.html", {"mindlogs": logs_page.object_list, "user": request.user}, request=request)
     return JsonResponse({
@@ -197,10 +211,13 @@ def load_more_personal_logs(request, username):
 @login_required
 def save_mindlog(request):
     if request.method == "POST":
-        logform = MindLogForm(request.POST or None)
+        logform = MindLogForm(request.POST, request.FILES)
         if logform.is_valid():
             log = logform.save(commit=False)
             log.user = request.user.info
+            raw_snippet = request.POST.get('code_snippet', '').strip()
+            log.code_snippet = raw_snippet[:1000] if raw_snippet else None
+
             log.save()
             
             today = timezone.localtime(timezone.now()).date()
@@ -215,7 +232,6 @@ def save_mindlog(request):
                 messages.success(request, "Log committed successfully!")
             return redirect("explore_logs_page")
     return redirect(request.META.get('HTTP_REFERER', '/'))
-    
 
 #save clone log
 @login_required

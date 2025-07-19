@@ -16,10 +16,10 @@
 
             <!-- Toggle Tabs -->
             <div class="flex justify-center mb-20">
-                <button id="tab-exec" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-l-md focus:outline-none shadow-md">
+                <button id="tab-exec" class="px-4 py-2 bg-green-600 text-white text-xs lg:text-base font-semibold rounded-l-md focus:outline-none shadow-md">
                     Execute Mind Logs
                 </button>
-                <button id="tab-log" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-r-md focus:outline-none shadow-md">
+                <button id="tab-log" class="px-4 py-2 bg-gray-800 text-white text-xs lg:text-base font-semibold rounded-r-md focus:outline-none shadow-md">
                     Commit Log Entry
                 </button>
             </div>
@@ -60,7 +60,7 @@
             </div>
 
             <!-- LOG SECTION -->
-            <form method = "POST" action = "{% url 'save_mindlog' %}" id="log-section" class="space-y-6 hidden">
+            <form method = "POST" enctype="multipart/form-data" action = "{% url 'save_mindlog' %}" id="log-section" class="space-y-6 hidden">
                 {% csrf_token %}
                 <p class="text-center text-gray-500 text-sm">Logging your brain is a habit. Start today. 🚀</p>
 
@@ -72,8 +72,53 @@
                     {{logform.content}}
                     </div>
 
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 -mt-2 ml-4">
+
+                        <!-- Upload Snapshot Icon -->
+                        <button type="button" onclick="document.getElementById('snapshotInput').click();" 
+                            class="bg-gray-800 hover:bg-gray-700 p-3 rounded-full shadow text-green-400 flex items-center justify-center">
+                            <i class="fa fa-picture-o text-lg"></i>
+                        </button>
+                        {{ logform.snap_shot }}
+
+                        <!-- Add Code Snippet Icon -->
+                        <button type="button" onclick="toggleCodeSnippet();" 
+                            class="bg-gray-800 hover:bg-gray-700 p-3 rounded-full shadow text-blue-400 flex items-center justify-center">
+                            <i class="fa fa-code text-lg"></i>
+                        </button>
+
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div id="imagePreviewContainer" class="relative hidden ml-4 mt-4 w-40">
+                        <img id="imagePreview" src="" alt="Preview" 
+                            class="rounded-xl border border-gray-700 w-40 h-40 object-cover shadow-lg">
+                        <button type="button" onclick="remove_log_Image()" 
+                            class="absolute top-1 right-1 bg-black bg-opacity-80 text-white rounded-full px-2 py-0.5 text-xs hover:bg-red-600 cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+
+                    <!-- Code Snippet Editor -->
+                    <div id="codeSnippetContainer" class="hidden relative mt-6 px-4">
+                        <div class="bg-[#1e1e1e] text-green-300 font-mono rounded-xl border border-gray-700 shadow-xl p-4">
+                            <textarea name="code_snippet"
+                                    rows="10"
+                                    maxlength="1000"
+                                    placeholder="// Write your code here..."
+                                    class="w-full bg-transparent focus:outline-none resize-y text-sm leading-relaxed font-mono text-green-300"
+                            ></textarea>
+                        </div>
+
+                        <button type="button" onclick="toggleCodeSnippet()"
+                            class="absolute top-2 right-6 bg-gray-800 text-white rounded-full px-3 py-0.5 text-sm hover:bg-red-600 cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+
                     <!-- Color Picker -->
-                    <div class="px-6 pb-4">
+                    <div class="px-6 pb-4 mt-8">
                     <div class="flex items-center gap-2 font-mono text-xs text-gray-400 mb-2">
                         Select log vibe →
                     </div>
