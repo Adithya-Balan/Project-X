@@ -4312,6 +4312,16 @@
       flex-direction: row;
     }
   }
+  .lg\:items-start {
+    @media (width >= 64rem) {
+      align-items: flex-start;
+    }
+  }
+  .lg\:justify-between {
+    @media (width >= 64rem) {
+      justify-content: space-between;
+    }
+  }
   .lg\:gap-x-1 {
     @media (width >= 64rem) {
       column-gap: calc(var(--spacing) * 1);
